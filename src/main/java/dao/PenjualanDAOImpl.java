@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import koneksi.Koneksi;
 import model.DetailPenjualan;
+import model.LapGrafik;
 import model.LapPendapatan;
 import model.LapPenjualan;
 import model.LapTerlaris;
@@ -414,6 +415,47 @@ public class PenjualanDAOImpl implements PenjualanDAO {
             return list;
         } catch (SQLException e) {
             throw new RuntimeException("Gagal ambil laporan terlaris: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<LapGrafik> omzetPerHari(LocalDate a, LocalDate b) {
+        String sql = "SELECT DATE_FORMAT(p.tanggal,'%d %b') label, SUM(p.total) nilai "
+                + "FROM penjualan p WHERE DATE(p.tanggal) BETWEEN ? AND ? "
+                + "GROUP BY DATE(p.tanggal) ORDER BY DATE(p.tanggal)";
+        List<LapGrafik> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setDate(1, java.sql.Date.valueOf(a));
+            ps.setDate(2, java.sql.Date.valueOf(b));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new LapGrafik(rs.getString("label"), rs.getDouble("nilai")));
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil omzet per hari: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public int itemTerjual(LocalDate a, LocalDate b) {
+        String sql = "SELECT COALESCE(SUM(d.qty),0) FROM detail_penjualan d "
+                + "JOIN penjualan p ON d.id_penjualan=p.id_penjualan "
+                + "WHERE DATE(p.tanggal) BETWEEN ? AND ?";
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setDate(1, java.sql.Date.valueOf(a));
+            ps.setDate(2, java.sql.Date.valueOf(b));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal hitung item terjual: " + e.getMessage(), e);
         }
     }
 }

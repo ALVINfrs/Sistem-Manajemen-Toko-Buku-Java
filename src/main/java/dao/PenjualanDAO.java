@@ -3,6 +3,7 @@ package dao;
 import java.time.LocalDate;
 import java.util.List;
 import model.DetailPenjualan;
+import model.LapGrafik;
 import model.LapPendapatan;
 import model.LapPenjualan;
 import model.LapTerlaris;
@@ -23,4 +24,6 @@ public interface PenjualanDAO {
     List<LapPendapatan> lapPendapatan(LocalDate a, LocalDate b);
     List<LapTerlaris> lapTerlaris(LocalDate a, LocalDate b);
     List<Penjualan> listTerbaru(int limit);
+    List<LapGrafik> omzetPerHari(LocalDate a, LocalDate b);
+    int itemTerjual(LocalDate a, LocalDate b);
 }
