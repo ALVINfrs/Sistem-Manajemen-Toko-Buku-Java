@@ -1,35 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:x="http://jasperreports.sourceforge.net/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="lap_data_buku" language="java" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="lap_data_buku" language="java" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40">
   <parameter name="APP_NAME" class="java.lang.String"/>
   <parameter name="PERIODE" class="java.lang.String"/>
+  <parameter name="KOTA" class="java.lang.String"/>
+  <parameter name="TGL_CETAK" class="java.lang.String"/>
+  <parameter name="PETUGAS" class="java.lang.String"/>
   <field name="kodeBuku" class="java.lang.String"/>
   <field name="judul" class="java.lang.String"/>
   <field name="kategori" class="java.lang.String"/>
   <field name="penerbit" class="java.lang.String"/>
   <field name="hargaJual" class="java.lang.Double"/>
   <field name="stok" class="java.lang.Integer"/>
-  <title><band height="80">
-    <textField><reportElement x="0" y="0" width="515" height="30"/><textElement textAlignment="Center"><font size="18" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{APP_NAME}]]></textFieldExpression></textField>
-    <textField><reportElement x="0" y="30" width="515" height="25"/><textElement textAlignment="Center"><font size="14" isBold="true"/></textElement><textFieldExpression><![CDATA["Laporan Data Buku"]]></textFieldExpression></textField>
-    <textField><reportElement x="0" y="55" width="515" height="18"/><textElement textAlignment="Center"><font size="11"/></textElement><textFieldExpression><![CDATA[$P{PERIODE}]]></textFieldExpression></textField>
-  </band></title>
-  <columnHeader><band height="22">
-    <staticText><reportElement mode="Opaque" x="0" y="0" width="70" height="22" backcolor="#000000" forecolor="#FFFFFF"/><textElement><font size="11" isBold="true"/></textElement><text><![CDATA[Kode]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="70" y="0" width="165" height="22" backcolor="#000000" forecolor="#FFFFFF"/><textElement><font size="11" isBold="true"/></textElement><text><![CDATA[Judul]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="235" y="0" width="75" height="22" backcolor="#000000" forecolor="#FFFFFF"/><textElement><font size="11" isBold="true"/></textElement><text><![CDATA[Kategori]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="310" y="0" width="95" height="22" backcolor="#000000" forecolor="#FFFFFF"/><textElement><font size="11" isBold="true"/></textElement><text><![CDATA[Penerbit]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="405" y="0" width="70" height="22" backcolor="#000000" forecolor="#FFFFFF"/><textElement textAlignment="Right"><font size="11" isBold="true"/></textElement><text><![CDATA[H. Jual]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="475" y="0" width="40" height="22" backcolor="#000000" forecolor="#FFFFFF"/><textElement textAlignment="Right"><font size="11" isBold="true"/></textElement><text><![CDATA[Stok]]></text></staticText>
-  </band></columnHeader>
+  <variable name="TOTAL_BUKU" class="java.lang.Integer" calculation="Count">
+    <variableExpression><![CDATA[$F{kodeBuku}]]></variableExpression>
+    <initialValueExpression><![CDATA[0]]></initialValueExpression>
+  </variable>
+  <variable name="TOTAL_STOK" class="java.lang.Integer" calculation="Sum">
+    <variableExpression><![CDATA[$F{stok}]]></variableExpression>
+    <initialValueExpression><![CDATA[0]]></initialValueExpression>
+  </variable>
+  <title><band height="96">
+    <textField><reportElement x="0" y="0" width="515" height="24"/><textElement textAlignment="Center"><font size="16" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{APP_NAME}]]></textFieldExpression></textField>
+    <staticText><reportElement x="0" y="24" width="515" height="15"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Jl. Merdeka No. 45 - Telp: 0812-3456-7890 - Jakarta Pusat]]></text></staticText>
+    <line><reportElement x="0" y="42" width="515" height="1"/><graphicElement><pen lineWidth="2.0" lineStyle="Solid"/></graphicElement></line>
+    <line><reportElement x="0" y="45" width="515" height="1"/><graphicElement><pen lineWidth="0.5" lineStyle="Solid"/></graphicElement></line>
+    <staticText><reportElement x="0" y="52" width="515" height="22"/><textElement textAlignment="Center"><font size="13" isBold="true"/></textElement><text><![CDATA[LAPORAN MASTER DATA BUKU]]></text></staticText>
+    <textField><reportElement x="0" y="74" width="515" height="16"/><textElement textAlignment="Center"><font size="10"/></textElement><textFieldExpression><![CDATA["Periode: " + $P{PERIODE}]]></textFieldExpression></textField>
+  </title></band></title>
+  <columnHeader><band height="24">
+    <staticText><reportElement mode="Opaque" x="0" y="0" width="70" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[ Kode]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="70" y="0" width="165" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Judul Buku]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="235" y="0" width="80" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Kategori]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="315" y="0" width="90" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Penerbit]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="405" y="0" width="70" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[H. Jual (Rp) ]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="475" y="0" width="40" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Stok ]]></text></staticText>
+  </columnHeader></band></columnHeader>
   <detail><band height="20">
-    <textField><reportElement x="0" y="0" width="70" height="20"/><textElement><font size="10"/></textElement><textFieldExpression><![CDATA[$F{kodeBuku}]]></textFieldExpression></textField>
-    <textField isStretchWithOverflow="true"><reportElement x="70" y="0" width="165" height="20"/><textElement><font size="10"/></textElement><textFieldExpression><![CDATA[$F{judul}]]></textFieldExpression></textField>
-    <textField><reportElement x="235" y="0" width="75" height="20"/><textElement><font size="10"/></textElement><textFieldExpression><![CDATA[$F{kategori}]]></textFieldExpression></textField>
-    <textField><reportElement x="310" y="0" width="95" height="20"/><textElement><font size="10"/></textElement><textFieldExpression><![CDATA[$F{penerbit}]]></textFieldExpression></textField>
-    <textField pattern="#,##0"><reportElement x="405" y="0" width="70" height="20"/><textElement textAlignment="Right"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{hargaJual}]]></textFieldExpression></textField>
-    <textField><reportElement x="475" y="0" width="40" height="20"/><textElement textAlignment="Right"><font size="10"/></textElement><textFieldExpression><![CDATA[$F{stok}]]></textFieldExpression></textField>
-  </band></detail>
+    <textField><reportElement x="0" y="0" width="70" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[" " + $F{kodeBuku}]]></textFieldExpression></textField>
+    <textField><reportElement x="70" y="0" width="165" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{judul}]]></textFieldExpression></textField>
+    <textField><reportElement x="235" y="0" width="80" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{kategori}]]></textFieldExpression></textField>
+    <textField><reportElement x="315" y="0" width="90" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{penerbit}]]></textFieldExpression></textField>
+    <textField pattern="#,##0"><reportElement x="405" y="0" width="70" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{hargaJual}]]></textFieldExpression></textField>
+    <textField pattern="#,##0"><reportElement x="475" y="0" width="40" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{stok}]]></textFieldExpression></textField>
+  </detail></band></detail>
+  <summary><band height="140">
+    <line><reportElement x="0" y="4" width="515" height="1"/><graphicElement><pen lineWidth="1.0" lineStyle="Solid"/></graphicElement></line>
+    <staticText><reportElement x="70" y="8" width="165" height="20"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[TOTAL MASTER BUKU:]]></text></staticText>
+    <textField pattern="#,##0"><reportElement x="235" y="8" width="80" height="20"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{TOTAL_BUKU} + " Judul"]]></textFieldExpression></textField>
+    <staticText><reportElement x="315" y="8" width="90" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Total Stok Fisik:]]></text></staticText>
+    <textField pattern="#,##0"><reportElement x="475" y="8" width="40" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{TOTAL_STOK}]]></textFieldExpression></textField>
+    <line><reportElement x="0" y="30" width="515" height="1"/><graphicElement><pen lineWidth="1.5" lineStyle="Solid"/></graphicElement></line>
+
+    <!-- Kolom Tanda Tangan -->
+    <staticText><reportElement x="30" y="45" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Dibuat Oleh,]]></text></staticText>
+    <staticText><reportElement x="30" y="59" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Kasir / Petugas Admin]]></text></staticText>
+    <textField><reportElement x="30" y="112" width="160" height="16"/><textElement textAlignment="Center"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA["( " + $P{PETUGAS} + " )"]]></textFieldExpression></textField>
+
+    <textField><reportElement x="325" y="45" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><textFieldExpression><![CDATA[$P{KOTA} + ", " + $P{TGL_CETAK}]]></textFieldExpression></textField>
+    <staticText><reportElement x="325" y="59" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Menyetujui,]]></text></staticText>
+    <staticText><reportElement x="325" y="73" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Kepala Toko]]></text></staticText>
+    <staticText><reportElement x="325" y="112" width="160" height="16"/><textElement textAlignment="Center"><font size="9" isBold="true"/></textElement><text><![CDATA[( Kepala Toko Almira )]]></text></staticText>
+  </summary></band></summary>
   <pageFooter><band height="20">
-    <textField><reportElement x="0" y="0" width="515" height="20"/><textElement textAlignment="Right"><font size="9"/></textElement><textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression></textField>
-  </band></pageFooter>
+    <textField><reportElement x="0" y="0" width="515" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression></textField>
+  </pageFooter></band></pageFooter>
 </jasperReport>

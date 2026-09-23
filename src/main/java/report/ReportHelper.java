@@ -31,7 +31,23 @@ public class ReportHelper {
     }
 
     private static JasperPrint fill(String jrxmlPath, List<?> data, Map<String, Object> params) throws JRException {
+        Map<String, Object> p = (params != null) ? new java.util.HashMap<>(params) : new java.util.HashMap<>();
+        if (!p.containsKey("APP_NAME")) {
+            p.put("APP_NAME", util.AppConfig.APP_NAME);
+        }
+        if (!p.containsKey("KOTA")) {
+            p.put("KOTA", "Jakarta");
+        }
+        if (!p.containsKey("TGL_CETAK")) {
+            java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy", new java.util.Locale("id", "ID"));
+            p.put("TGL_CETAK", java.time.LocalDate.now().format(fmt));
+        }
+        if (!p.containsKey("PETUGAS")) {
+            String nama = (util.Sesi.userLogin != null && util.Sesi.userLogin.getNamaLengkap() != null)
+                    ? util.Sesi.userLogin.getNamaLengkap() : "Petugas Kasir / Admin";
+            p.put("PETUGAS", nama);
+        }
         JasperReport jr = JasperCompileManager.compileReport(ReportHelper.class.getResourceAsStream(jrxmlPath));
-        return JasperFillManager.fillReport(jr, params, new JRBeanCollectionDataSource(data));
+        return JasperFillManager.fillReport(jr, p, new JRBeanCollectionDataSource(data));
     }
 }
