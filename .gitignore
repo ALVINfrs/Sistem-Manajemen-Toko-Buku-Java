@@ -1,0 +1,23 @@
+# Build output
+target/
+*.class
+
+# NetBeans private metadata
+nbproject/private/
+nbproject/Makefile-*.mk
+nbproject/Package-*.bash
+build/
+nbbuild/
+dist/
+nbactions.xml
+nb-configuration.xml
+
+# SDD controller workspace (git-ignored scratch per plan)
+.superpowers/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
