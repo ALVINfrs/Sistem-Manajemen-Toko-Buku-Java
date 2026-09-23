@@ -1,4 +1,4 @@
-# Sistem Informasi Manajemen Toko Buku — CV Almira Jaya Abadi
+# Sistem Informasi Manajemen Toko Buku - CV Almira Jaya Abadi
 
 Aplikasi desktop Java Swing untuk penjualan, pembelian, retur, master data,
 dan laporan (JasperReports + export PDF) di toko buku CV Almira Jaya Abadi.
@@ -21,7 +21,7 @@ Import wajib (skema final, 11 tabel):
 mysql -u root db_toko_buku < database/schema.sql
 ```
 
-Opsional — data demo kaya (2 user, 5 kategori, 3 penerbit, 3 supplier,
+Opsional - data demo kaya (2 user, 5 kategori, 3 penerbit, 3 supplier,
 5 member, 12 buku BK-001..BK-012, 2 penjualan, 1 pembelian, 1 retur):
 
 ```sh
@@ -34,7 +34,7 @@ user `root` tanpa password (lihat `src/main/java/koneksi/Koneksi.java`).
 
 ## Buka + Jalankan (NetBeans)
 
-1. File → Open Project → pilih folder ini (Maven Project).
+1. File -> Open Project -> pilih folder ini (Maven Project).
 2. Build Project (membersihkan + mengompilasi).
 3. Run (main class `view.Login`).
 
@@ -58,7 +58,7 @@ berperan Kasir (bisa langsung dipakai login).
 
 Sudah bundled: `src/main/resources/images/login_bg.jpg` tampil di panel
 kiri layar login. Bila file tidak ditemukan, aplikasi otomatis memakai
-fallback (ikon buku) — login tetap jalan normal.
+fallback (ikon buku) - login tetap jalan normal.
 
 ## Fitur per Role
 
@@ -102,5 +102,5 @@ Catatan: bila `mvn` belum ada di PATH, pakai path portable Maven Anda
 sebagai alternatif (contoh `C:\...\mvn.cmd package`).
 
 JAR hasil `package` adalah fat/shaded JAR (semua dependensi di dalam,
-termasuk JasperReports) — terbukti bisa export PDF langsung dari JAR.
+termasuk JasperReports) - terbukti bisa export PDF langsung dari JAR.
 Panduan testing manual: lihat `TESTING.md`.
