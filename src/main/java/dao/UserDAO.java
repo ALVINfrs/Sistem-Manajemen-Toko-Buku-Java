@@ -9,5 +9,6 @@ public interface UserDAO {
     boolean delete(int id);
     List<User> getAll();
     User getById(int id);
+    User getByUsername(String username);
     List<User> search(String keyword);
 }

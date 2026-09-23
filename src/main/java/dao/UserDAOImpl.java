@@ -98,6 +98,23 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public User getByUsername(String username) {
+        String sql = "SELECT * FROM users WHERE username = ?";
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return map(rs);
+                }
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil user by username: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public List<User> search(String keyword) {
         String sql = "SELECT id_user, username, password, nama_lengkap, role FROM users "
                 + "WHERE username LIKE ? OR nama_lengkap LIKE ? ORDER BY id_user";
