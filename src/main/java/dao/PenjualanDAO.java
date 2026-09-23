@@ -19,6 +19,7 @@ public interface PenjualanDAO {
     Penjualan getByNoNota(String noNota);
     List<DetailPenjualan> getDetailByPenjualan(int idPenjualan);
     List<LapPenjualan> lapPenjualan(LocalDate a, LocalDate b);
+    List<LapPenjualan> lapPenjualanByUser(LocalDate a, LocalDate b, int idUser);
     List<LapPendapatan> lapPendapatan(LocalDate a, LocalDate b);
     List<LapTerlaris> lapTerlaris(LocalDate a, LocalDate b);
 }

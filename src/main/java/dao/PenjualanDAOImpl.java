@@ -299,6 +299,36 @@ public class PenjualanDAOImpl implements PenjualanDAO {
     }
 
     @Override
+    public List<LapPenjualan> lapPenjualanByUser(LocalDate a, LocalDate b, int idUser) {
+        String sql = "SELECT p.no_nota, p.tanggal, u.nama_lengkap kasir, COALESCE(m.nama,'-') member, p.total "
+                + "FROM penjualan p "
+                + "JOIN users u ON p.id_user = u.id_user "
+                + "LEFT JOIN member m ON p.id_member = m.id_member "
+                + "WHERE DATE(p.tanggal) BETWEEN ? AND ? AND p.id_user = ? ORDER BY p.tanggal";
+        List<LapPenjualan> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setDate(1, java.sql.Date.valueOf(a));
+            ps.setDate(2, java.sql.Date.valueOf(b));
+            ps.setInt(3, idUser);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Timestamp ts = rs.getTimestamp("tanggal");
+                    list.add(new LapPenjualan(
+                            rs.getString("no_nota"),
+                            ts == null ? null : ts.toLocalDateTime(),
+                            rs.getString("kasir"),
+                            rs.getString("member"),
+                            rs.getDouble("total")));
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil laporan penjualan per user: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public List<LapPendapatan> lapPendapatan(LocalDate a, LocalDate b) {
         String sql = "SELECT p.no_nota, p.tanggal, b.judul, d.qty, b.harga_beli, d.harga_jual "
                 + "FROM detail_penjualan d "
