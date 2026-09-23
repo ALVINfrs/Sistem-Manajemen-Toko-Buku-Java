@@ -18,6 +18,7 @@
         <dependency><groupId>net.sf.jasperreports</groupId><artifactId>jasperreports</artifactId><version>6.21.3</version></dependency>
         <dependency><groupId>org.jfree</groupId><artifactId>jfreechart</artifactId><version>1.0.19</version></dependency>
         <dependency><groupId>com.github.lgooddatepicker</groupId><artifactId>LGoodDatePicker</artifactId><version>11.2.1</version></dependency>
+        <dependency><groupId>org.apache.poi</groupId><artifactId>poi-ooxml</artifactId><version>5.2.5</version></dependency>
     </dependencies>
     <build>
         <plugins>
