@@ -12,7 +12,9 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -26,6 +28,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import model.LapGrafik;
 import model.Member;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignD;
@@ -55,11 +58,18 @@ public class FormMember extends JPanel {
         setBackground(NeoBrutalTheme.BG);
         setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-        add(buildNorth(), BorderLayout.NORTH);
+        JPanel pnlNorth = new JPanel(new BorderLayout(4, 4));
+        pnlNorth.setBackground(NeoBrutalTheme.BG);
+        pnlNorth.add(buildNorth(), BorderLayout.NORTH);
+        JLabel lblHint = new JLabel("Pilih member di POS agar dapat diskon 5% (syarat: 50 buku / Rp750rb)");
+        lblHint.setFont(new Font("Segoe UI Semibold", Font.ITALIC, 12));
+        lblHint.setForeground(Color.BLACK);
+        pnlNorth.add(lblHint, BorderLayout.SOUTH);
+        add(pnlNorth, BorderLayout.NORTH);
 
         JPanel cardInput = buildInputCard();
 
-        model = new DefaultTableModel(new String[]{"ID", "Kode", "Nama", "Alamat", "No. Telp"}, 0) {
+        model = new DefaultTableModel(new String[]{"ID", "Kode", "Nama", "Alamat", "No. Telp", "Transaksi"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -216,10 +226,19 @@ public class FormMember extends JPanel {
     }
 
     private void isiTabel(List<Member> list) {
+        Map<String, Integer> count = new HashMap<>();
+        try {
+            for (LapGrafik g : memberDAO.countTransaksi()) {
+                count.put(g.getLabel(), (int) g.getNilai());
+            }
+        } catch (RuntimeException e) {
+            count.clear();
+        }
         model.setRowCount(0);
         for (Member m : list) {
             model.addRow(new Object[]{m.getIdMember(), m.getKodeMember(), m.getNama(),
-                    m.getAlamat(), m.getNoTelp()});
+                    m.getAlamat(), m.getNoTelp(),
+                    count.getOrDefault(m.getNama(), 0)});
         }
     }
 

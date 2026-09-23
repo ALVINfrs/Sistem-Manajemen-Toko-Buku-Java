@@ -1,5 +1,7 @@
 package view;
 
+import dao.BukuDAO;
+import dao.BukuDAOImpl;
 import dao.KategoriDAO;
 import dao.KategoriDAOImpl;
 import java.awt.BorderLayout;
@@ -12,7 +14,9 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -27,6 +31,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import model.Kategori;
+import model.LapGrafik;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignD;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignM;
@@ -39,6 +44,7 @@ import util.Validasi;
 public class FormKategori extends JPanel {
 
     private final KategoriDAO kategoriDAO = new KategoriDAOImpl();
+    private final BukuDAO bukuDAO = new BukuDAOImpl();
 
     private int selectedId = -1;
 
@@ -46,6 +52,7 @@ public class FormKategori extends JPanel {
     private DefaultTableModel model;
     private JTextField txtSearch;
     private JTextField txtNama;
+    private JTextField txtDeskripsi;
 
     public FormKategori() {
         setLayout(new BorderLayout(12, 12));
@@ -56,7 +63,7 @@ public class FormKategori extends JPanel {
 
         JPanel cardInput = buildInputCard();
 
-        model = new DefaultTableModel(new String[]{"ID", "Nama Kategori"}, 0) {
+        model = new DefaultTableModel(new String[]{"ID", "Nama Kategori", "Deskripsi", "Jml Buku"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -121,6 +128,9 @@ public class FormKategori extends JPanel {
         txtNama = new JTextField(16);
         txtNama.setName("nama_kategori");
         txtNama.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        txtDeskripsi = new JTextField(16);
+        txtDeskripsi.setName("deskripsi");
+        txtDeskripsi.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -131,6 +141,15 @@ public class FormKategori extends JPanel {
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         card.add(txtNama, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 0;
+        JLabel lblDeskripsi = new JLabel("Deskripsi");
+        lblDeskripsi.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
+        card.add(lblDeskripsi, gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        card.add(txtDeskripsi, gbc);
         return card;
     }
 
@@ -194,9 +213,19 @@ public class FormKategori extends JPanel {
     }
 
     private void isiTabel(List<Kategori> list) {
+        Map<String, Integer> count = new HashMap<>();
+        try {
+            for (LapGrafik g : bukuDAO.countByKategori()) {
+                count.put(g.getLabel(), (int) g.getNilai());
+            }
+        } catch (RuntimeException e) {
+            count.clear();
+        }
         model.setRowCount(0);
         for (Kategori k : list) {
-            model.addRow(new Object[]{k.getIdKategori(), k.getNamaKategori()});
+            model.addRow(new Object[]{k.getIdKategori(), k.getNamaKategori(),
+                    k.getDeskripsi() != null ? k.getDeskripsi() : "",
+                    count.getOrDefault(k.getNamaKategori(), 0)});
         }
     }
 
@@ -208,12 +237,19 @@ public class FormKategori extends JPanel {
         if (k == null) return;
         selectedId = k.getIdKategori();
         txtNama.setText(k.getNamaKategori());
+        txtDeskripsi.setText(k.getDeskripsi() != null ? k.getDeskripsi() : "");
+    }
+
+    private String bacaDeskripsi() {
+        String d = txtDeskripsi.getText().trim();
+        return d.isEmpty() ? null : d;
     }
 
     private void doSimpan() {
         if (!Validasi.wajib(txtNama)) return;
         Kategori k = new Kategori();
         k.setNamaKategori(txtNama.getText().trim());
+        k.setDeskripsi(bacaDeskripsi());
         try {
             kategoriDAO.insert(k);
             reset();
@@ -234,6 +270,7 @@ public class FormKategori extends JPanel {
         Kategori k = new Kategori();
         k.setIdKategori(selectedId);
         k.setNamaKategori(txtNama.getText().trim());
+        k.setDeskripsi(bacaDeskripsi());
         try {
             kategoriDAO.update(k);
             reset();
@@ -272,6 +309,7 @@ public class FormKategori extends JPanel {
     private void reset() {
         selectedId = -1;
         txtNama.setText("");
+        txtDeskripsi.setText("");
         table.clearSelection();
     }
 

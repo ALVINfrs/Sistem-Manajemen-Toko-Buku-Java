@@ -23,6 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import model.DetailPenjualan;
 import model.Penjualan;
@@ -42,8 +44,13 @@ public class FormRetur extends JPanel {
 
     private Penjualan nota;
     private List<DetailPenjualan> detailNota = new ArrayList<>();
+    private List<Penjualan> daftarNota = new ArrayList<>();
+    private List<Penjualan> daftarTampil = new ArrayList<>();
 
     private JTextField txtNoNota;
+    private JTextField txtFilter;
+    private JTable tblNota;
+    private DefaultTableModel modelNota;
     private JLabel lblInfo;
     private JTable tblItem;
     private DefaultTableModel modelItem;
@@ -64,6 +71,8 @@ public class FormRetur extends JPanel {
         cols.add(buildKiri());
         cols.add(buildKanan());
         add(cols, BorderLayout.CENTER);
+
+        loadTable();
     }
 
     private JPanel buildKiri() {
@@ -86,9 +95,14 @@ public class FormRetur extends JPanel {
         btnCari.addActionListener(e -> cariNota());
         pnlCari.add(txtNoNota, BorderLayout.CENTER);
         pnlCari.add(btnCari, BorderLayout.EAST);
-        card.add(pnlCari, BorderLayout.CENTER);
 
-        lblInfo = new JLabel("Belum ada nota dipilih");
+        JPanel pnlTengah = new JPanel(new BorderLayout(6, 6));
+        pnlTengah.setBackground(NeoBrutalTheme.SURFACE);
+        pnlTengah.add(pnlCari, BorderLayout.NORTH);
+        pnlTengah.add(buildDaftar(), BorderLayout.CENTER);
+        card.add(pnlTengah, BorderLayout.CENTER);
+
+        lblInfo = new JLabel("50 nota terbaru — ketik untuk filter");
         lblInfo.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
         JPanel pnlInfo = new JPanel(new BorderLayout());
         pnlInfo.setBackground(NeoBrutalTheme.SURFACE);
@@ -96,6 +110,37 @@ public class FormRetur extends JPanel {
         pnlInfo.add(lblInfo, BorderLayout.NORTH);
         card.add(pnlInfo, BorderLayout.SOUTH);
         return card;
+    }
+
+    private JPanel buildDaftar() {
+        JPanel pnl = new JPanel(new BorderLayout(6, 6));
+        pnl.setBackground(NeoBrutalTheme.SURFACE);
+        txtFilter = new JTextField();
+        txtFilter.setName("filter_nota");
+        txtFilter.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        txtFilter.getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) { tampilkanDaftar(txtFilter.getText()); }
+            @Override public void removeUpdate(DocumentEvent e) { tampilkanDaftar(txtFilter.getText()); }
+            @Override public void changedUpdate(DocumentEvent e) { tampilkanDaftar(txtFilter.getText()); }
+        });
+        pnl.add(txtFilter, BorderLayout.NORTH);
+
+        modelNota = new DefaultTableModel(
+                new String[]{"No Nota", "Tanggal", "Total"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tblNota = new JTable(modelNota);
+        tblNota.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblNota.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) pilihNotaDariDaftar();
+        });
+        JScrollPane scroll = new JScrollPane(tblNota);
+        scroll.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        pnl.add(scroll, BorderLayout.CENTER);
+        return pnl;
     }
 
     private JPanel buildKanan() {
@@ -170,6 +215,43 @@ public class FormRetur extends JPanel {
         return b;
     }
 
+    public void loadTable() {
+        daftarNota = penjualanDAO.listTerbaru(50);
+        tampilkanDaftar(txtFilter != null ? txtFilter.getText() : "");
+    }
+
+    private void tampilkanDaftar(String keyword) {
+        String kw = keyword == null ? "" : keyword.trim().toLowerCase();
+        daftarTampil = new ArrayList<>();
+        for (Penjualan p : daftarNota) {
+            if (kw.isEmpty() || (p.getNoNota() != null
+                    && p.getNoNota().toLowerCase().contains(kw))) {
+                daftarTampil.add(p);
+            }
+        }
+        modelNota.setRowCount(0);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        for (Penjualan p : daftarTampil) {
+            String tgl = p.getTanggal() != null ? p.getTanggal().format(fmt) : "-";
+            modelNota.addRow(new Object[]{p.getNoNota(), tgl, p.getTotal()});
+        }
+    }
+
+    private void pilihNotaDariDaftar() {
+        int row = tblNota.getSelectedRow();
+        if (row < 0 || row >= daftarTampil.size()) return;
+        tampilkanNota(daftarTampil.get(row));
+    }
+
+    private void tampilkanNota(Penjualan p) {
+        nota = p;
+        detailNota = penjualanDAO.getDetailByPenjualan(p.getIdPenjualan());
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        String tgl = p.getTanggal() != null ? p.getTanggal().format(fmt) : "-";
+        lblInfo.setText("Nota: " + p.getNoNota() + " | Tgl: " + tgl + " | Total: " + p.getTotal());
+        refreshItem();
+    }
+
     private void cariNota() {
         String noNota = txtNoNota.getText().trim();
         if (noNota.isEmpty()) {
@@ -183,12 +265,7 @@ public class FormRetur extends JPanel {
                     "Validasi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        nota = p;
-        detailNota = penjualanDAO.getDetailByPenjualan(p.getIdPenjualan());
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        String tgl = p.getTanggal() != null ? p.getTanggal().format(fmt) : "-";
-        lblInfo.setText("Nota: " + p.getNoNota() + " | Tgl: " + tgl + " | Total: " + p.getTotal());
-        refreshItem();
+        tampilkanNota(p);
     }
 
     private void refreshItem() {

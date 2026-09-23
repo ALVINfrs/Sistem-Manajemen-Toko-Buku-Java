@@ -3,12 +3,19 @@ package model;
 public class Kategori {
     private int idKategori;
     private String namaKategori;
+    private String deskripsi;
 
     public Kategori() {}
 
     public Kategori(int idKategori, String namaKategori) {
         this.idKategori = idKategori;
         this.namaKategori = namaKategori;
+    }
+
+    public Kategori(int idKategori, String namaKategori, String deskripsi) {
+        this.idKategori = idKategori;
+        this.namaKategori = namaKategori;
+        this.deskripsi = deskripsi;
     }
 
     public int getIdKategori() {
@@ -25,5 +32,13 @@ public class Kategori {
 
     public void setNamaKategori(String namaKategori) {
         this.namaKategori = namaKategori;
+    }
+
+    public String getDeskripsi() {
+        return deskripsi;
+    }
+
+    public void setDeskripsi(String deskripsi) {
+        this.deskripsi = deskripsi;
     }
 }

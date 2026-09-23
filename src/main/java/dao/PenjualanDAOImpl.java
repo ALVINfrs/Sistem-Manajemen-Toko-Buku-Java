@@ -227,6 +227,24 @@ public class PenjualanDAOImpl implements PenjualanDAO {
     }
 
     @Override
+    public List<Penjualan> listTerbaru(int limit) {
+        String sql = BASE_SELECT + " ORDER BY p.tanggal DESC, p.id_penjualan DESC LIMIT ?";
+        List<Penjualan> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(map(rs));
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil penjualan terbaru: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public Penjualan getByNoNota(String noNota) {
         String sql = BASE_SELECT + " WHERE p.no_nota=?";
         try (Connection c = Koneksi.getConnection();

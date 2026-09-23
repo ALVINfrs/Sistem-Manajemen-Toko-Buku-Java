@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import koneksi.Koneksi;
 import model.Buku;
+import model.LapGrafik;
 import model.LapStok;
 
 public class BukuDAOImpl implements BukuDAO {
@@ -197,6 +198,24 @@ public class BukuDAOImpl implements BukuDAO {
             return list;
         } catch (SQLException e) {
             throw new RuntimeException("Gagal ambil stok menipis: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<LapGrafik> countByKategori() {
+        String sql = "SELECT k.nama_kategori label, COUNT(b.id_buku) nilai FROM kategori k "
+                + "LEFT JOIN buku b ON b.id_kategori=k.id_kategori "
+                + "GROUP BY k.id_kategori, k.nama_kategori ORDER BY k.nama_kategori";
+        List<LapGrafik> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(new LapGrafik(rs.getString("label"), rs.getDouble("nilai")));
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal hitung buku per kategori: " + e.getMessage(), e);
         }
     }
 }

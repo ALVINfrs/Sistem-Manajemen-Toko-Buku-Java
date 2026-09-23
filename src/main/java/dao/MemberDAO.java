@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.List;
+import model.LapGrafik;
 import model.Member;
 
 public interface MemberDAO {
@@ -10,4 +11,5 @@ public interface MemberDAO {
     List<Member> getAll();
     Member getById(int id);
     List<Member> search(String keyword);
+    List<LapGrafik> countTransaksi();
 }

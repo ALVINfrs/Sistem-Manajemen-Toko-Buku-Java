@@ -22,4 +22,5 @@ public interface PenjualanDAO {
     List<LapPenjualan> lapPenjualanByUser(LocalDate a, LocalDate b, int idUser);
     List<LapPendapatan> lapPendapatan(LocalDate a, LocalDate b);
     List<LapTerlaris> lapTerlaris(LocalDate a, LocalDate b);
+    List<Penjualan> listTerbaru(int limit);
 }

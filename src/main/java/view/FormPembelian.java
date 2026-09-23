@@ -72,9 +72,16 @@ public class FormPembelian extends JPanel {
         setBackground(NeoBrutalTheme.BG);
         setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
+        JPanel pnlNorth = new JPanel(new BorderLayout(4, 4));
+        pnlNorth.setBackground(NeoBrutalTheme.BG);
         JLabel lblJudul = new JLabel("Pembelian");
         lblJudul.setFont(new Font("Segoe UI Black", Font.BOLD, 22));
-        add(lblJudul, BorderLayout.NORTH);
+        pnlNorth.add(lblJudul, BorderLayout.NORTH);
+        JLabel lblHint = new JLabel("Cara pakai: 1) Pilih supplier 2) Cari buku + isi qty & harga beli + Tambah 3) Simpan — stok bertambah otomatis");
+        lblHint.setFont(new Font("Segoe UI Semibold", Font.ITALIC, 12));
+        lblHint.setForeground(Color.BLACK);
+        pnlNorth.add(lblHint, BorderLayout.SOUTH);
+        add(pnlNorth, BorderLayout.NORTH);
 
         JPanel cols = new JPanel(new GridLayout(1, 2, 12, 0));
         cols.setBackground(NeoBrutalTheme.BG);

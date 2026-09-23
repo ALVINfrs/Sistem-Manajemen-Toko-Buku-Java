@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import koneksi.Koneksi;
+import model.LapGrafik;
 import model.Member;
 
 public class MemberDAOImpl implements MemberDAO {
@@ -116,6 +117,24 @@ public class MemberDAOImpl implements MemberDAO {
             return list;
         } catch (SQLException e) {
             throw new RuntimeException("Gagal cari member: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<LapGrafik> countTransaksi() {
+        String sql = "SELECT m.nama label, COUNT(p.id_penjualan) nilai FROM member m "
+                + "LEFT JOIN penjualan p ON p.id_member=m.id_member "
+                + "GROUP BY m.id_member, m.nama ORDER BY m.nama";
+        List<LapGrafik> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(new LapGrafik(rs.getString("label"), rs.getDouble("nilai")));
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal hitung transaksi per member: " + e.getMessage(), e);
         }
     }
 }

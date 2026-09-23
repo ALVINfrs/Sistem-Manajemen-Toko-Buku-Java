@@ -2,6 +2,7 @@ package dao;
 
 import java.util.List;
 import model.Buku;
+import model.LapGrafik;
 
 public interface BukuDAO {
     boolean insert(Buku b);
@@ -12,4 +13,5 @@ public interface BukuDAO {
     List<Buku> search(String keyword);
     List<model.LapStok> lapDataBuku();
     List<model.LapStok> getStokMenipis();
+    List<LapGrafik> countByKategori();
 }
