@@ -212,4 +212,45 @@ public class ReturDAOImpl implements ReturDAO {
             }
         }
     }
+
+    @Override
+    public List<model.LapRetur> lapRetur(java.time.LocalDate dari, java.time.LocalDate sampai) {
+        String sql = "SELECT r.no_retur, r.tanggal, p.no_nota, b.kode_buku, b.judul, r.qty, "
+                + "COALESCE((SELECT dp.harga_jual FROM detail_penjualan dp WHERE dp.id_penjualan = r.id_penjualan AND dp.id_buku = r.id_buku LIMIT 1), b.harga_jual) AS harga_jual, "
+                + "r.alasan "
+                + "FROM retur r "
+                + "JOIN penjualan p ON r.id_penjualan = p.id_penjualan "
+                + "JOIN buku b ON r.id_buku = b.id_buku "
+                + "WHERE DATE(r.tanggal) BETWEEN ? AND ? "
+                + "ORDER BY r.tanggal DESC, r.id_retur DESC";
+        List<model.LapRetur> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setDate(1, java.sql.Date.valueOf(dari));
+            ps.setDate(2, java.sql.Date.valueOf(sampai));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Timestamp ts = rs.getTimestamp("tanggal");
+                    java.time.LocalDateTime tgl = ts == null ? null : ts.toLocalDateTime();
+                    int qty = rs.getInt("qty");
+                    double hargaJual = rs.getDouble("harga_jual");
+                    double totalRefund = qty * hargaJual;
+                    list.add(new model.LapRetur(
+                            rs.getString("no_retur"),
+                            tgl,
+                            rs.getString("no_nota"),
+                            rs.getString("kode_buku"),
+                            rs.getString("judul"),
+                            qty,
+                            hargaJual,
+                            totalRefund,
+                            rs.getString("alasan")
+                    ));
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil laporan retur: " + e.getMessage(), e);
+        }
+    }
 }

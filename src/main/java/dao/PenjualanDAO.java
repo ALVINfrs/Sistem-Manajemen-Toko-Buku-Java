@@ -26,4 +26,5 @@ public interface PenjualanDAO {
     List<Penjualan> listTerbaru(int limit);
     List<LapGrafik> omzetPerHari(LocalDate a, LocalDate b);
     int itemTerjual(LocalDate a, LocalDate b);
+    List<model.LapLabaKotor> lapLabaKotor(LocalDate a, LocalDate b);
 }

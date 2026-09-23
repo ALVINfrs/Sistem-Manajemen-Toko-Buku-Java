@@ -234,4 +234,39 @@ public class PembelianDAOImpl implements PembelianDAO {
             throw new RuntimeException("Gagal ambil laporan pembelian: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public List<model.LapSupplier> lapSupplier(LocalDate a, LocalDate b) {
+        String sql = "SELECT s.id_supplier, s.nama_supplier, s.no_telp, s.alamat, "
+                + "COUNT(DISTINCT pb.id_pembelian) AS total_faktur, "
+                + "COALESCE(SUM(dp.qty), 0) AS total_pcs, "
+                + "COALESCE(SUM(dp.subtotal), 0) AS total_biaya "
+                + "FROM supplier s "
+                + "LEFT JOIN pembelian pb ON s.id_supplier = pb.id_supplier AND DATE(pb.tanggal) BETWEEN ? AND ? "
+                + "LEFT JOIN detail_pembelian dp ON pb.id_pembelian = dp.id_pembelian "
+                + "GROUP BY s.id_supplier, s.nama_supplier, s.no_telp, s.alamat "
+                + "ORDER BY total_biaya DESC";
+        List<model.LapSupplier> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setDate(1, java.sql.Date.valueOf(a));
+            ps.setDate(2, java.sql.Date.valueOf(b));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new model.LapSupplier(
+                            rs.getInt("id_supplier"),
+                            rs.getString("nama_supplier"),
+                            rs.getString("no_telp"),
+                            rs.getString("alamat"),
+                            rs.getInt("total_faktur"),
+                            rs.getInt("total_pcs"),
+                            rs.getDouble("total_biaya")
+                    ));
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil laporan supplier: " + e.getMessage(), e);
+        }
+    }
 }

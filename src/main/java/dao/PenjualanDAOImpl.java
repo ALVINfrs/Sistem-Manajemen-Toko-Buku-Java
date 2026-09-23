@@ -458,4 +458,53 @@ public class PenjualanDAOImpl implements PenjualanDAO {
             throw new RuntimeException("Gagal hitung item terjual: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public List<model.LapLabaKotor> lapLabaKotor(LocalDate a, LocalDate b) {
+        String sql = "SELECT p.no_nota, p.tanggal, b.kode_buku, b.judul, dp.qty, "
+                + "b.harga_beli, dp.harga_jual, "
+                + "(dp.qty * b.harga_beli) AS total_modal, "
+                + "(dp.qty * dp.harga_jual) AS total_omset, "
+                + "((dp.qty * dp.harga_jual) - (dp.qty * b.harga_beli)) AS laba_kotor "
+                + "FROM detail_penjualan dp "
+                + "JOIN penjualan p ON dp.id_penjualan = p.id_penjualan "
+                + "JOIN buku b ON dp.id_buku = b.id_buku "
+                + "WHERE DATE(p.tanggal) BETWEEN ? AND ? "
+                + "ORDER BY p.tanggal DESC, p.id_penjualan DESC";
+        List<model.LapLabaKotor> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setDate(1, java.sql.Date.valueOf(a));
+            ps.setDate(2, java.sql.Date.valueOf(b));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Timestamp ts = rs.getTimestamp("tanggal");
+                    java.time.LocalDateTime tgl = ts == null ? null : ts.toLocalDateTime();
+                    int qty = rs.getInt("qty");
+                    double beli = rs.getDouble("harga_beli");
+                    double jual = rs.getDouble("harga_jual");
+                    double modal = rs.getDouble("total_modal");
+                    double omset = rs.getDouble("total_omset");
+                    double laba = rs.getDouble("laba_kotor");
+                    double margin = omset > 0 ? (laba / omset) * 100.0 : 0.0;
+                    list.add(new model.LapLabaKotor(
+                            rs.getString("no_nota"),
+                            tgl,
+                            rs.getString("kode_buku"),
+                            rs.getString("judul"),
+                            qty,
+                            beli,
+                            jual,
+                            modal,
+                            omset,
+                            laba,
+                            margin
+                    ));
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil laporan laba kotor: " + e.getMessage(), e);
+        }
+    }
 }
