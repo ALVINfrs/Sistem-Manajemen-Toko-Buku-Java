@@ -16,6 +16,8 @@ public interface PenjualanDAO {
     Penjualan getById(int id);
     List<Penjualan> search(String keyword);
     int saveWithDetail(Penjualan h, List<DetailPenjualan> d);
+    Penjualan getByNoNota(String noNota);
+    List<DetailPenjualan> getDetailByPenjualan(int idPenjualan);
     List<LapPenjualan> lapPenjualan(LocalDate a, LocalDate b);
     List<LapPendapatan> lapPendapatan(LocalDate a, LocalDate b);
     List<LapTerlaris> lapTerlaris(LocalDate a, LocalDate b);

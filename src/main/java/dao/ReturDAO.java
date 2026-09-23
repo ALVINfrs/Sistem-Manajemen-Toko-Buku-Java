@@ -11,4 +11,5 @@ public interface ReturDAO {
     Retur getById(int id);
     List<Retur> search(String keyword);
     boolean saveRetur(Retur r);
+    int getReturQty(int idPenjualan, int idBuku);
 }

@@ -136,6 +136,24 @@ public class ReturDAOImpl implements ReturDAO {
     }
 
     @Override
+    public int getReturQty(int idPenjualan, int idBuku) {
+        String sql = "SELECT COALESCE(SUM(qty),0) FROM retur WHERE id_penjualan=? AND id_buku=?";
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, idPenjualan);
+            ps.setInt(2, idBuku);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal hitung qty retur: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public boolean saveRetur(Retur r) {
         String sqlInsert = "INSERT INTO retur (no_retur, tanggal, id_penjualan, id_buku, qty, alasan) "
                 + "VALUES (?,?,?,?,?,?)";

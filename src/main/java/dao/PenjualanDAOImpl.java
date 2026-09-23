@@ -222,6 +222,54 @@ public class PenjualanDAOImpl implements PenjualanDAO {
     }
 
     @Override
+    public Penjualan getByNoNota(String noNota) {
+        String sql = BASE_SELECT + " WHERE p.no_nota=?";
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, noNota);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return map(rs);
+                }
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil penjualan by no nota: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<DetailPenjualan> getDetailByPenjualan(int idPenjualan) {
+        String sql = "SELECT d.id_detail, d.id_penjualan, d.id_buku, b.kode_buku, b.judul, "
+                + "d.qty, d.harga_jual, d.subtotal "
+                + "FROM detail_penjualan d "
+                + "JOIN buku b ON d.id_buku = b.id_buku "
+                + "WHERE d.id_penjualan=? ORDER BY d.id_detail";
+        List<DetailPenjualan> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, idPenjualan);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    DetailPenjualan d = new DetailPenjualan();
+                    d.setIdDetail(rs.getInt("id_detail"));
+                    d.setIdPenjualan(rs.getInt("id_penjualan"));
+                    d.setIdBuku(rs.getInt("id_buku"));
+                    d.setKodeBuku(rs.getString("kode_buku"));
+                    d.setJudul(rs.getString("judul"));
+                    d.setQty(rs.getInt("qty"));
+                    d.setHargaJual(rs.getDouble("harga_jual"));
+                    d.setSubtotal(rs.getDouble("subtotal"));
+                    list.add(d);
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil detail penjualan: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public List<LapPenjualan> lapPenjualan(LocalDate a, LocalDate b) {
         String sql = "SELECT p.no_nota, p.tanggal, u.nama_lengkap kasir, COALESCE(m.nama,'-') member, p.total "
                 + "FROM penjualan p "
