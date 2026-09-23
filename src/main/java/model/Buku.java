@@ -12,6 +12,7 @@ public class Buku {
     private double hargaBeli;
     private double hargaJual;
     private int stok;
+    private String deskripsi;
 
     public Buku() {}
 
@@ -118,5 +119,13 @@ public class Buku {
 
     public void setStok(int stok) {
         this.stok = stok;
+    }
+
+    public String getDeskripsi() {
+        return deskripsi;
+    }
+
+    public void setDeskripsi(String deskripsi) {
+        this.deskripsi = deskripsi;
     }
 }
