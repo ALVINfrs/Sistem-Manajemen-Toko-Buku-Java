@@ -26,7 +26,7 @@
     <line><reportElement x="0" y="45" width="515" height="1"/><graphicElement><pen lineWidth="0.5" lineStyle="Solid"/></graphicElement></line>
     <staticText><reportElement x="0" y="52" width="515" height="22"/><textElement textAlignment="Center"><font size="13" isBold="true"/></textElement><text><![CDATA[LAPORAN MASTER DATA BUKU]]></text></staticText>
     <textField><reportElement x="0" y="74" width="515" height="16"/><textElement textAlignment="Center"><font size="10"/></textElement><textFieldExpression><![CDATA["Periode: " + $P{PERIODE}]]></textFieldExpression></textField>
-  </title></band></title>
+  </band></title>
   <columnHeader><band height="24">
     <staticText><reportElement mode="Opaque" x="0" y="0" width="70" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[ Kode]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="70" y="0" width="165" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Judul Buku]]></text></staticText>
@@ -34,7 +34,7 @@
     <staticText><reportElement mode="Opaque" x="315" y="0" width="90" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Penerbit]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="405" y="0" width="70" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[H. Jual (Rp) ]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="475" y="0" width="40" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Stok ]]></text></staticText>
-  </columnHeader></band></columnHeader>
+  </band></columnHeader>
   <detail><band height="20">
     <textField><reportElement x="0" y="0" width="70" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[" " + $F{kodeBuku}]]></textFieldExpression></textField>
     <textField><reportElement x="70" y="0" width="165" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{judul}]]></textFieldExpression></textField>
@@ -42,7 +42,10 @@
     <textField><reportElement x="315" y="0" width="90" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{penerbit}]]></textFieldExpression></textField>
     <textField pattern="#,##0"><reportElement x="405" y="0" width="70" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{hargaJual}]]></textFieldExpression></textField>
     <textField pattern="#,##0"><reportElement x="475" y="0" width="40" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{stok}]]></textFieldExpression></textField>
-  </detail></band></detail>
+  </band></detail>
+  <pageFooter><band height="20">
+    <textField><reportElement x="0" y="0" width="515" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression></textField>
+  </band></pageFooter>
   <summary><band height="140">
     <line><reportElement x="0" y="4" width="515" height="1"/><graphicElement><pen lineWidth="1.0" lineStyle="Solid"/></graphicElement></line>
     <staticText><reportElement x="70" y="8" width="165" height="20"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[TOTAL MASTER BUKU:]]></text></staticText>
@@ -60,8 +63,5 @@
     <staticText><reportElement x="325" y="59" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Menyetujui,]]></text></staticText>
     <staticText><reportElement x="325" y="73" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Kepala Toko]]></text></staticText>
     <staticText><reportElement x="325" y="112" width="160" height="16"/><textElement textAlignment="Center"><font size="9" isBold="true"/></textElement><text><![CDATA[( Kepala Toko Almira )]]></text></staticText>
-  </summary></band></summary>
-  <pageFooter><band height="20">
-    <textField><reportElement x="0" y="0" width="515" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression></textField>
-  </pageFooter></band></pageFooter>
+  </band></summary>
 </jasperReport>

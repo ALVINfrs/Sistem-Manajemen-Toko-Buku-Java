@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="lap_supplier" language="java" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40">
   <parameter name="APP_NAME" class="java.lang.String"/>
   <parameter name="PERIODE" class="java.lang.String"/>
@@ -26,7 +26,7 @@
     <line><reportElement x="0" y="45" width="515" height="1"/><graphicElement><pen lineWidth="0.5" lineStyle="Solid"/></graphicElement></line>
     <staticText><reportElement x="0" y="52" width="515" height="22"/><textElement textAlignment="Center"><font size="13" isBold="true"/></textElement><text><![CDATA[REKAPITULASI PENGADAAN PER SUPPLIER]]></text></staticText>
     <textField><reportElement x="0" y="74" width="515" height="16"/><textElement textAlignment="Center"><font size="10"/></textElement><textFieldExpression><![CDATA["Periode: " + $P{PERIODE}]]></textFieldExpression></textField>
-  </title></band></title>
+  </band></title>
   <columnHeader><band height="24">
     <staticText><reportElement mode="Opaque" x="0" y="0" width="135" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[ Nama Mitra Supplier]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="135" y="0" width="95" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[No. Telepon]]></text></staticText>
@@ -34,7 +34,7 @@
     <staticText><reportElement mode="Opaque" x="355" y="0" width="40" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Faktur ]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="395" y="0" width="40" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Qty ]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="435" y="0" width="80" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Total Biaya ]]></text></staticText>
-  </columnHeader></band></columnHeader>
+  </band></columnHeader>
   <detail><band height="20">
     <textField><reportElement x="0" y="0" width="135" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[" " + $F{namaSupplier}]]></textFieldExpression></textField>
     <textField><reportElement x="135" y="0" width="95" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{noTelp}]]></textFieldExpression></textField>
@@ -42,7 +42,10 @@
     <textField pattern="#,##0"><reportElement x="355" y="0" width="40" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{totalFaktur}]]></textFieldExpression></textField>
     <textField pattern="#,##0"><reportElement x="395" y="0" width="40" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{totalPcs}]]></textFieldExpression></textField>
     <textField pattern="#,##0"><reportElement x="435" y="0" width="80" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{totalBiaya}]]></textFieldExpression></textField>
-  </detail></band></detail>
+  </band></detail>
+  <pageFooter><band height="20">
+    <textField><reportElement x="0" y="0" width="515" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression></textField>
+  </band></pageFooter>
   <summary><band height="140">
     <line><reportElement x="0" y="4" width="515" height="1"/><graphicElement><pen lineWidth="1.0" lineStyle="Solid"/></graphicElement></line>
     <staticText><reportElement x="230" y="8" width="125" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[TOTAL PENGADAAN:]]></text></staticText>
@@ -59,8 +62,6 @@
     <staticText><reportElement x="325" y="59" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Menyetujui,]]></text></staticText>
     <staticText><reportElement x="325" y="73" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Kepala Toko]]></text></staticText>
     <staticText><reportElement x="325" y="112" width="160" height="16"/><textElement textAlignment="Center"><font size="9" isBold="true"/></textElement><text><![CDATA[( Kepala Toko Almira )]]></text></staticText>
-  </summary></band></summary>
-  <pageFooter><band height="20">
-    <textField><reportElement x="0" y="0" width="515" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression></textField>
-  </pageFooter></band></pageFooter>
+  </band></summary>
+  
 </jasperReport>

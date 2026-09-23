@@ -19,6 +19,7 @@
         <dependency><groupId>org.jfree</groupId><artifactId>jfreechart</artifactId><version>1.0.19</version></dependency>
         <dependency><groupId>com.github.lgooddatepicker</groupId><artifactId>LGoodDatePicker</artifactId><version>11.2.1</version></dependency>
         <dependency><groupId>org.apache.poi</groupId><artifactId>poi-ooxml</artifactId><version>5.2.5</version></dependency>
+        <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>5.10.2</version><scope>test</scope></dependency>
     </dependencies>
     <build>
         <plugins>

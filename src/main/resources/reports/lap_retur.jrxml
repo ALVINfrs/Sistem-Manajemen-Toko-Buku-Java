@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="lap_retur" language="java" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40">
   <import value="java.time.format.DateTimeFormatter"/>
   <parameter name="APP_NAME" class="java.lang.String"/>
@@ -30,7 +30,7 @@
     <line><reportElement x="0" y="45" width="515" height="1"/><graphicElement><pen lineWidth="0.5" lineStyle="Solid"/></graphicElement></line>
     <staticText><reportElement x="0" y="52" width="515" height="22"/><textElement textAlignment="Center"><font size="13" isBold="true"/></textElement><text><![CDATA[LAPORAN RETUR PENJUALAN BUKU]]></text></staticText>
     <textField><reportElement x="0" y="74" width="515" height="16"/><textElement textAlignment="Center"><font size="10"/></textElement><textFieldExpression><![CDATA["Periode: " + $P{PERIODE}]]></textFieldExpression></textField>
-  </title></band></title>
+  </band></title>
   <columnHeader><band height="24">
     <staticText><reportElement mode="Opaque" x="0" y="0" width="90" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[ No. Retur]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="90" y="0" width="75" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Tanggal]]></text></staticText>
@@ -38,7 +38,7 @@
     <staticText><reportElement mode="Opaque" x="245" y="0" width="125" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Buku / Judul]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="370" y="0" width="35" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Qty ]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="405" y="0" width="110" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Refund (Rp) ]]></text></staticText>
-  </columnHeader></band></columnHeader>
+  </band></columnHeader>
   <detail><band height="20">
     <textField><reportElement x="0" y="0" width="90" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[" " + $F{noRetur}]]></textFieldExpression></textField>
     <textField><reportElement x="90" y="0" width="75" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{tanggal}.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))]]></textFieldExpression></textField>
@@ -46,7 +46,10 @@
     <textField><reportElement x="245" y="0" width="125" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{judul}]]></textFieldExpression></textField>
     <textField pattern="#,##0"><reportElement x="370" y="0" width="35" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{qty}]]></textFieldExpression></textField>
     <textField pattern="#,##0"><reportElement x="405" y="0" width="110" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{totalRefund}]]></textFieldExpression></textField>
-  </detail></band></detail>
+  </band></detail>
+  <pageFooter><band height="20">
+    <textField><reportElement x="0" y="0" width="515" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression></textField>
+  </band></pageFooter>
   <summary><band height="140">
     <line><reportElement x="0" y="4" width="515" height="1"/><graphicElement><pen lineWidth="1.0" lineStyle="Solid"/></graphicElement></line>
     <staticText><reportElement x="245" y="8" width="125" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[TOTAL RETUR:]]></text></staticText>
@@ -63,8 +66,6 @@
     <staticText><reportElement x="325" y="59" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Menyetujui,]]></text></staticText>
     <staticText><reportElement x="325" y="73" width="160" height="14"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Kepala Toko]]></text></staticText>
     <staticText><reportElement x="325" y="112" width="160" height="16"/><textElement textAlignment="Center"><font size="9" isBold="true"/></textElement><text><![CDATA[( Kepala Toko Almira )]]></text></staticText>
-  </summary></band></summary>
-  <pageFooter><band height="20">
-    <textField><reportElement x="0" y="0" width="515" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression></textField>
-  </pageFooter></band></pageFooter>
+  </band></summary>
+  
 </jasperReport>
