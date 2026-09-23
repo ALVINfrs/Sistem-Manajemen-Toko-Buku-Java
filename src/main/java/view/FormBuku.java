@@ -63,6 +63,7 @@ public class FormBuku extends JPanel {
     private JTextField txtHargaBeli;
     private JTextField txtHargaJual;
     private JTextField txtStok;
+    private javax.swing.JTextArea txtDeskripsi;
 
     public FormBuku() {
         setLayout(new BorderLayout(12, 12));
@@ -149,6 +150,13 @@ public class FormBuku extends JPanel {
         txtHargaBeli = field("harga_beli");
         txtHargaJual = field("harga_jual");
         txtStok = field("stok");
+        txtDeskripsi = new javax.swing.JTextArea(3, 16);
+        txtDeskripsi.setName("deskripsi");
+        txtDeskripsi.setLineWrap(true);
+        txtDeskripsi.setWrapStyleWord(true);
+        txtDeskripsi.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        JScrollPane scrollDesc = new JScrollPane(txtDeskripsi);
+        scrollDesc.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
         int y = 0;
         y = addRow(card, gbc, y, "Kode Buku", txtKode);
@@ -159,6 +167,7 @@ public class FormBuku extends JPanel {
         y = addRow(card, gbc, y, "Harga Beli", txtHargaBeli);
         y = addRow(card, gbc, y, "Harga Jual", txtHargaJual);
         y = addRow(card, gbc, y, "Stok", txtStok);
+        y = addRow(card, gbc, y, "Deskripsi", scrollDesc);
 
         reloadCombos();
         return card;
@@ -304,6 +313,7 @@ public class FormBuku extends JPanel {
         txtHargaBeli.setText(String.valueOf(b.getHargaBeli()));
         txtHargaJual.setText(String.valueOf(b.getHargaJual()));
         txtStok.setText(String.valueOf(b.getStok()));
+        txtDeskripsi.setText(b.getDeskripsi() != null ? b.getDeskripsi() : "");
     }
 
     private Buku bacaForm() {
@@ -322,6 +332,7 @@ public class FormBuku extends JPanel {
         b.setHargaBeli(Double.parseDouble(txtHargaBeli.getText().trim()));
         b.setHargaJual(Double.parseDouble(txtHargaJual.getText().trim()));
         b.setStok(Integer.parseInt(txtStok.getText().trim()));
+        b.setDeskripsi(txtDeskripsi.getText().trim());
         return b;
     }
 
@@ -402,6 +413,7 @@ public class FormBuku extends JPanel {
         txtHargaBeli.setText("");
         txtHargaJual.setText("");
         txtStok.setText("");
+        txtDeskripsi.setText("");
         table.clearSelection();
     }
 
