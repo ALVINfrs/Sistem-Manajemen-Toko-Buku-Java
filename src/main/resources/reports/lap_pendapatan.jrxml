@@ -41,7 +41,7 @@
     <textField><reportElement x="0" y="0" width="515" height="20"/><textElement textAlignment="Right"><font size="9"/></textElement><textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression></textField>
   </band></pageFooter>
   <summary><band height="24">
-    <staticText><reportElement x="360" y="0" width="55" height="24"/><textElement textAlignment="Right"><font size="11" isBold="true"/></textElement><text><![CDATA[LABA:]]></text></staticText>
+    <staticText><reportElement x="415" y="0" width="50" height="24"/><textElement textAlignment="Right"><font size="11" isBold="true"/></textElement><text><![CDATA[LABA:]]></text></staticText>
     <textField pattern="#,##0"><reportElement x="465" y="0" width="50" height="24"/><textElement textAlignment="Right"><font size="11" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{LABA}]]></textFieldExpression></textField>
   </band></summary>
 </jasperReport>

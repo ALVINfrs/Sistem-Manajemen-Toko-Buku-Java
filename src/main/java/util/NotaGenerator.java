@@ -7,7 +7,7 @@ public class NotaGenerator {
     public static synchronized String next(String prefix, String table, String column) throws SQLException {
         String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         String sql = "SELECT " + column + " FROM " + table + " WHERE " + column + " LIKE ? ORDER BY " + column + " DESC LIMIT 1";
-        // GUARD: table/column hanya dari 3 konstanta internal berikut — bukan input user:
+        // GUARD: table/column hanya dari 3 konstanta internal berikut - bukan input user:
         // ("NJ","penjualan","no_nota"), ("FB","pembelian","no_faktur"), ("RT","retur","no_retur").
         if (!isAllowed(prefix, table, column)) throw new IllegalArgumentException("Kombinasi nota tidak dikenal");
         try (Connection c = Koneksi.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {

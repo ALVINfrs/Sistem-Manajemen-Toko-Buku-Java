@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -77,6 +79,17 @@ public class StrukDialog extends JDialog {
         btnTutup.setBorder(new NeoShadowBorder());
         btnTutup.setFocusPainted(false);
         btnTutup.addActionListener(e -> dispose());
+        btnTutup.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                btnTutup.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                btnTutup.setBorder(new NeoShadowBorder());
+            }
+        });
         JPanel pnlSouth = new JPanel(new BorderLayout(8, 8));
         pnlSouth.setBackground(NeoBrutalTheme.BG);
         pnlSouth.add(pnlTotal, BorderLayout.CENTER);

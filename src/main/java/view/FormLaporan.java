@@ -311,7 +311,10 @@ public class FormLaporan extends JPanel {
         }
         File out = fc.getSelectedFile();
         if (!out.getName().toLowerCase().endsWith(".pdf")) {
-            out = new File(out.getParentFile(), out.getName() + ".pdf");
+            File parent = out.getParentFile();
+            out = (parent != null)
+                    ? new File(parent, out.getName() + ".pdf")
+                    : new File(out.getName() + ".pdf");
         }
         try {
             ReportHelper.exportPdf(jrxmlPath(), data, params, out);
