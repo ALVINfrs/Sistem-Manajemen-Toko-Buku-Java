@@ -13,6 +13,7 @@ public class Retur {
     private String judul;
     private int qty;
     private String alasan;
+    private double hargaJual;
 
     public Retur() {}
 
@@ -109,5 +110,17 @@ public class Retur {
 
     public void setAlasan(String alasan) {
         this.alasan = alasan;
+    }
+
+    public double getHargaJual() {
+        return hargaJual;
+    }
+
+    public void setHargaJual(double hargaJual) {
+        this.hargaJual = hargaJual;
+    }
+
+    public double getTotalRefund() {
+        return (double) qty * hargaJual;
     }
 }
