@@ -14,7 +14,8 @@ public class ReturDAOImpl implements ReturDAO {
 
     private static final String BASE_SELECT =
             "SELECT r.id_retur, r.no_retur, r.tanggal, r.id_penjualan, p.no_nota, "
-            + "r.id_buku, b.kode_buku, b.judul, r.qty, r.alasan "
+            + "r.id_buku, b.kode_buku, b.judul, r.qty, r.alasan, "
+            + "COALESCE((SELECT dp.harga_jual FROM detail_penjualan dp WHERE dp.id_penjualan = r.id_penjualan AND dp.id_buku = r.id_buku LIMIT 1), b.harga_jual) AS harga_jual "
             + "FROM retur r "
             + "JOIN penjualan p ON r.id_penjualan = p.id_penjualan "
             + "JOIN buku b ON r.id_buku = b.id_buku";
@@ -32,6 +33,7 @@ public class ReturDAOImpl implements ReturDAO {
         r.setJudul(rs.getString("judul"));
         r.setQty(rs.getInt("qty"));
         r.setAlasan(rs.getString("alasan"));
+        r.setHargaJual(rs.getDouble("harga_jual"));
         return r;
     }
 
@@ -119,11 +121,15 @@ public class ReturDAOImpl implements ReturDAO {
 
     @Override
     public List<Retur> search(String keyword) {
-        String sql = BASE_SELECT + " WHERE r.no_retur LIKE ? ORDER BY r.id_retur DESC";
+        String sql = BASE_SELECT + " WHERE (r.no_retur LIKE ? OR p.no_nota LIKE ? OR b.judul LIKE ? OR b.kode_buku LIKE ?) ORDER BY r.id_retur DESC";
         List<Retur> list = new ArrayList<>();
         try (Connection c = Koneksi.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, "%" + keyword + "%");
+            String kw = "%" + keyword + "%";
+            ps.setString(1, kw);
+            ps.setString(2, kw);
+            ps.setString(3, kw);
+            ps.setString(4, kw);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(map(rs));
