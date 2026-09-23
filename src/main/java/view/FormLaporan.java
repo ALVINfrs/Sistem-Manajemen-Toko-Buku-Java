@@ -54,6 +54,7 @@ import model.LapPembelian;
 import model.LapPendapatan;
 import model.LapPenjualan;
 import model.LapRetur;
+import model.LapStok;
 import model.LapSupplier;
 import model.LapTerlaris;
 import net.sf.jasperreports.engine.JRException;
@@ -480,9 +481,9 @@ public class FormLaporan extends JPanel {
             case JENIS_STOK:
                 columns = new String[]{"Kode Buku", "Judul Buku", "Kategori", "Penerbit", "Harga Jual", "Sisa Stok Fisik"};
                 for (Object o : data) {
-                    Buku b = (Buku) o;
+                    LapStok b = (LapStok) o;
                     allTableRows.add(new Object[]{
-                            b.getKodeBuku(), b.getJudul(), b.getNamaKategori(), b.getNamaPenerbit(),
+                            b.getKodeBuku(), b.getJudul(), b.getKategori(), b.getPenerbit(),
                             formatRp(b.getHargaJual()), b.getStok() + " pcs"
                     });
                 }
@@ -492,9 +493,9 @@ public class FormLaporan extends JPanel {
             default:
                 columns = new String[]{"Kode Buku", "Judul Buku", "Kategori", "Penerbit", "Harga Jual", "Stok"};
                 for (Object o : data) {
-                    Buku b = (Buku) o;
+                    LapStok b = (LapStok) o;
                     allTableRows.add(new Object[]{
-                            b.getKodeBuku(), b.getJudul(), b.getNamaKategori(), b.getNamaPenerbit(),
+                            b.getKodeBuku(), b.getJudul(), b.getKategori(), b.getPenerbit(),
                             formatRp(b.getHargaJual()), b.getStok() + " pcs"
                     });
                 }
@@ -643,7 +644,7 @@ public class FormLaporan extends JPanel {
             case JENIS_BUKU:
             default:
                 for (Object o : currentRawData) {
-                    Buku b = (Buku) o;
+                    LapStok b = (LapStok) o;
                     totalPcs += b.getStok();
                     totalFinansial += (b.getStok() * b.getHargaJual());
                 }
@@ -727,6 +728,26 @@ public class FormLaporan extends JPanel {
                     "Tanggal", "Nominal (Ribu Rp)",
                     dataset, PlotOrientation.VERTICAL, false, true, false);
 
+        } else if (JENIS_PEMBELIAN.equals(jenis)) {
+            // Agregasi harian untuk kurva tren pengeluaran pembelian
+            Map<String, Double> mapHarian = new HashMap<>();
+            List<String> listHari = new ArrayList<>();
+            for (Object o : currentRawData) {
+                LapPembelian p = (LapPembelian) o;
+                if (p.getTanggal() != null) {
+                    String key = p.getTanggal().format(FMT_TGL_PENDEK);
+                    mapHarian.put(key, mapHarian.getOrDefault(key, 0.0) + p.getTotal());
+                    if (!listHari.contains(key)) listHari.add(key);
+                }
+            }
+            for (String h : listHari) {
+                dataset.addValue(mapHarian.get(h) / 1000.0, "Pengeluaran", h);
+            }
+            chart = ChartFactory.createLineChart(
+                    "Kurva Tren Pengeluaran Pembelian Harian (Ribuan Rupiah)",
+                    "Tanggal", "Pengeluaran (Ribu Rp)",
+                    dataset, PlotOrientation.VERTICAL, false, true, false);
+
         } else if (JENIS_RETUR.equals(jenis)) {
             for (Object o : currentRawData) {
                 LapRetur r = (LapRetur) o;
@@ -742,8 +763,8 @@ public class FormLaporan extends JPanel {
             // Data Master Buku / Stok Menipis (Distribusi Kategori)
             Map<String, Integer> mapKat = new HashMap<>();
             for (Object o : currentRawData) {
-                Buku b = (Buku) o;
-                String kat = (b.getNamaKategori() != null && !b.getNamaKategori().isBlank()) ? b.getNamaKategori() : "Lainnya";
+                LapStok b = (LapStok) o;
+                String kat = (b.getKategori() != null && !b.getKategori().isBlank()) ? b.getKategori() : "Lainnya";
                 mapKat.put(kat, mapKat.getOrDefault(kat, 0) + b.getStok());
             }
             for (Map.Entry<String, Integer> e : mapKat.entrySet()) {
