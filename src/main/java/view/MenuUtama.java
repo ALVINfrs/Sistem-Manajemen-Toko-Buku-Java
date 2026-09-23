@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.time.LocalDate;
@@ -14,11 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
@@ -69,10 +74,12 @@ public class MenuUtama extends JFrame {
     public MenuUtama() {
         super(AppConfig.APP_NAME + " - Menu Utama");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1000, 650);
+        setSize(1050, 700);
+        setMinimumSize(new Dimension(900, 600));
         setLocationRelativeTo(null);
 
-        JPanel sidebar = new JPanel(new GridLayout(0, 1, 0, 10));
+        JPanel sidebar = new JPanel();
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(NeoBrutalTheme.SURFACE);
         sidebar.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
@@ -162,47 +169,97 @@ public class MenuUtama extends JFrame {
         JLabel lblLaporan = sectionLabel("LAPORAN");
 
         sidebar.add(btnDashboard);
-        sidebar.add(lblMaster);
-        sidebar.add(btnBuku);
-        sidebar.add(btnKategori);
-        sidebar.add(btnPenerbit);
-        sidebar.add(btnSupplier);
-        sidebar.add(btnMember);
-        sidebar.add(btnUser);
-        sidebar.add(lblTransaksi);
-        sidebar.add(btnPenjualan);
-        sidebar.add(btnPembelian);
-        sidebar.add(btnRetur);
-        sidebar.add(btnRiwayat);
-        sidebar.add(lblLaporan);
-        sidebar.add(btnLaporan);
-        sidebar.add(btnLogout);
+        sidebar.add(Box.createVerticalStrut(10));
 
-        if (!Sesi.isAdmin()) {
-            btnBuku.setVisible(false);
-            btnKategori.setVisible(false);
-            btnPenerbit.setVisible(false);
-            btnSupplier.setVisible(false);
-            btnMember.setVisible(false);
-            btnUser.setVisible(false);
-            btnPembelian.setVisible(false);
-            lblMaster.setVisible(false);
+        if (Sesi.isAdmin()) {
+            sidebar.add(lblMaster);
+            sidebar.add(Box.createVerticalStrut(6));
+            sidebar.add(btnBuku);
+            sidebar.add(Box.createVerticalStrut(8));
+            sidebar.add(btnKategori);
+            sidebar.add(Box.createVerticalStrut(8));
+            sidebar.add(btnPenerbit);
+            sidebar.add(Box.createVerticalStrut(8));
+            sidebar.add(btnSupplier);
+            sidebar.add(Box.createVerticalStrut(8));
+            sidebar.add(btnMember);
+            sidebar.add(Box.createVerticalStrut(8));
+            sidebar.add(btnUser);
+            sidebar.add(Box.createVerticalStrut(10));
         }
+
+        sidebar.add(lblTransaksi);
+        sidebar.add(Box.createVerticalStrut(6));
+        sidebar.add(btnPenjualan);
+        sidebar.add(Box.createVerticalStrut(8));
+        if (Sesi.isAdmin()) {
+            sidebar.add(btnPembelian);
+            sidebar.add(Box.createVerticalStrut(8));
+        }
+        sidebar.add(btnRetur);
+        sidebar.add(Box.createVerticalStrut(8));
+        sidebar.add(btnRiwayat);
+        sidebar.add(Box.createVerticalStrut(10));
+
+        sidebar.add(lblLaporan);
+        sidebar.add(Box.createVerticalStrut(6));
+        sidebar.add(btnLaporan);
 
         content = new JPanel(new BorderLayout());
         content.setBackground(NeoBrutalTheme.BG);
 
-        profilCard = buildProfilCard();
+        // Header Brand di atas Sidebar
+        JPanel pnlBrand = new JPanel(new BorderLayout(8, 0));
+        pnlBrand.setBackground(NeoBrutalTheme.SURFACE);
+        pnlBrand.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK),
+                BorderFactory.createEmptyBorder(14, 12, 14, 12)));
+        JLabel iconBrand = new JLabel(FontIcon.of(MaterialDesignB.BOOK_OPEN_PAGE_VARIANT, 24, Color.BLACK));
+        JLabel lblBrand = new JLabel(AppConfig.APP_NAME);
+        lblBrand.setFont(new Font("Segoe UI Black", Font.BOLD, 13));
+        lblBrand.setForeground(Color.BLACK);
+        pnlBrand.add(iconBrand, BorderLayout.WEST);
+        pnlBrand.add(lblBrand, BorderLayout.CENTER);
+
+        // Sidebar scrollable di dalam viewport
+        JPanel sidebarContent = new JPanel(new BorderLayout());
+        sidebarContent.setBackground(NeoBrutalTheme.SURFACE);
+        sidebarContent.add(sidebar, BorderLayout.NORTH);
+
+        JScrollPane scrollSidebar = new JScrollPane(sidebarContent);
+        scrollSidebar.setBorder(BorderFactory.createEmptyBorder());
+        scrollSidebar.setBackground(NeoBrutalTheme.SURFACE);
+        scrollSidebar.getViewport().setBackground(NeoBrutalTheme.SURFACE);
+        scrollSidebar.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollSidebar.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollSidebar.getVerticalScrollBar().setUnitIncrement(16);
+
+        // Tombol Logout dipin di bagian bawah sidebar agar selalu terlihat
+        JPanel pnlLogout = new JPanel(new BorderLayout());
+        pnlLogout.setBackground(NeoBrutalTheme.SURFACE);
+        pnlLogout.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(2, 0, 0, 0, Color.BLACK),
+                BorderFactory.createEmptyBorder(10, 12, 10, 12)));
+        pnlLogout.add(btnLogout, BorderLayout.CENTER);
 
         JPanel sideWrap = new JPanel(new BorderLayout());
         sideWrap.setBackground(NeoBrutalTheme.SURFACE);
-        sideWrap.setPreferredSize(new Dimension(220, 0));
-        sideWrap.add(sidebar, BorderLayout.NORTH);
-        sideWrap.add(profilCard, BorderLayout.SOUTH);
+        sideWrap.setPreferredSize(new Dimension(230, 0));
+        sideWrap.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, Color.BLACK));
+        sideWrap.add(pnlBrand, BorderLayout.NORTH);
+        sideWrap.add(scrollSidebar, BorderLayout.CENTER);
+        sideWrap.add(pnlLogout, BorderLayout.SOUTH);
+
+        // Top Bar di atas area konten
+        JPanel topBar = buildTopBar();
+
+        JPanel mainArea = new JPanel(new BorderLayout());
+        mainArea.add(topBar, BorderLayout.NORTH);
+        mainArea.add(content, BorderLayout.CENTER);
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(sideWrap, BorderLayout.WEST);
-        getContentPane().add(content, BorderLayout.CENTER);
+        getContentPane().add(mainArea, BorderLayout.CENTER);
 
         refreshProfil();
         setActive(btnDashboard);
@@ -212,7 +269,9 @@ public class MenuUtama extends JFrame {
     private JLabel sectionLabel(String teks) {
         JLabel l = new JLabel(teks);
         l.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        l.setForeground(Color.BLACK);
+        l.setForeground(new Color(0x64, 0x74, 0x8B));
+        l.setAlignmentX(Component.LEFT_ALIGNMENT);
+        l.setBorder(BorderFactory.createEmptyBorder(6, 2, 2, 2));
         return l;
     }
 
@@ -224,58 +283,91 @@ public class MenuUtama extends JFrame {
         b.setBackground(ACTIVE_BG);
     }
 
-    private JPanel buildProfilCard() {
-        JPanel card = new JPanel(new BorderLayout(8, 0));
-        card.setName("profil_card");
-        card.setBackground(NeoBrutalTheme.SURFACE);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                new NeoShadowBorder(),
-                BorderFactory.createEmptyBorder(6, 6, 6, 6)));
+    private JPanel buildTopBar() {
+        JPanel bar = new JPanel(new BorderLayout(16, 0));
+        bar.setBackground(NeoBrutalTheme.SURFACE);
+        bar.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK),
+                BorderFactory.createEmptyBorder(10, 18, 10, 18)));
 
-        JLabel avatar = new JLabel(FontIcon.of(MaterialDesignA.ACCOUNT_CIRCLE, 40, Color.BLACK));
+        // Sisi Kiri: Ucapan Selamat Datang + Nama User + Badge Role
+        JPanel pnlUser = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        pnlUser.setOpaque(false);
 
-        JPanel info = new JPanel(new GridLayout(0, 1, 0, 2));
-        info.setBackground(NeoBrutalTheme.SURFACE);
+        JLabel lblSapaan = new JLabel("Halo, Selamat Datang,");
+        lblSapaan.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblSapaan.setForeground(new Color(0x33, 0x33, 0x33));
+
         lblNama = new JLabel("-");
         lblNama.setName("profil_nama");
-        lblNama.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
+        lblNama.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
+        lblNama.setForeground(Color.BLACK);
+
         lblRole = new JLabel("-");
         lblRole.setName("profil_role");
-        lblRole.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 12));
-        lblJam = new JLabel("--:--:--");
-        lblJam.setName("profil_jam");
-        lblJam.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
+        lblRole.setFont(new Font("Segoe UI Semibold", Font.BOLD, 11));
+        lblRole.setOpaque(true);
+        lblRole.setBackground(new Color(0xEE, 0xF2, 0xF6));
+        lblRole.setForeground(Color.BLACK);
+        lblRole.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.BLACK, 1),
+                BorderFactory.createEmptyBorder(2, 8, 2, 8)));
+
+        pnlUser.add(lblSapaan);
+        pnlUser.add(lblNama);
+        pnlUser.add(lblRole);
+
+        // Sisi Kanan: Live Date & Clock Card + Profil Saya Button
+        JPanel pnlKanan = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
+        pnlKanan.setOpaque(false);
+
+        JPanel pnlWaktu = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 4));
+        pnlWaktu.setBackground(NeoBrutalTheme.BG);
+        pnlWaktu.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.BLACK, 1),
+                BorderFactory.createEmptyBorder(2, 8, 2, 8)));
+
+        JLabel iconTgl = new JLabel(FontIcon.of(MaterialDesignC.CALENDAR_MONTH, 16, Color.BLACK));
         lblTanggal = new JLabel("-");
         lblTanggal.setName("profil_tanggal");
-        lblTanggal.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 12));
-        info.add(lblNama);
-        info.add(lblRole);
-        info.add(lblJam);
-        info.add(lblTanggal);
+        lblTanggal.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
+        lblTanggal.setForeground(Color.BLACK);
 
-        card.add(avatar, BorderLayout.WEST);
-        card.add(info, BorderLayout.CENTER);
+        JLabel sepWaktu = new JLabel("•");
+        sepWaktu.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        sepWaktu.setForeground(Color.GRAY);
+
+        JLabel iconJam = new JLabel(FontIcon.of(MaterialDesignC.CLOCK_OUTLINE, 16, Color.BLACK));
+        lblJam = new JLabel("--:--:--");
+        lblJam.setName("profil_jam");
+        lblJam.setFont(new Font("Segoe UI Black", Font.BOLD, 13));
+        lblJam.setForeground(Color.BLACK);
+
+        pnlWaktu.add(iconTgl);
+        pnlWaktu.add(lblTanggal);
+        pnlWaktu.add(sepWaktu);
+        pnlWaktu.add(iconJam);
+        pnlWaktu.add(lblJam);
+
+        JButton btnProfil = new JButton("Profil Saya", FontIcon.of(MaterialDesignA.ACCOUNT_CIRCLE, 18, Color.BLACK));
+        btnProfil.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+        btnProfil.setBackground(NeoBrutalTheme.SURFACE);
+        btnProfil.setForeground(Color.BLACK);
+        btnProfil.setBorder(new NeoShadowBorder());
+        btnProfil.setFocusPainted(false);
+        btnProfil.addActionListener(e -> new ProfilSaya(MenuUtama.this, MenuUtama.this::refreshProfil).setVisible(true));
+
+        pnlKanan.add(pnlWaktu);
+        pnlKanan.add(btnProfil);
+
+        bar.add(pnlUser, BorderLayout.WEST);
+        bar.add(pnlKanan, BorderLayout.EAST);
 
         lblJam.setText(FMT_JAM.format(LocalTime.now()));
         lblTanggal.setText(FMT_TGL.format(LocalDate.now()));
         new Timer(1000, e -> lblJam.setText(FMT_JAM.format(LocalTime.now()))).start();
 
-        attachProfilClick(card);
-        return card;
-    }
-
-    private void attachProfilClick(Component c) {
-        c.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                new ProfilSaya(MenuUtama.this, MenuUtama.this::refreshProfil).setVisible(true);
-            }
-        });
-        if (c instanceof Container) {
-            for (Component child : ((Container) c).getComponents()) {
-                attachProfilClick(child);
-            }
-        }
+        return bar;
     }
 
     public void refreshProfil() {
@@ -285,7 +377,14 @@ public class MenuUtama extends JFrame {
             lblNama.setText(nama);
         }
         if (lblRole != null) {
-            lblRole.setText(role);
+            lblRole.setText(role.toUpperCase());
+            if ("ADMIN".equalsIgnoreCase(role) || "ADMINISTRATOR".equalsIgnoreCase(role)) {
+                lblRole.setBackground(new Color(0xFF, 0xE4, 0xE6));
+                lblRole.setForeground(new Color(0xBE, 0x12, 0x3C));
+            } else {
+                lblRole.setBackground(new Color(0xDC, 0xFC, 0xE7));
+                lblRole.setForeground(new Color(0x15, 0x80, 0x3D));
+            }
         }
     }
 
@@ -297,6 +396,9 @@ public class MenuUtama extends JFrame {
         b.setForeground(Color.BLACK);
         b.setBorder(new NeoShadowBorder());
         b.setFocusPainted(false);
+        b.setAlignmentX(Component.LEFT_ALIGNMENT);
+        b.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        b.setPreferredSize(new Dimension(200, 38));
         return b;
     }
 
