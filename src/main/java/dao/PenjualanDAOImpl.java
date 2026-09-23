@@ -21,7 +21,8 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     private static final String BASE_SELECT =
             "SELECT p.id_penjualan, p.no_nota, p.tanggal, p.id_user, u.username, "
-            + "p.id_member, m.kode_member, p.total, p.bayar, p.kembalian "
+            + "p.id_member, m.kode_member, p.total, p.bayar, p.kembalian, "
+            + "p.metode_bayar, p.diskon "
             + "FROM penjualan p "
             + "JOIN users u ON p.id_user = u.id_user "
             + "LEFT JOIN member m ON p.id_member = m.id_member";
@@ -40,6 +41,8 @@ public class PenjualanDAOImpl implements PenjualanDAO {
         p.setTotal(rs.getDouble("total"));
         p.setBayar(rs.getDouble("bayar"));
         p.setKembalian(rs.getDouble("kembalian"));
+        p.setMetodeBayar(rs.getString("metode_bayar"));
+        p.setDiskon(rs.getDouble("diskon"));
         return p;
     }
 
@@ -147,8 +150,8 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public int saveWithDetail(Penjualan h, List<DetailPenjualan> d) {
-        String sqlHeader = "INSERT INTO penjualan (no_nota, tanggal, id_user, id_member, total, bayar, kembalian) "
-                + "VALUES (?,?,?,?,?,?,?)";
+        String sqlHeader = "INSERT INTO penjualan (no_nota, tanggal, id_user, id_member, total, bayar, kembalian, metode_bayar, diskon) "
+                + "VALUES (?,?,?,?,?,?,?,?,?)";
         String sqlDetail = "INSERT INTO detail_penjualan (id_penjualan, id_buku, qty, harga_jual, subtotal) "
                 + "VALUES (?,?,?,?,?)";
         String sqlStok = "UPDATE buku SET stok = stok - ? WHERE id_buku = ? AND stok >= ?";
@@ -165,6 +168,8 @@ public class PenjualanDAOImpl implements PenjualanDAO {
                 ps.setDouble(5, h.getTotal());
                 ps.setDouble(6, h.getBayar());
                 ps.setDouble(7, h.getKembalian());
+                ps.setString(8, h.getMetodeBayar());
+                ps.setDouble(9, h.getDiskon());
                 ps.executeUpdate();
                 try (ResultSet keys = ps.getGeneratedKeys()) {
                     if (!keys.next()) {
@@ -271,7 +276,8 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public List<LapPenjualan> lapPenjualan(LocalDate a, LocalDate b) {
-        String sql = "SELECT p.no_nota, p.tanggal, u.nama_lengkap kasir, COALESCE(m.nama,'-') member, p.total "
+        String sql = "SELECT p.no_nota, p.tanggal, u.nama_lengkap kasir, COALESCE(m.nama,'-') member, p.total, "
+                + "p.metode_bayar, p.diskon "
                 + "FROM penjualan p "
                 + "JOIN users u ON p.id_user = u.id_user "
                 + "LEFT JOIN member m ON p.id_member = m.id_member "
@@ -289,7 +295,9 @@ public class PenjualanDAOImpl implements PenjualanDAO {
                             ts == null ? null : ts.toLocalDateTime(),
                             rs.getString("kasir"),
                             rs.getString("member"),
-                            rs.getDouble("total")));
+                            rs.getDouble("total"),
+                            rs.getString("metode_bayar"),
+                            rs.getDouble("diskon")));
                 }
             }
             return list;
@@ -300,7 +308,8 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public List<LapPenjualan> lapPenjualanByUser(LocalDate a, LocalDate b, int idUser) {
-        String sql = "SELECT p.no_nota, p.tanggal, u.nama_lengkap kasir, COALESCE(m.nama,'-') member, p.total "
+        String sql = "SELECT p.no_nota, p.tanggal, u.nama_lengkap kasir, COALESCE(m.nama,'-') member, p.total, "
+                + "p.metode_bayar, p.diskon "
                 + "FROM penjualan p "
                 + "JOIN users u ON p.id_user = u.id_user "
                 + "LEFT JOIN member m ON p.id_member = m.id_member "
@@ -319,7 +328,9 @@ public class PenjualanDAOImpl implements PenjualanDAO {
                             ts == null ? null : ts.toLocalDateTime(),
                             rs.getString("kasir"),
                             rs.getString("member"),
-                            rs.getDouble("total")));
+                            rs.getDouble("total"),
+                            rs.getString("metode_bayar"),
+                            rs.getDouble("diskon")));
                 }
             }
             return list;

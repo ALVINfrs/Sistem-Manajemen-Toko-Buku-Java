@@ -9,7 +9,8 @@ CREATE TABLE users (
 
 CREATE TABLE kategori (
     id_kategori INT AUTO_INCREMENT PRIMARY KEY,
-    nama_kategori VARCHAR(50) NOT NULL
+    nama_kategori VARCHAR(50) NOT NULL,
+    deskripsi VARCHAR(255) NULL
 );
 
 CREATE TABLE penerbit (
@@ -58,6 +59,8 @@ CREATE TABLE penjualan (
     total DECIMAL(12,2) NOT NULL DEFAULT 0,
     bayar DECIMAL(12,2) NOT NULL DEFAULT 0,
     kembalian DECIMAL(12,2) NOT NULL DEFAULT 0,
+    metode_bayar VARCHAR(20) NOT NULL DEFAULT 'Tunai',
+    diskon DECIMAL(12,2) NOT NULL DEFAULT 0,
     FOREIGN KEY (id_user) REFERENCES users(id_user),
     FOREIGN KEY (id_member) REFERENCES member(id_member)
 );

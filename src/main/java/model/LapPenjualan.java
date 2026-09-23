@@ -8,6 +8,8 @@ public class LapPenjualan {
     private String kasir;
     private String member;
     private double total;
+    private String metodeBayar;
+    private double diskon;
 
     public LapPenjualan() {}
 
@@ -17,6 +19,17 @@ public class LapPenjualan {
         this.kasir = kasir;
         this.member = member;
         this.total = total;
+    }
+
+    public LapPenjualan(String noNota, LocalDateTime tanggal, String kasir, String member,
+                        double total, String metodeBayar, double diskon) {
+        this.noNota = noNota;
+        this.tanggal = tanggal;
+        this.kasir = kasir;
+        this.member = member;
+        this.total = total;
+        this.metodeBayar = metodeBayar;
+        this.diskon = diskon;
     }
 
     public String getNoNota() {
@@ -57,5 +70,21 @@ public class LapPenjualan {
 
     public void setTotal(double total) {
         this.total = total;
+    }
+
+    public String getMetodeBayar() {
+        return metodeBayar;
+    }
+
+    public void setMetodeBayar(String metodeBayar) {
+        this.metodeBayar = metodeBayar;
+    }
+
+    public double getDiskon() {
+        return diskon;
+    }
+
+    public void setDiskon(double diskon) {
+        this.diskon = diskon;
     }
 }

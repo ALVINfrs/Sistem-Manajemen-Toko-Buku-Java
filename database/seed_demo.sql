@@ -101,12 +101,12 @@ INSERT IGNORE INTO buku (kode_buku, judul, penulis, id_penerbit, id_kategori, ha
 -- (a) nota -0001, 2 hari lalu, admin (id 1), member 1.
 --     Item: BK-001 qty 2 @65000 = 130000; BK-002 qty 1 @85000 = 85000.
 --     Total 215000; bayar = total + 5000 = 220000; kembalian 5000.
-INSERT INTO penjualan (no_nota, tanggal, id_user, id_member, total, bayar, kembalian)
-VALUES (CONCAT('NJ-', DATE_FORMAT(NOW() - INTERVAL 2 DAY, '%Y%m%d'), '-0001'), NOW() - INTERVAL 2 DAY, 1, 1, 215000, 220000, 5000);
+INSERT INTO penjualan (no_nota, tanggal, id_user, id_member, total, bayar, kembalian, metode_bayar, diskon)
+VALUES (CONCAT('NJ-', DATE_FORMAT(NOW() - INTERVAL 2 DAY, '%Y%m%d'), '-0001'), NOW() - INTERVAL 2 DAY, 1, 1, 215000, 220000, 5000, 'Tunai', 0);
 -- (b) nota -0002, hari ini, kasir (subselect), tanpa member, bayar pas.
 --     Item: BK-003 qty 3 @35000 = 105000. Total/bayar 105000, kembalian 0.
-INSERT INTO penjualan (no_nota, tanggal, id_user, id_member, total, bayar, kembalian)
-VALUES (CONCAT('NJ-', DATE_FORMAT(NOW(), '%Y%m%d'), '-0002'), NOW(), (SELECT id_user FROM users WHERE username = 'kasir'), NULL, 105000, 105000, 0);
+INSERT INTO penjualan (no_nota, tanggal, id_user, id_member, total, bayar, kembalian, metode_bayar, diskon)
+VALUES (CONCAT('NJ-', DATE_FORMAT(NOW(), '%Y%m%d'), '-0002'), NOW(), (SELECT id_user FROM users WHERE username = 'kasir'), NULL, 105000, 105000, 0, 'Tunai', 0);
 
 -- ---------- DETAIL PENJUALAN (transaksi, INSERT biasa) ----------
 -- id_penjualan 1 = penjualan (a); id_buku 1 = BK-001, 2 = BK-002 (fresh-DB).

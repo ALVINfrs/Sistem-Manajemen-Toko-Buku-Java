@@ -13,12 +13,15 @@ public class Penjualan {
     private double total;
     private double bayar;
     private double kembalian;
+    private String metodeBayar;
+    private double diskon;
 
     public Penjualan() {}
 
     public Penjualan(int idPenjualan, String noNota, LocalDateTime tanggal,
                      int idUser, String username, Integer idMember, String kodeMember,
-                     double total, double bayar, double kembalian) {
+                     double total, double bayar, double kembalian,
+                     String metodeBayar, double diskon) {
         this.idPenjualan = idPenjualan;
         this.noNota = noNota;
         this.tanggal = tanggal;
@@ -29,6 +32,8 @@ public class Penjualan {
         this.total = total;
         this.bayar = bayar;
         this.kembalian = kembalian;
+        this.metodeBayar = metodeBayar;
+        this.diskon = diskon;
     }
 
     public int getIdPenjualan() {
@@ -109,5 +114,21 @@ public class Penjualan {
 
     public void setKembalian(double kembalian) {
         this.kembalian = kembalian;
+    }
+
+    public String getMetodeBayar() {
+        return metodeBayar;
+    }
+
+    public void setMetodeBayar(String metodeBayar) {
+        this.metodeBayar = metodeBayar;
+    }
+
+    public double getDiskon() {
+        return diskon;
+    }
+
+    public void setDiskon(double diskon) {
+        this.diskon = diskon;
     }
 }

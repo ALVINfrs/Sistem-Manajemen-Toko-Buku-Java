@@ -40,6 +40,7 @@ import org.kordamp.ikonli.materialdesign2.MaterialDesignD;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignM;
 import org.kordamp.ikonli.swing.FontIcon;
 import util.ComboItem;
+import util.AppConfig;
 import util.NeoBrutalTheme;
 import util.NeoShadowBorder;
 import util.NotaGenerator;
@@ -64,6 +65,9 @@ public class FormPenjualan extends JPanel {
     private JTable tblCart;
     private DefaultTableModel modelCart;
     private JComboBox<ComboItem> cmbMember;
+    private JComboBox<String> cmbMetode;
+    private JLabel lblDiskon;
+    private JTextField txtPotongan;
     private JLabel lblTotal;
     private JLabel lblKembalian;
     private JTextField txtBayar;
@@ -191,7 +195,30 @@ public class FormPenjualan extends JPanel {
         cmbMember = new JComboBox<>();
         cmbMember.setBackground(NeoBrutalTheme.SURFACE);
         cmbMember.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        cmbMember.addActionListener(e -> refreshCart());
         card.add(cmbMember);
+
+        card.add(new JLabel("Metode Bayar"));
+        cmbMetode = new JComboBox<>(new String[]{"Tunai", "Transfer", "QRIS"});
+        cmbMetode.setBackground(NeoBrutalTheme.SURFACE);
+        cmbMetode.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        cmbMetode.addActionListener(e -> refreshCart());
+        card.add(cmbMetode);
+
+        lblDiskon = new JLabel("Belanja Rp750000 lagi / 50 buku lagi");
+        lblDiskon.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 12));
+        card.add(lblDiskon);
+
+        card.add(new JLabel("Potongan (Rp)"));
+        txtPotongan = new JTextField("0");
+        txtPotongan.setName("potongan");
+        txtPotongan.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        txtPotongan.getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) { refreshCart(); }
+            @Override public void removeUpdate(DocumentEvent e) { refreshCart(); }
+            @Override public void changedUpdate(DocumentEvent e) { refreshCart(); }
+        });
+        card.add(txtPotongan);
 
         lblTotal = new JLabel("Total: 0");
         lblTotal.setFont(new Font("Segoe UI Black", Font.BOLD, 22));
@@ -331,12 +358,69 @@ public class FormPenjualan extends JPanel {
         refreshCart();
     }
 
-    private double hitungTotal() {
+    /** Diskon member 5% bila ada member dan (qty>=50 atau subtotal>=750rb). */
+    public static double hitungDiskonMember(boolean adaMember, int qtyTotal, double subtotal) {
+        boolean syaratOk = adaMember
+                && (qtyTotal >= AppConfig.SYARAT_DISKON_QTY || subtotal >= AppConfig.SYARAT_DISKON_NOMINAL);
+        if (!syaratOk) return 0;
+        return Math.round(subtotal * AppConfig.DISKON_MEMBER_PCT / 100.0);
+    }
+
+    /** @return pesan error atau null bila potongan valid. */
+    public static String validasiPotongan(double potongan, double subtotal, double diskonMember) {
+        if (Double.isNaN(potongan)) return "Potongan harus angka";
+        if (potongan < 0 || potongan > subtotal - diskonMember) return "Potongan melebihi sisa";
+        return null;
+    }
+
+    /** @return pesan error atau null bila bayar valid (non-tunai selalu valid: auto=total). */
+    public static String validasiBayar(String metode, Double bayar, double total) {
+        if (!"Tunai".equals(metode)) return null;
+        if (bayar == null) return "Uang bayar harus angka";
+        if (bayar < total) return "Uang bayar kurang";
+        return null;
+    }
+
+    private boolean adaMember() {
+        ComboItem mi = (ComboItem) cmbMember.getSelectedItem();
+        return mi != null && mi.id >= 0;
+    }
+
+    private String metodeTerpilih() {
+        Object m = cmbMetode.getSelectedItem();
+        return m == null ? "Tunai" : m.toString();
+    }
+
+    private double hitungSubtotal() {
         double total = 0;
         for (CartRow r : cart) {
             total += r.qty * r.buku.getHargaJual();
         }
         return total;
+    }
+
+    private int hitungQtyTotal() {
+        int qty = 0;
+        for (CartRow r : cart) {
+            qty += r.qty;
+        }
+        return qty;
+    }
+
+    private double bacaPotongan() {
+        try {
+            return Double.parseDouble(txtPotongan.getText().trim());
+        } catch (NumberFormatException | NullPointerException e) {
+            return Double.NaN;
+        }
+    }
+
+    private double hitungTotal() {
+        double subtotal = hitungSubtotal();
+        double diskonMember = hitungDiskonMember(adaMember(), hitungQtyTotal(), subtotal);
+        double potongan = bacaPotongan();
+        if (Double.isNaN(potongan)) potongan = 0;
+        return subtotal - diskonMember - potongan;
     }
 
     private void refreshCart() {
@@ -347,8 +431,26 @@ public class FormPenjualan extends JPanel {
                     r.qty, r.qty * r.buku.getHargaJual()
             });
         }
-        double total = hitungTotal();
+        double subtotal = hitungSubtotal();
+        int qtyTotal = hitungQtyTotal();
+        double diskonMember = hitungDiskonMember(adaMember(), qtyTotal, subtotal);
+        double potongan = bacaPotongan();
+        if (Double.isNaN(potongan)) potongan = 0;
+        double total = subtotal - diskonMember - potongan;
+        if (diskonMember > 0) {
+            lblDiskon.setText("Diskon member 5% aktif");
+        } else {
+            long sisaRp = Math.max(0, Math.round(AppConfig.SYARAT_DISKON_NOMINAL - subtotal));
+            int sisaQty = Math.max(0, AppConfig.SYARAT_DISKON_QTY - qtyTotal);
+            lblDiskon.setText("Belanja Rp" + sisaRp + " lagi / " + sisaQty + " buku lagi");
+        }
         lblTotal.setText("Total: " + total);
+        if (!"Tunai".equals(metodeTerpilih())) {
+            txtBayar.setText(String.valueOf(total));
+            txtBayar.setEnabled(false);
+        } else {
+            txtBayar.setEnabled(true);
+        }
         hitungKembalian();
     }
 
@@ -375,20 +477,35 @@ public class FormPenjualan extends JPanel {
                     "Validasi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        double total = hitungTotal();
-        double bayar;
-        try {
-            bayar = Double.parseDouble(txtBayar.getText().trim());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Uang bayar harus angka",
+        double subtotal = hitungSubtotal();
+        int qtyTotal = hitungQtyTotal();
+        double diskonMember = hitungDiskonMember(adaMember(), qtyTotal, subtotal);
+        double potongan = bacaPotongan();
+        String errPot = validasiPotongan(potongan, subtotal, diskonMember);
+        if (errPot != null) {
+            JOptionPane.showMessageDialog(this, errPot,
                     "Validasi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (bayar < total) {
-            JOptionPane.showMessageDialog(this, "Uang bayar kurang",
+        double total = subtotal - diskonMember - potongan;
+        String metode = metodeTerpilih();
+        Double bayarBox;
+        if ("Tunai".equals(metode)) {
+            try {
+                bayarBox = Double.parseDouble(txtBayar.getText().trim());
+            } catch (NumberFormatException e) {
+                bayarBox = null;
+            }
+        } else {
+            bayarBox = total;
+        }
+        String errBayar = validasiBayar(metode, bayarBox, total);
+        if (errBayar != null) {
+            JOptionPane.showMessageDialog(this, errBayar,
                     "Validasi", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        double bayar = bayarBox;
         for (CartRow r : cart) {
             Buku fresh = bukuDAO.getById(r.buku.getIdBuku());
             if (fresh == null || r.qty > fresh.getStok()) {
@@ -410,6 +527,8 @@ public class FormPenjualan extends JPanel {
             h.setTotal(total);
             h.setBayar(bayar);
             h.setKembalian(bayar - total);
+            h.setMetodeBayar(metode);
+            h.setDiskon(diskonMember + potongan);
             List<DetailPenjualan> items = new ArrayList<>();
             for (CartRow r : cart) {
                 DetailPenjualan d = new DetailPenjualan();
@@ -425,9 +544,12 @@ public class FormPenjualan extends JPanel {
             String kasir = Sesi.userLogin.getNamaLengkap();
             String member = (mi == null || mi.id < 0) ? "-" : mi.label;
             Frame owner = (Frame) SwingUtilities.getWindowAncestor(this);
-            new StrukDialog(owner, h, items, kasir, member).setVisible(true);
+            new StrukDialog(owner, h, items, kasir, member, diskonMember, potongan).setVisible(true);
             cart.clear();
             txtBayar.setText("");
+            cmbMetode.setSelectedItem("Tunai");
+            txtPotongan.setText("0");
+            cmbMember.setSelectedItem(ComboItem.EMPTY);
             refreshCart();
             cariBuku(txtCari.getText());
         } catch (Exception ex) {
