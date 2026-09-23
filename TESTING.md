@@ -9,10 +9,16 @@ File ini = panduan testing manual untuk Gus.
 
 ## 1. Akun + Cara Masuk
 
-| Username | Password | Role  | Asal                  |
-|----------|----------|-------|-----------------------|
-| admin    | admin123 | Admin | schema.sql / seed     |
-| kasir    | kasir123 | Kasir | seed_demo.sql         |
+| Username | Password | Role  | Asal                                             |
+|----------|----------|-------|--------------------------------------------------|
+| admin    | admin123 | Admin | schema.sql (login perlu hash dari seed_demo.sql) |
+| kasir    | kasir123 | Kasir | seed_demo.sql                                    |
+
+Akun admin berasal dari schema.sql, kasir dari seed_demo.sql.
+`schema.sql` men-seed admin dengan password plain sedangkan aplikasi
+membandingkan hash SHA-256, jadi DB skema-saja tidak bisa login;
+import `seed_demo.sql` (normalisasi ke `SHA2('admin123', 256)`) agar
+`admin/admin123` bisa login.
 
 Login: jalankan app (`view.Login`), isi username + password, klik Login.
 Salah satu salah → popup "Username atau password salah", tetap di login.

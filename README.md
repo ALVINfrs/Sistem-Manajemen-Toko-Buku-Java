@@ -45,7 +45,12 @@ user `root` tanpa password (lihat `src/main/java/koneksi/Koneksi.java`).
 | admin    | admin123   | Admin |
 | kasir    | kasir123   | Kasir |
 
-Akun `kasir` tersedia bila `seed_demo.sql` diimport. Tombol
+Akun admin berasal dari schema.sql, kasir dari seed_demo.sql.
+Catatan: `schema.sql` men-seed admin dengan password plain, sedangkan
+aplikasi membandingkan hash SHA-256 (`view.Login` + `util.HashUtil`),
+jadi login `admin/admin123` butuh normalisasi hash dari `seed_demo.sql`
+(`UPDATE users SET password = SHA2('admin123', 256) ...`). Praktisnya:
+import `seed_demo.sql` agar kedua akun bisa login. Tombol
 "Daftar Akun Kasir" di layar login membuat akun baru yang otomatis
 berperan Kasir (bisa langsung dipakai login).
 
@@ -89,9 +94,12 @@ src/main/resources/
 ## CLI Alternatif
 
 ```sh
-C:\Users\alvin\tools\apache-maven-3.9.9\bin\mvn.cmd package
+mvn package
 java -jar target/sistem-toko-buku-1.0.0.jar
 ```
+
+Catatan: bila `mvn` belum ada di PATH, pakai path portable Maven Anda
+sebagai alternatif (contoh `C:\...\mvn.cmd package`).
 
 JAR hasil `package` adalah fat/shaded JAR (semua dependensi di dalam,
 termasuk JasperReports) — terbukti bisa export PDF langsung dari JAR.
