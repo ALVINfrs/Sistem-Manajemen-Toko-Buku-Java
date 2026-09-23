@@ -33,6 +33,7 @@ public class MenuUtama extends JFrame {
     private JButton btnPenerbit;
     private JButton btnSupplier;
     private JButton btnMember;
+    private JButton btnUser;
     private JButton btnPenjualan;
     private JButton btnPembelian;
     private JButton btnRetur;
@@ -54,6 +55,7 @@ public class MenuUtama extends JFrame {
         btnPenerbit = modulButton("Penerbit", FontIcon.of(MaterialDesignD.DOMAIN, 22, Color.BLACK));
         btnSupplier = modulButton("Supplier", FontIcon.of(MaterialDesignT.TRUCK, 22, Color.BLACK));
         btnMember = modulButton("Member", FontIcon.of(MaterialDesignA.ACCOUNT_GROUP, 22, Color.BLACK));
+        btnUser = modulButton("User", FontIcon.of(MaterialDesignA.ACCOUNT_COG, 22, Color.BLACK));
         btnPenjualan = modulButton("Penjualan", FontIcon.of(MaterialDesignC.CASH_REGISTER, 22, Color.BLACK));
         btnPembelian = modulButton("Pembelian", FontIcon.of(MaterialDesignC.CART_ARROW_DOWN, 22, Color.BLACK));
         btnRetur = modulButton("Retur", FontIcon.of(MaterialDesignK.KEYBOARD_RETURN, 22, Color.BLACK));
@@ -65,6 +67,7 @@ public class MenuUtama extends JFrame {
         btnPenerbit.addActionListener(e -> bukaModul("view.FormPenerbit", "Penerbit"));
         btnSupplier.addActionListener(e -> bukaModul("view.FormSupplier", "Supplier"));
         btnMember.addActionListener(e -> bukaModul("view.FormMember", "Member"));
+        btnUser.addActionListener(e -> bukaModul("view.FormUser", "User"));
         btnPenjualan.addActionListener(e -> bukaModul("view.FormPenjualan", "Penjualan"));
         btnPembelian.addActionListener(e -> bukaModul("view.FormPembelian", "Pembelian"));
         btnRetur.addActionListener(e -> bukaModul("view.FormRetur", "Retur"));
@@ -80,6 +83,7 @@ public class MenuUtama extends JFrame {
         sidebar.add(btnPenerbit);
         sidebar.add(btnSupplier);
         sidebar.add(btnMember);
+        sidebar.add(btnUser);
         sidebar.add(btnPenjualan);
         sidebar.add(btnPembelian);
         sidebar.add(btnRetur);
@@ -92,6 +96,7 @@ public class MenuUtama extends JFrame {
             btnPenerbit.setVisible(false);
             btnSupplier.setVisible(false);
             btnMember.setVisible(false);
+            btnUser.setVisible(false);
             btnPembelian.setVisible(false);
         }
 

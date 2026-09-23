@@ -23,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import model.User;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignA;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignB;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignL;
 import org.kordamp.ikonli.swing.FontIcon;
@@ -42,7 +43,7 @@ public class Login extends JFrame {
     public Login() {
         super(AppConfig.APP_NAME + " - Login");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(800, 480);
+        setSize(800, 540);
         setLocationRelativeTo(null);
 
         JPanel root = new JPanel(new GridBagLayout());
@@ -63,12 +64,24 @@ public class Login extends JFrame {
         JPanel card = new JPanel(new BorderLayout(0, 12));
         card.setBackground(NeoBrutalTheme.SURFACE);
         card.setBorder(new NeoShadowBorder());
-        card.setPreferredSize(new Dimension(320, 380));
+        card.setPreferredSize(new Dimension(320, 440));
 
         JLabel lblJudul = new JLabel(AppConfig.APP_NAME, SwingConstants.CENTER);
         lblJudul.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
         lblJudul.setForeground(Color.BLACK);
-        card.add(lblJudul, BorderLayout.NORTH);
+
+        JLabel lblLogo = new JLabel(FontIcon.of(MaterialDesignB.BOOK_OPEN_PAGE_VARIANT, 48, Color.BLACK));
+        lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel lblSub = new JLabel("Sistem Informasi Penjualan Buku", SwingConstants.CENTER);
+        lblSub.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
+        lblSub.setForeground(Color.BLACK);
+
+        JPanel pnlHeader = new JPanel(new BorderLayout(0, 2));
+        pnlHeader.setBackground(NeoBrutalTheme.SURFACE);
+        pnlHeader.add(lblLogo, BorderLayout.NORTH);
+        pnlHeader.add(lblJudul, BorderLayout.CENTER);
+        pnlHeader.add(lblSub, BorderLayout.SOUTH);
+        card.add(pnlHeader, BorderLayout.NORTH);
 
         JPanel form = new JPanel(new GridBagLayout());
         form.setBackground(NeoBrutalTheme.SURFACE);
@@ -110,7 +123,26 @@ public class Login extends JFrame {
         fgc.insets = new Insets(14, 12, 6, 12);
         form.add(btnLogin, fgc);
 
+        JButton btnDaftar = new JButton("Daftar Akun Kasir",
+                FontIcon.of(MaterialDesignA.ACCOUNT_PLUS, 18, Color.BLACK));
+        btnDaftar.setIconTextGap(8);
+        btnDaftar.setBackground(NeoBrutalTheme.SECONDARY);
+        btnDaftar.setForeground(Color.BLACK);
+        btnDaftar.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
+        btnDaftar.setBorder(new NeoShadowBorder());
+        btnDaftar.setFocusPainted(false);
+        addPressEffect(btnDaftar);
+        btnDaftar.addActionListener(e -> new RegisterDialog(this).setVisible(true));
+        fgc.gridy = 5;
+        fgc.insets = new Insets(6, 12, 6, 12);
+        form.add(btnDaftar, fgc);
+
         card.add(form, BorderLayout.CENTER);
+
+        JLabel lblHint = new JLabel("Gunakan akun Admin/Kasir untuk masuk", SwingConstants.CENTER);
+        lblHint.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        lblHint.setForeground(Color.BLACK);
+        card.add(lblHint, BorderLayout.SOUTH);
         getRootPane().setDefaultButton(btnLogin);
 
         btnLogin.addActionListener(e -> doLogin());
@@ -129,7 +161,18 @@ public class Login extends JFrame {
     private JPanel buildIlustrasi() {
         java.net.URL imgUrl = getClass().getResource("/images/login_bg.jpg");
         if (imgUrl != null) {
-            JLabel lbl = new JLabel(new javax.swing.ImageIcon(imgUrl));
+            javax.swing.ImageIcon raw = new javax.swing.ImageIcon(imgUrl);
+            int maxW = 380;
+            int maxH = 360;
+            int w = raw.getIconWidth();
+            int h = raw.getIconHeight();
+            if (w > 0 && h > 0 && (w > maxW || h > maxH)) {
+                double s = Math.min((double) maxW / w, (double) maxH / h);
+                w = (int) Math.round(w * s);
+                h = (int) Math.round(h * s);
+            }
+            java.awt.Image scaled = raw.getImage().getScaledInstance(w, h, java.awt.Image.SCALE_SMOOTH);
+            JLabel lbl = new JLabel(new javax.swing.ImageIcon(scaled));
             lbl.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
             lbl.setHorizontalAlignment(SwingConstants.CENTER);
             JPanel p = new JPanel(new BorderLayout());
