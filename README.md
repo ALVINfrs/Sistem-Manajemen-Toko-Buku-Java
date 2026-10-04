@@ -1,4 +1,4 @@
-# 📚 Sistem Informasi Manajemen Toko Buku — CV Almira Jaya Abadi
+# 📚 Sistem Informasi Manajemen Toko Buku — CV. Almira Jaya Abadi
 
 <div align="center">
 
@@ -41,7 +41,7 @@
 
 ## 📖 1. Tentang Proyek & Latar Belakang
 
-**Sistem Informasi Manajemen Toko Buku CV Almira Jaya Abadi** adalah sistem aplikasi desktop komprehensif yang dirancang untuk mengotomatisasi seluruh siklus operasional bisnis ritel buku. Mulai dari rantai pasok pengadaan (*supply chain purchasing*), pengelolaan katalog buku dan inventaris multi-kategori, sistem kasir kasir pintar (*Point of Sale*), manajemen keanggotaan pelanggan (*membership loyalty*), penanganan retur penjualan, hingga analitik omzet dan pelaporan laba rugi berkala.
+**Sistem Informasi Manajemen Toko Buku CV. Almira Jaya Abadi** adalah sistem aplikasi desktop komprehensif yang dirancang untuk mengotomatisasi seluruh siklus operasional bisnis ritel buku. Mulai dari rantai pasok pengadaan (*supply chain purchasing*), pengelolaan katalog buku dan inventaris multi-kategori, sistem kasir kasir pintar (*Point of Sale*), manajemen keanggotaan pelanggan (*membership loyalty*), penanganan retur penjualan, hingga analitik omzet dan pelaporan laba rugi berkala.
 
 Aplikasi ini dikembangkan untuk menggantikan pencatatan manual berbasis buku besar / spreadsheet yang rentan terhadap:
 - Ketidakcocokan stok fisik buku dengan catatan penjualan.
@@ -570,9 +570,9 @@ Untuk memastikan seluruh modul berfungsi sempurna, Anda dapat mencoba skenario p
 
 Proyek ini dikembangkan sebagai karya **Kuliah Kerja Praktik (KKP) Sistem Informasi** untuk digitalisasi operasional retail buku:
 
-- **Instansi Mitra:** Toko Buku CV Almira Jaya Abadi
+- **Instansi Mitra:** Toko Buku CV. Almira Jaya Abadi
 - **Arsitektur & Pengembangan:** Tim Mahasiswa Pengembang Sistem Informasi
-- **Lisensi:** *Academic & Proprietary Use* untuk CV Almira Jaya Abadi. Seluruh kode sumber terbuka untuk keperluan evaluasi akademik dan pembelajaran.
+- **Lisensi:** *Academic & Proprietary Use* untuk CV. Almira Jaya Abadi. Seluruh kode sumber terbuka untuk keperluan evaluasi akademik dan pembelajaran.
 
 ---
 

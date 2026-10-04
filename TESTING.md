@@ -1,4 +1,4 @@
-# Report Testing - Sistem Informasi Toko Buku (CV Almira Jaya Abadi)
+# Report Testing - Sistem Informasi Toko Buku (CV. Almira Jaya Abadi)
 
 Versi app: 1.0.0 * Tanggal testing: 2026-09-23 * DB: MySQL lokal `db_toko_buku`
 (skema final 11 tabel + `seed_demo.sql`).

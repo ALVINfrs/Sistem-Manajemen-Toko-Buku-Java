@@ -214,7 +214,7 @@ public class MenuUtama extends JFrame {
         pnlBrand.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 2, 0, Color.BLACK),
                 BorderFactory.createEmptyBorder(14, 12, 14, 12)));
-        JLabel iconBrand = new JLabel(FontIcon.of(MaterialDesignB.BOOK_OPEN_PAGE_VARIANT, 24, Color.BLACK));
+        JLabel iconBrand = new JLabel(util.LogoUtil.icon(28));
         JLabel lblBrand = new JLabel(AppConfig.APP_NAME);
         lblBrand.setFont(new Font("Segoe UI Black", Font.BOLD, 13));
         lblBrand.setForeground(Color.BLACK);

@@ -70,7 +70,7 @@ public class Login extends JFrame {
         lblJudul.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
         lblJudul.setForeground(Color.BLACK);
 
-        JLabel lblLogo = new JLabel(FontIcon.of(MaterialDesignB.BOOK_OPEN_PAGE_VARIANT, 48, Color.BLACK));
+        JLabel lblLogo = new JLabel(util.LogoUtil.icon(56));
         lblLogo.setHorizontalAlignment(SwingConstants.CENTER);
         JLabel lblSub = new JLabel("Sistem Informasi Penjualan Buku", SwingConstants.CENTER);
         lblSub.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
@@ -183,7 +183,7 @@ public class Login extends JFrame {
         JPanel p = new JPanel(new BorderLayout());
         p.setBackground(NeoBrutalTheme.SECONDARY);
         p.setBorder(new NeoShadowBorder());
-        JLabel ikon = new JLabel(FontIcon.of(MaterialDesignB.BOOK_OPEN_PAGE_VARIANT, 120, Color.BLACK));
+        JLabel ikon = new JLabel(util.LogoUtil.icon(140));
         ikon.setHorizontalAlignment(SwingConstants.CENTER);
         p.add(ikon, BorderLayout.CENTER);
         return p;

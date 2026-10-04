@@ -916,7 +916,7 @@ public class FormLaporan extends JPanel {
     private Map<String, Object> buildParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("APP_NAME", AppConfig.APP_NAME);
-        params.put("KOTA", "Jakarta");
+        params.put("KOTA", "Bekasi");
         params.put("TGL_CETAK", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy", LOCALE_ID)));
         String namaPetugas = (Sesi.userLogin != null && Sesi.userLogin.getNamaLengkap() != null)
                 ? Sesi.userLogin.getNamaLengkap() : "Kasir / Admin";

@@ -16,8 +16,9 @@
     <initialValueExpression><![CDATA[0.0]]></initialValueExpression>
   </variable>
   <title><band height="96">
+    <image><reportElement x="0" y="0" width="80" height="60"/><imageExpression class="java.net.URL"><![CDATA[Thread.currentThread().getContextClassLoader().getResource("images/logo_ajb_transparent.png")]]></imageExpression></image>
     <textField><reportElement x="0" y="0" width="515" height="24"/><textElement textAlignment="Center"><font size="16" isBold="true"/></textElement><textFieldExpression><![CDATA[$P{APP_NAME}]]></textFieldExpression></textField>
-    <staticText><reportElement x="0" y="24" width="515" height="15"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Jl. Merdeka No. 45 - Telp: 0812-3456-7890 - Jakarta Pusat]]></text></staticText>
+    <staticText><reportElement x="0" y="24" width="515" height="15"/><textElement textAlignment="Center"><font size="9"/></textElement><text><![CDATA[Jl. Raya Legok No.22, RT.6/RW.004, Jatimekar, Kec. Jatiasih, Kota Bks, Jawa Barat 17415]]></text></staticText>
     <line><reportElement x="0" y="42" width="515" height="1"/><graphicElement><pen lineWidth="2.0" lineStyle="Solid"/></graphicElement></line>
     <line><reportElement x="0" y="45" width="515" height="1"/><graphicElement><pen lineWidth="0.5" lineStyle="Solid"/></graphicElement></line>
     <staticText><reportElement x="0" y="52" width="515" height="22"/><textElement textAlignment="Center"><font size="13" isBold="true"/></textElement><text><![CDATA[LAPORAN TRANSAKSI PEMBELIAN BARANG]]></text></staticText>

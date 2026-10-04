@@ -138,7 +138,7 @@ public class StrukDialog extends JDialog {
         sb.append(eqLine).append("\n");
         sb.append(center(AppConfig.APP_NAME.toUpperCase())).append("\n");
         sb.append(center("TOKO BUKU & ALAT TULIS")).append("\n");
-        sb.append(center("Jl. Merdeka No. 45 - Telp: 0812-3456-7890")).append("\n");
+        appendWrappedText(sb, AppConfig.ALAMAT_TOKO, LINE_WIDTH);
         sb.append(eqLine).append("\n");
 
         // Info Transaksi
