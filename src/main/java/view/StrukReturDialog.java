@@ -167,7 +167,7 @@ public class StrukReturDialog extends JDialog {
         sb.append(eqLine).append("\n");
         sb.append(center(AppConfig.APP_NAME.toUpperCase())).append("\n");
         sb.append(center("BUKTI TANDA TERIMA RETUR")).append("\n");
-        appendWrappedText(sb, AppConfig.ALAMAT_TOKO, LINE_WIDTH);
+        appendWrappedText(sb, AppConfig.ALAMAT_TOKO + " Telp: " + AppConfig.NO_TELP_TOKO, LINE_WIDTH);
         sb.append(eqLine).append("\n");
 
         // Info Transaksi Retur
