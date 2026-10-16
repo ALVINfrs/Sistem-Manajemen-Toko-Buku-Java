@@ -8,8 +8,6 @@ public class Penjualan {
     private LocalDateTime tanggal;
     private int idUser;
     private String username;
-    private Integer idMember;
-    private String kodeMember;
     private double total;
     private double bayar;
     private double kembalian;
@@ -19,7 +17,7 @@ public class Penjualan {
     public Penjualan() {}
 
     public Penjualan(int idPenjualan, String noNota, LocalDateTime tanggal,
-                     int idUser, String username, Integer idMember, String kodeMember,
+                     int idUser, String username,
                      double total, double bayar, double kembalian,
                      String metodeBayar, double diskon) {
         this.idPenjualan = idPenjualan;
@@ -27,8 +25,6 @@ public class Penjualan {
         this.tanggal = tanggal;
         this.idUser = idUser;
         this.username = username;
-        this.idMember = idMember;
-        this.kodeMember = kodeMember;
         this.total = total;
         this.bayar = bayar;
         this.kembalian = kembalian;
@@ -74,22 +70,6 @@ public class Penjualan {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public Integer getIdMember() {
-        return idMember;
-    }
-
-    public void setIdMember(Integer idMember) {
-        this.idMember = idMember;
-    }
-
-    public String getKodeMember() {
-        return kodeMember;
-    }
-
-    public void setKodeMember(String kodeMember) {
-        this.kodeMember = kodeMember;
     }
 
     public double getTotal() {

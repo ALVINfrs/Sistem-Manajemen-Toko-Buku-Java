@@ -100,7 +100,7 @@ public class FormRiwayat extends JPanel {
         wrap.add(card, BorderLayout.NORTH);
 
         modelRiwayat = new DefaultTableModel(
-                new String[]{"Nota", "Tanggal", "Kasir", "Member", "Metode", "Total"}, 0) {
+                new String[]{"Nota", "Tanggal", "Kasir", "Metode", "Total"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -174,7 +174,6 @@ public class FormRiwayat extends JPanel {
                     l.getNoNota(),
                     l.getTanggal() != null ? l.getTanggal().format(FMT_TGL) : "-",
                     l.getKasir(),
-                    l.getMember(),
                     l.getMetodeBayar(),
                     l.getTotal()
             });
@@ -190,7 +189,6 @@ public class FormRiwayat extends JPanel {
         }
         String noNota = String.valueOf(modelRiwayat.getValueAt(row, 0));
         String kasir = String.valueOf(modelRiwayat.getValueAt(row, 2));
-        String member = String.valueOf(modelRiwayat.getValueAt(row, 3));
         try {
             Penjualan h = penjualanDAO.getByNoNota(noNota);
             if (h == null) {
@@ -200,7 +198,7 @@ public class FormRiwayat extends JPanel {
             }
             List<DetailPenjualan> items = penjualanDAO.getDetailByPenjualan(h.getIdPenjualan());
             Frame owner = (Frame) SwingUtilities.getWindowAncestor(this);
-            new StrukDialog(owner, h, items, kasir, member, 0, h.getDiskon()).setVisible(true);
+            new StrukDialog(owner, h, items, kasir, "-", 0, 0, h.getDiskon()).setVisible(true);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Gagal buka struk: " + ex.getMessage(),
                     "Gagal", JOptionPane.ERROR_MESSAGE);

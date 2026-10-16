@@ -37,13 +37,13 @@ public class StrukDialog extends JDialog {
     private final JTextArea txtStruk;
 
     public StrukDialog(Frame owner, Penjualan h, List<DetailPenjualan> items,
-                       String kasir, String member, double diskonMember, double potongan) {
+                       String kasir, String pelanggan, double diskonPersen, double diskonPersenRp, double potongan) {
         super(owner, "Struk Penjualan - " + (h != null ? h.getNoNota() : AppConfig.APP_NAME), true);
         setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(NeoBrutalTheme.BG);
         ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-        String receiptContent = generateReceiptText(h, items, kasir, member, diskonMember, potongan);
+        String receiptContent = generateReceiptText(h, items, kasir, pelanggan, diskonPersen, diskonPersenRp, potongan);
 
         txtStruk = new JTextArea(receiptContent);
         txtStruk.setFont(getReceiptFont());
@@ -128,8 +128,8 @@ public class StrukDialog extends JDialog {
     }
 
     private String generateReceiptText(Penjualan h, List<DetailPenjualan> items,
-                                      String kasir, String member,
-                                      double diskonMember, double potongan) {
+                                      String kasir, String pelanggan,
+                                      double diskonPersen, double diskonPersenRp, double potongan) {
         StringBuilder sb = new StringBuilder();
         String eqLine = repeat('=', LINE_WIDTH);
         String dashLine = repeat('-', LINE_WIDTH);
@@ -146,12 +146,12 @@ public class StrukDialog extends JDialog {
         String strTanggal = tgl.format(FMT_TGL);
         String strNota = (h != null && h.getNoNota() != null) ? h.getNoNota() : "-";
         String strKasir = (kasir != null && !kasir.isBlank()) ? kasir : "-";
-        String strMember = (member != null && !member.isBlank() && !"-".equals(member)) ? member : "- (Non-Member)";
+        String strPelanggan = (pelanggan != null && !pelanggan.isBlank()) ? pelanggan : "-";
 
         sb.append(row("No. Nota  : " + strNota, "")).append("\n");
         sb.append(row("Tanggal   : " + strTanggal, "")).append("\n");
         sb.append(row("Kasir     : " + strKasir, "")).append("\n");
-        sb.append(row("Pelanggan : " + strMember, "")).append("\n");
+        sb.append(row("Pelanggan : " + strPelanggan, "")).append("\n");
         sb.append(dashLine).append("\n");
 
         // Daftar Item
@@ -188,11 +188,11 @@ public class StrukDialog extends JDialog {
         sb.append(row("Total Item : " + totalItem + " (" + totalQty + " pcs)", "")).append("\n");
         sb.append(row("Subtotal Belanja :", formatRp(subtotal))).append("\n");
 
-        if (diskonMember > 0) {
-            sb.append(row("Diskon Member (" + AppConfig.DISKON_MEMBER_PCT + "%) :", "-" + formatRp(diskonMember))).append("\n");
+        if (diskonPersenRp > 0) {
+            sb.append(row("Diskon (" + trimAngka(diskonPersen) + "%) :", "-" + formatRp(diskonPersenRp))).append("\n");
         }
         if (potongan > 0) {
-            sb.append(row("Potongan Promo :", "-" + formatRp(potongan))).append("\n");
+            sb.append(row("Potongan :", "-" + formatRp(potongan))).append("\n");
         }
 
         sb.append(dashLine).append("\n");
@@ -232,6 +232,11 @@ public class StrukDialog extends JDialog {
 
     private String formatAngka(double val) {
         return FMT_RP.format((long) Math.round(val));
+    }
+
+    private String trimAngka(double val) {
+        if (val == Math.rint(val)) return String.valueOf((long) val);
+        return String.valueOf(val);
     }
 
     private String center(String text) {

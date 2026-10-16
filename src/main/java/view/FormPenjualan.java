@@ -2,8 +2,6 @@ package view;
 
 import dao.BukuDAO;
 import dao.BukuDAOImpl;
-import dao.MemberDAO;
-import dao.MemberDAOImpl;
 import dao.PenjualanDAO;
 import dao.PenjualanDAOImpl;
 import java.awt.BorderLayout;
@@ -33,7 +31,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import model.Buku;
 import model.DetailPenjualan;
-import model.Member;
 import model.Penjualan;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignD;
@@ -49,7 +46,6 @@ import util.Sesi;
 public class FormPenjualan extends JPanel {
 
     private final BukuDAO bukuDAO = new BukuDAOImpl();
-    private final MemberDAO memberDAO = new MemberDAOImpl();
     private final PenjualanDAO penjualanDAO = new PenjualanDAOImpl();
 
     private static class CartRow {
@@ -64,9 +60,9 @@ public class FormPenjualan extends JPanel {
     private JTextField txtCari;
     private JTable tblCart;
     private DefaultTableModel modelCart;
-    private JComboBox<ComboItem> cmbMember;
     private JComboBox<String> cmbMetode;
     private JLabel lblDiskon;
+    private JTextField txtDiskonPersen;
     private JTextField txtPotongan;
     private JLabel lblTotal;
     private JLabel lblKembalian;
@@ -88,7 +84,6 @@ public class FormPenjualan extends JPanel {
         cols.add(buildKanan());
         add(cols, BorderLayout.CENTER);
 
-        reloadMember();
         refreshCart();
     }
 
@@ -191,13 +186,6 @@ public class FormPenjualan extends JPanel {
         lbl.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
         card.add(lbl);
 
-        card.add(new JLabel("Member"));
-        cmbMember = new JComboBox<>();
-        cmbMember.setBackground(NeoBrutalTheme.SURFACE);
-        cmbMember.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        cmbMember.addActionListener(e -> refreshCart());
-        card.add(cmbMember);
-
         card.add(new JLabel("Metode Bayar"));
         cmbMetode = new JComboBox<>(new String[]{"Tunai", "Transfer", "QRIS"});
         cmbMetode.setBackground(NeoBrutalTheme.SURFACE);
@@ -205,9 +193,16 @@ public class FormPenjualan extends JPanel {
         cmbMetode.addActionListener(e -> refreshCart());
         card.add(cmbMetode);
 
-        lblDiskon = new JLabel("Belanja Rp750000 lagi / 50 buku lagi");
-        lblDiskon.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 12));
-        card.add(lblDiskon);
+        card.add(new JLabel("Diskon (%)"));
+        txtDiskonPersen = new JTextField("0");
+        txtDiskonPersen.setName("diskon_persen");
+        txtDiskonPersen.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        txtDiskonPersen.getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) { refreshCart(); }
+            @Override public void removeUpdate(DocumentEvent e) { refreshCart(); }
+            @Override public void changedUpdate(DocumentEvent e) { refreshCart(); }
+        });
+        card.add(txtDiskonPersen);
 
         card.add(new JLabel("Potongan (Rp)"));
         txtPotongan = new JTextField("0");
@@ -219,6 +214,10 @@ public class FormPenjualan extends JPanel {
             @Override public void changedUpdate(DocumentEvent e) { refreshCart(); }
         });
         card.add(txtPotongan);
+
+        lblDiskon = new JLabel(" ");
+        lblDiskon.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 12));
+        card.add(lblDiskon);
 
         lblTotal = new JLabel("Total: 0");
         lblTotal.setFont(new Font("Segoe UI Black", Font.BOLD, 22));
@@ -269,14 +268,6 @@ public class FormPenjualan extends JPanel {
             }
         });
         return b;
-    }
-
-    private void reloadMember() {
-        cmbMember.removeAllItems();
-        cmbMember.addItem(ComboItem.EMPTY);
-        for (Member m : memberDAO.getAll()) {
-            cmbMember.addItem(new ComboItem(m.getIdMember(), m.getNama()));
-        }
     }
 
     private void cariBuku(String keyword) {
@@ -358,18 +349,15 @@ public class FormPenjualan extends JPanel {
         refreshCart();
     }
 
-    /** Diskon member 5% bila ada member dan (qty>=50 atau subtotal>=750rb). */
-    public static double hitungDiskonMember(boolean adaMember, int qtyTotal, double subtotal) {
-        boolean syaratOk = adaMember
-                && (qtyTotal >= AppConfig.SYARAT_DISKON_QTY || subtotal >= AppConfig.SYARAT_DISKON_NOMINAL);
-        if (!syaratOk) return 0;
-        return Math.round(subtotal * AppConfig.DISKON_MEMBER_PCT / 100.0);
+    /** Total = round(subtotal*(100-persen)/100) - nominal. */
+    public static double hitungTotal(double subtotal, double persen, double nominal) {
+        return Math.round(subtotal * (100 - persen) / 100.0) - nominal;
     }
 
-    /** @return pesan error atau null bila potongan valid. */
-    public static String validasiPotongan(double potongan, double subtotal, double diskonMember) {
-        if (Double.isNaN(potongan)) return "Potongan harus angka";
-        if (potongan < 0 || potongan > subtotal - diskonMember) return "Potongan melebihi sisa";
+    /** @return pesan error atau null bila diskon persen+nominal valid (0<=persen<=100; 0<=nominal<=sisa). */
+    public static String validasiDiskon(double persen, double nominal, double sisa) {
+        if (Double.isNaN(persen) || persen < 0 || persen > 100) return "Diskon persen 0-100";
+        if (Double.isNaN(nominal) || nominal < 0 || nominal > sisa) return "Potongan melebihi sisa";
         return null;
     }
 
@@ -379,11 +367,6 @@ public class FormPenjualan extends JPanel {
         if (bayar == null) return "Uang bayar harus angka";
         if (bayar < total) return "Uang bayar kurang";
         return null;
-    }
-
-    private boolean adaMember() {
-        ComboItem mi = (ComboItem) cmbMember.getSelectedItem();
-        return mi != null && mi.id >= 0;
     }
 
     private String metodeTerpilih() {
@@ -415,12 +398,21 @@ public class FormPenjualan extends JPanel {
         }
     }
 
+    private double bacaPersen() {
+        try {
+            return Double.parseDouble(txtDiskonPersen.getText().trim());
+        } catch (NumberFormatException | NullPointerException e) {
+            return Double.NaN;
+        }
+    }
+
     private double hitungTotal() {
         double subtotal = hitungSubtotal();
-        double diskonMember = hitungDiskonMember(adaMember(), hitungQtyTotal(), subtotal);
-        double potongan = bacaPotongan();
-        if (Double.isNaN(potongan)) potongan = 0;
-        return subtotal - diskonMember - potongan;
+        double persen = bacaPersen();
+        double nominal = bacaPotongan();
+        if (Double.isNaN(persen)) persen = 0;
+        if (Double.isNaN(nominal)) nominal = 0;
+        return hitungTotal(subtotal, persen, nominal);
     }
 
     private void refreshCart() {
@@ -432,17 +424,16 @@ public class FormPenjualan extends JPanel {
             });
         }
         double subtotal = hitungSubtotal();
-        int qtyTotal = hitungQtyTotal();
-        double diskonMember = hitungDiskonMember(adaMember(), qtyTotal, subtotal);
-        double potongan = bacaPotongan();
-        if (Double.isNaN(potongan)) potongan = 0;
-        double total = subtotal - diskonMember - potongan;
-        if (diskonMember > 0) {
-            lblDiskon.setText("Diskon member 5% aktif");
+        double persen = bacaPersen();
+        double nominal = bacaPotongan();
+        if (Double.isNaN(persen)) persen = 0;
+        if (Double.isNaN(nominal)) nominal = 0;
+        double total = hitungTotal(subtotal, persen, nominal);
+        double diskonRupiah = Math.round(subtotal * persen / 100.0);
+        if (diskonRupiah > 0 || nominal > 0) {
+            lblDiskon.setText("Diskon: -" + (diskonRupiah + nominal));
         } else {
-            long sisaRp = Math.max(0, Math.round(AppConfig.SYARAT_DISKON_NOMINAL - subtotal));
-            int sisaQty = Math.max(0, AppConfig.SYARAT_DISKON_QTY - qtyTotal);
-            lblDiskon.setText("Belanja Rp" + sisaRp + " lagi / " + sisaQty + " buku lagi");
+            lblDiskon.setText(" ");
         }
         lblTotal.setText("Total: " + total);
         if (!"Tunai".equals(metodeTerpilih())) {
@@ -478,16 +469,17 @@ public class FormPenjualan extends JPanel {
             return;
         }
         double subtotal = hitungSubtotal();
-        int qtyTotal = hitungQtyTotal();
-        double diskonMember = hitungDiskonMember(adaMember(), qtyTotal, subtotal);
-        double potongan = bacaPotongan();
-        String errPot = validasiPotongan(potongan, subtotal, diskonMember);
-        if (errPot != null) {
-            JOptionPane.showMessageDialog(this, errPot,
+        double persen = bacaPersen();
+        double nominal = bacaPotongan();
+        if (Double.isNaN(persen)) persen = 0;
+        if (Double.isNaN(nominal)) nominal = 0;
+        String errDiskon = validasiDiskon(persen, nominal, subtotal);
+        if (errDiskon != null) {
+            JOptionPane.showMessageDialog(this, errDiskon,
                     "Validasi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        double total = subtotal - diskonMember - potongan;
+        double total = hitungTotal(subtotal, persen, nominal);
         String metode = metodeTerpilih();
         Double bayarBox;
         if ("Tunai".equals(metode)) {
@@ -517,18 +509,16 @@ public class FormPenjualan extends JPanel {
         }
         try {
             String noNota = NotaGenerator.next("NJ", "penjualan", "no_nota");
-            ComboItem mi = (ComboItem) cmbMember.getSelectedItem();
-            Integer idMember = (mi == null || mi.id < 0) ? null : mi.id;
+            double diskonPersenRp = Math.round(subtotal * persen / 100.0);
             Penjualan h = new Penjualan();
             h.setNoNota(noNota);
             h.setTanggal(LocalDateTime.now());
             h.setIdUser(Sesi.userLogin.getIdUser());
-            h.setIdMember(idMember);
             h.setTotal(total);
             h.setBayar(bayar);
             h.setKembalian(bayar - total);
             h.setMetodeBayar(metode);
-            h.setDiskon(diskonMember + potongan);
+            h.setDiskon(diskonPersenRp + nominal);
             List<DetailPenjualan> items = new ArrayList<>();
             for (CartRow r : cart) {
                 DetailPenjualan d = new DetailPenjualan();
@@ -542,14 +532,13 @@ public class FormPenjualan extends JPanel {
             }
             penjualanDAO.saveWithDetail(h, items);
             String kasir = Sesi.userLogin.getNamaLengkap();
-            String member = (mi == null || mi.id < 0) ? "-" : mi.label;
             Frame owner = (Frame) SwingUtilities.getWindowAncestor(this);
-            new StrukDialog(owner, h, items, kasir, member, diskonMember, potongan).setVisible(true);
+            new StrukDialog(owner, h, items, kasir, "-", persen, diskonPersenRp, nominal).setVisible(true);
             cart.clear();
             txtBayar.setText("");
             cmbMetode.setSelectedItem("Tunai");
+            txtDiskonPersen.setText("0");
             txtPotongan.setText("0");
-            cmbMember.setSelectedItem(ComboItem.EMPTY);
             refreshCart();
             cariBuku(txtCari.getText());
         } catch (Exception ex) {

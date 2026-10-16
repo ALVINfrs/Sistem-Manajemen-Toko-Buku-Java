@@ -422,8 +422,7 @@ public class FormRetur extends JPanel {
         modelNota.setRowCount(0);
         for (Penjualan p : daftarTampil) {
             String tgl = p.getTanggal() != null ? p.getTanggal().format(FMT_TGL) : "-";
-            String cust = (p.getKodeMember() != null && !p.getKodeMember().isBlank())
-                    ? "Member (" + p.getKodeMember() + ")" : "Pelanggan Umum";
+            String cust = "Pelanggan Umum";
             modelNota.addRow(new Object[]{p.getNoNota(), tgl, cust, formatRp(p.getTotal())});
         }
     }
@@ -438,8 +437,7 @@ public class FormRetur extends JPanel {
         nota = p;
         detailNota = penjualanDAO.getDetailByPenjualan(p.getIdPenjualan());
         String tgl = p.getTanggal() != null ? p.getTanggal().format(FMT_TGL) : "-";
-        String cust = (p.getKodeMember() != null && !p.getKodeMember().isBlank())
-                ? "Member (" + p.getKodeMember() + ")" : "Umum";
+        String cust = "Umum";
 
         lblInfoNota.setText("📄 Nota: " + p.getNoNota() + " | Tgl: " + tgl + " | Pelanggan: " + cust + " | Total: " + formatRp(p.getTotal()));
         refreshItem();
@@ -617,8 +615,7 @@ public class FormRetur extends JPanel {
             // Buka dialog struk retur
             Frame owner = (Frame) SwingUtilities.getWindowAncestor(this);
             String namaPetugas = Sesi.userLogin != null ? Sesi.userLogin.getNamaLengkap() : "Admin";
-            String namaPelanggan = (nota.getKodeMember() != null && !nota.getKodeMember().isBlank())
-                    ? "Member (" + nota.getKodeMember() + ")" : "Pelanggan Umum";
+            String namaPelanggan = "Pelanggan Umum";
 
             StrukReturDialog dialog = new StrukReturDialog(owner, r, d.getHargaJual(), namaPetugas, namaPelanggan);
             dialog.setVisible(true);

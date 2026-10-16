@@ -33,6 +33,7 @@ import org.kordamp.ikonli.materialdesign2.MaterialDesignD;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignH;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignK;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignL;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignS;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignT;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignV;
 import org.kordamp.ikonli.swing.FontIcon;
@@ -56,7 +57,7 @@ public class MenuUtama extends JFrame {
     private JButton btnKategori;
     private JButton btnPenerbit;
     private JButton btnSupplier;
-    private JButton btnMember;
+    private JButton btnAtk;
     private JButton btnUser;
     private JButton btnPenjualan;
     private JButton btnPembelian;
@@ -88,7 +89,7 @@ public class MenuUtama extends JFrame {
         btnKategori = modulButton("Kategori", FontIcon.of(MaterialDesignT.TAG, 22, Color.BLACK));
         btnPenerbit = modulButton("Penerbit", FontIcon.of(MaterialDesignD.DOMAIN, 22, Color.BLACK));
         btnSupplier = modulButton("Supplier", FontIcon.of(MaterialDesignT.TRUCK, 22, Color.BLACK));
-        btnMember = modulButton("Member", FontIcon.of(MaterialDesignA.ACCOUNT_GROUP, 22, Color.BLACK));
+        btnAtk = modulButton("ATK", FontIcon.of(MaterialDesignS.STORE, 22, Color.BLACK));
         btnUser = modulButton("User", FontIcon.of(MaterialDesignA.ACCOUNT_COG, 22, Color.BLACK));
         btnPenjualan = modulButton("Penjualan", FontIcon.of(MaterialDesignC.CASH_REGISTER, 22, Color.BLACK));
         btnPembelian = modulButton("Pembelian", FontIcon.of(MaterialDesignC.CART_ARROW_DOWN, 22, Color.BLACK));
@@ -117,9 +118,9 @@ public class MenuUtama extends JFrame {
             setActive(btnSupplier);
             bukaModul("view.FormSupplier", "Supplier");
         });
-        btnMember.addActionListener(e -> {
-            setActive(btnMember);
-            bukaModul("view.FormMember", "Member");
+        btnAtk.addActionListener(e -> {
+            setActive(btnAtk);
+            bukaModul("view.FormAtk", "ATK");
         });
         btnUser.addActionListener(e -> {
             setActive(btnUser);
@@ -156,7 +157,7 @@ public class MenuUtama extends JFrame {
         modulButtons.add(btnKategori);
         modulButtons.add(btnPenerbit);
         modulButtons.add(btnSupplier);
-        modulButtons.add(btnMember);
+        modulButtons.add(btnAtk);
         modulButtons.add(btnUser);
         modulButtons.add(btnPenjualan);
         modulButtons.add(btnPembelian);
@@ -182,7 +183,7 @@ public class MenuUtama extends JFrame {
             sidebar.add(Box.createVerticalStrut(8));
             sidebar.add(btnSupplier);
             sidebar.add(Box.createVerticalStrut(8));
-            sidebar.add(btnMember);
+            sidebar.add(btnAtk);
             sidebar.add(Box.createVerticalStrut(8));
             sidebar.add(btnUser);
             sidebar.add(Box.createVerticalStrut(10));

@@ -22,11 +22,10 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     private static final String BASE_SELECT =
             "SELECT p.id_penjualan, p.no_nota, p.tanggal, p.id_user, u.username, "
-            + "p.id_member, m.kode_member, p.total, p.bayar, p.kembalian, "
+            + "p.total, p.bayar, p.kembalian, "
             + "p.metode_bayar, p.diskon "
             + "FROM penjualan p "
-            + "JOIN users u ON p.id_user = u.id_user "
-            + "LEFT JOIN member m ON p.id_member = m.id_member";
+            + "JOIN users u ON p.id_user = u.id_user";
 
     private Penjualan map(ResultSet rs) throws SQLException {
         Penjualan p = new Penjualan();
@@ -36,9 +35,6 @@ public class PenjualanDAOImpl implements PenjualanDAO {
         p.setTanggal(ts == null ? null : ts.toLocalDateTime());
         p.setIdUser(rs.getInt("id_user"));
         p.setUsername(rs.getString("username"));
-        int idMember = rs.getInt("id_member");
-        p.setIdMember(rs.wasNull() ? null : idMember);
-        p.setKodeMember(rs.getString("kode_member"));
         p.setTotal(rs.getDouble("total"));
         p.setBayar(rs.getDouble("bayar"));
         p.setKembalian(rs.getDouble("kembalian"));
@@ -49,17 +45,16 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public boolean insert(Penjualan p) {
-        String sql = "INSERT INTO penjualan (no_nota, tanggal, id_user, id_member, total, bayar, kembalian) "
-                + "VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO penjualan (no_nota, tanggal, id_user, total, bayar, kembalian) "
+                + "VALUES (?,?,?,?,?,?)";
         try (Connection c = Koneksi.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, p.getNoNota());
             ps.setTimestamp(2, Timestamp.valueOf(p.getTanggal()));
             ps.setInt(3, p.getIdUser());
-            ps.setObject(4, p.getIdMember(), Types.INTEGER);
-            ps.setDouble(5, p.getTotal());
-            ps.setDouble(6, p.getBayar());
-            ps.setDouble(7, p.getKembalian());
+            ps.setDouble(4, p.getTotal());
+            ps.setDouble(5, p.getBayar());
+            ps.setDouble(6, p.getKembalian());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Gagal insert penjualan: " + e.getMessage(), e);
@@ -68,18 +63,17 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public boolean update(Penjualan p) {
-        String sql = "UPDATE penjualan SET no_nota=?, tanggal=?, id_user=?, id_member=?, "
+        String sql = "UPDATE penjualan SET no_nota=?, tanggal=?, id_user=?, "
                 + "total=?, bayar=?, kembalian=? WHERE id_penjualan=?";
         try (Connection c = Koneksi.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, p.getNoNota());
             ps.setTimestamp(2, Timestamp.valueOf(p.getTanggal()));
             ps.setInt(3, p.getIdUser());
-            ps.setObject(4, p.getIdMember(), Types.INTEGER);
-            ps.setDouble(5, p.getTotal());
-            ps.setDouble(6, p.getBayar());
-            ps.setDouble(7, p.getKembalian());
-            ps.setInt(8, p.getIdPenjualan());
+            ps.setDouble(4, p.getTotal());
+            ps.setDouble(5, p.getBayar());
+            ps.setDouble(6, p.getKembalian());
+            ps.setInt(7, p.getIdPenjualan());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Gagal update penjualan: " + e.getMessage(), e);
@@ -151,8 +145,8 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public int saveWithDetail(Penjualan h, List<DetailPenjualan> d) {
-        String sqlHeader = "INSERT INTO penjualan (no_nota, tanggal, id_user, id_member, total, bayar, kembalian, metode_bayar, diskon) "
-                + "VALUES (?,?,?,?,?,?,?,?,?)";
+        String sqlHeader = "INSERT INTO penjualan (no_nota, tanggal, id_user, total, bayar, kembalian, metode_bayar, diskon) "
+                + "VALUES (?,?,?,?,?,?,?,?)";
         String sqlDetail = "INSERT INTO detail_penjualan (id_penjualan, id_buku, qty, harga_jual, subtotal) "
                 + "VALUES (?,?,?,?,?)";
         String sqlStok = "UPDATE buku SET stok = stok - ? WHERE id_buku = ? AND stok >= ?";
@@ -165,12 +159,11 @@ public class PenjualanDAOImpl implements PenjualanDAO {
                 ps.setString(1, h.getNoNota());
                 ps.setTimestamp(2, Timestamp.valueOf(h.getTanggal()));
                 ps.setInt(3, h.getIdUser());
-                ps.setObject(4, h.getIdMember(), Types.INTEGER);
-                ps.setDouble(5, h.getTotal());
-                ps.setDouble(6, h.getBayar());
-                ps.setDouble(7, h.getKembalian());
-                ps.setString(8, h.getMetodeBayar());
-                ps.setDouble(9, h.getDiskon());
+                ps.setDouble(4, h.getTotal());
+                ps.setDouble(5, h.getBayar());
+                ps.setDouble(6, h.getKembalian());
+                ps.setString(7, h.getMetodeBayar());
+                ps.setDouble(8, h.getDiskon());
                 ps.executeUpdate();
                 try (ResultSet keys = ps.getGeneratedKeys()) {
                     if (!keys.next()) {
@@ -295,11 +288,10 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public List<LapPenjualan> lapPenjualan(LocalDate a, LocalDate b) {
-        String sql = "SELECT p.no_nota, p.tanggal, u.nama_lengkap kasir, COALESCE(m.nama,'-') member, p.total, "
+        String sql = "SELECT p.no_nota, p.tanggal, u.nama_lengkap kasir, p.total, "
                 + "p.metode_bayar, p.diskon "
                 + "FROM penjualan p "
                 + "JOIN users u ON p.id_user = u.id_user "
-                + "LEFT JOIN member m ON p.id_member = m.id_member "
                 + "WHERE DATE(p.tanggal) BETWEEN ? AND ? ORDER BY p.tanggal";
         List<LapPenjualan> list = new ArrayList<>();
         try (Connection c = Koneksi.getConnection();
@@ -313,7 +305,6 @@ public class PenjualanDAOImpl implements PenjualanDAO {
                             rs.getString("no_nota"),
                             ts == null ? null : ts.toLocalDateTime(),
                             rs.getString("kasir"),
-                            rs.getString("member"),
                             rs.getDouble("total"),
                             rs.getString("metode_bayar"),
                             rs.getDouble("diskon")));
@@ -327,11 +318,10 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public List<LapPenjualan> lapPenjualanByUser(LocalDate a, LocalDate b, int idUser) {
-        String sql = "SELECT p.no_nota, p.tanggal, u.nama_lengkap kasir, COALESCE(m.nama,'-') member, p.total, "
+        String sql = "SELECT p.no_nota, p.tanggal, u.nama_lengkap kasir, p.total, "
                 + "p.metode_bayar, p.diskon "
                 + "FROM penjualan p "
                 + "JOIN users u ON p.id_user = u.id_user "
-                + "LEFT JOIN member m ON p.id_member = m.id_member "
                 + "WHERE DATE(p.tanggal) BETWEEN ? AND ? AND p.id_user = ? ORDER BY p.tanggal";
         List<LapPenjualan> list = new ArrayList<>();
         try (Connection c = Koneksi.getConnection();
@@ -346,7 +336,6 @@ public class PenjualanDAOImpl implements PenjualanDAO {
                             rs.getString("no_nota"),
                             ts == null ? null : ts.toLocalDateTime(),
                             rs.getString("kasir"),
-                            rs.getString("member"),
                             rs.getDouble("total"),
                             rs.getString("metode_bayar"),
                             rs.getDouble("diskon")));

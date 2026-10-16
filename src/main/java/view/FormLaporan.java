@@ -397,12 +397,12 @@ public class FormLaporan extends JPanel {
 
         switch (jenis) {
             case JENIS_PENJUALAN:
-                columns = new String[]{"No. Nota", "Tanggal", "Kasir", "Pelanggan", "Metode", "Diskon", "Total"};
+                columns = new String[]{"No. Nota", "Tanggal", "Kasir", "Metode", "Diskon", "Total"};
                 for (Object o : data) {
                     LapPenjualan p = (LapPenjualan) o;
                     String tgl = p.getTanggal() != null ? p.getTanggal().format(FMT_TGL) : "-";
                     allTableRows.add(new Object[]{
-                            p.getNoNota(), tgl, p.getKasir(), p.getMember(),
+                            p.getNoNota(), tgl, p.getKasir(),
                             p.getMetodeBayar(), formatRp(p.getDiskon()), formatRp(p.getTotal())
                     });
                 }

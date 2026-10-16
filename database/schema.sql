@@ -27,14 +27,6 @@ CREATE TABLE supplier (
     no_telp VARCHAR(20)
 );
 
-CREATE TABLE member (
-    id_member INT AUTO_INCREMENT PRIMARY KEY,
-    kode_member VARCHAR(20) UNIQUE,
-    nama VARCHAR(100) NOT NULL,
-    alamat VARCHAR(255),
-    no_telp VARCHAR(20)
-);
-
 CREATE TABLE buku (
     id_buku INT AUTO_INCREMENT PRIMARY KEY,
     kode_buku VARCHAR(20) UNIQUE NOT NULL,
@@ -56,14 +48,12 @@ CREATE TABLE penjualan (
     no_nota VARCHAR(30) UNIQUE NOT NULL,
     tanggal DATETIME NOT NULL,
     id_user INT NOT NULL,
-    id_member INT NULL,
     total DECIMAL(12,2) NOT NULL DEFAULT 0,
     bayar DECIMAL(12,2) NOT NULL DEFAULT 0,
     kembalian DECIMAL(12,2) NOT NULL DEFAULT 0,
     metode_bayar VARCHAR(20) NOT NULL DEFAULT 'Tunai',
     diskon DECIMAL(12,2) NOT NULL DEFAULT 0,
-    FOREIGN KEY (id_user) REFERENCES users(id_user),
-    FOREIGN KEY (id_member) REFERENCES member(id_member)
+    FOREIGN KEY (id_user) REFERENCES users(id_user)
 );
 
 CREATE TABLE detail_penjualan (

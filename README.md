@@ -1,4 +1,4 @@
-# 📚 Sistem Informasi Manajemen Toko Buku — CV. Almira Jaya Abadi
+﻿# 📚 Sistem Informasi Manajemen Toko Buku — CV. Almira Jaya Abadi
 
 <div align="center">
 
@@ -41,11 +41,11 @@
 
 ## 📖 1. Tentang Proyek & Latar Belakang
 
-**Sistem Informasi Manajemen Toko Buku CV. Almira Jaya Abadi** adalah sistem aplikasi desktop komprehensif yang dirancang untuk mengotomatisasi seluruh siklus operasional bisnis ritel buku. Mulai dari rantai pasok pengadaan (*supply chain purchasing*), pengelolaan katalog buku dan inventaris multi-kategori, sistem kasir kasir pintar (*Point of Sale*), manajemen keanggotaan pelanggan (*membership loyalty*), penanganan retur penjualan, hingga analitik omzet dan pelaporan laba rugi berkala.
+**Sistem Informasi Manajemen Toko Buku CV. Almira Jaya Abadi** adalah sistem aplikasi desktop komprehensif yang dirancang untuk mengotomatisasi seluruh siklus operasional bisnis ritel buku dan alat tulis. Mulai dari rantai pasok pengadaan (*supply chain purchasing*), pengelolaan katalog buku dan inventaris multi-kategori, sistem kasir pintar (*Point of Sale*), penanganan retur penjualan, hingga analitik omzet dan pelaporan laba rugi berkala.
 
 Aplikasi ini dikembangkan untuk menggantikan pencatatan manual berbasis buku besar / spreadsheet yang rentan terhadap:
 - Ketidakcocokan stok fisik buku dengan catatan penjualan.
-- Kerumitan dalam menghitung potongan diskon member dan diskon grosir saat transaksi ramai.
+- Kerumitan dalam menghitung potongan diskon persen dan nominal saat transaksi ramai.
 - Ketiadaan bukti struk resmi yang cepat bagi pelanggan.
 - Kesulitan dalam melacak riwayat transaksi lama dan penanganan retur buku rusak/salah.
 - Lambatnya proses rekapitulasi laporan pendapatan dan laba kotor toko buku setiap akhir bulan.
@@ -106,10 +106,9 @@ Berikut adalah rincian fungsionalitas modul-modul yang telah selesai dibangun da
 ### 2. 💳 Point of Sale (POS) Penjualan Pintar (`FormPenjualan`)
 - **Pencarian Buku Real-time:** Cari instan berdasarkan kode buku, judul, maupun penulis.
 - **Keranjang Belanja Dinamis:** Tambah/kurang kuantitas, hapus item, dan proteksi otomatis agar kasir tidak dapat menginput kuantitas melebihi stok yang tersedia di rak.
-- **Sistem Member & Diskon Otomatis:**
-  - Pilihan member terdaftar dengan potongan otomatis **5%** (`AppConfig.DISKON_MEMBER_PCT`).
-  - Dukungan diskon grosir untuk pembelian partai besar (syarat $\ge 50$ pcs atau nominal $\ge$ Rp 750.000).
-  - Kolom input potongan manual (diskon promo khusus/spesial).
+- **Sistem Diskon Fleksibel:**
+  - Diskon persen (%) bebas untuk semua role, dihitung dari subtotal sebelum potongan.
+  - Kolom input potongan nominal (Rp) untuk diskon promo khusus/spesial.
 - **Multi-Metode Pembayaran:** Pilihan pembayaran fleksibel:
   - 💵 **Tunai**: Validasi nominal bayar $\ge$ total belanja dengan perhitungan kembalian otomatis.
   - 💳 **Transfer Bank**: Pembayaran non-tunai via transfer rekening.
@@ -121,7 +120,7 @@ Berikut adalah rincian fungsionalitas modul-modul yang telah selesai dibangun da
 
 ### 3. 🧾 Dialog Struk Belanja & Thermal Printing (`StrukDialog`)
 - **Pratinjau Struk Kasir:** Tampilan kertas struk Neobrutalism berformat standar kasir toko buku (lebar 42 karakter).
-- **Rincian Transaksi Lengkap:** Mencantumkan header toko, nama kasir bertugas, nama member (jika ada), detail item, diskon per item/total, rincian pembayaran, kembalian, dan ucapan terima kasih.
+- **Rincian Transaksi Lengkap:** Mencantumkan header toko, nama kasir bertugas, detail item, baris diskon persen dan potongan, rincian pembayaran, kembalian, dan ucapan terima kasih.
 - **Dukungan Cetak Thermal Langsung:** Tombol *Cetak Struk* terhubung langsung dengan dialog pencetakan printer sistem (`java.awt.print.PrinterJob`) untuk printer kasir thermal 58mm/80mm.
 - **Salin Teks Struk:** Tombol *Salin Struk* untuk mencadangkan teks struk ke clipboard sistem secara instan.
 
@@ -129,7 +128,7 @@ Berikut adalah rincian fungsionalitas modul-modul yang telah selesai dibangun da
 
 ### 4. 📜 Riwayat Transaksi & Audit Nota (`FormRiwayat`)
 - **Log Nota Penjualan:** Melihat seluruh daftar transaksi penjualan yang telah dibukukan.
-- **Filter Fleksibel:** Filter rentang tanggal menggunakan kalender interaktif *LGoodDatePicker* serta pencarian cepat berdasarkan nomor nota, nama kasir, atau nama member.
+- **Filter Fleksibel:** Filter rentang tanggal menggunakan kalender interaktif *LGoodDatePicker* serta pencarian cepat berdasarkan nomor nota atau nama kasir.
 - **Isolasi Role Kasir:** Jika kasir yang login membuka menu ini, sistem secara otomatis menyaring riwayat sehingga kasir hanya dapat melihat transaksi yang ditanganinya sendiri (privasi data).
 - **Cetak Ulang Struk:** Klik ganda baris nota untuk membuka kembali dialog cetak struk dari transaksi yang sudah lewat.
 
@@ -155,7 +154,7 @@ Berikut adalah rincian fungsionalitas modul-modul yang telah selesai dibangun da
 - **Master Kategori (`FormKategori`):** Kelola kategori rak buku (Fiksi, Non-Fiksi, Pendidikan, Anak, Komik, dll) beserta deskripsinya.
 - **Master Penerbit (`FormPenerbit`):** Kelola data rekanan penerbit buku, alamat kantor, dan kontak penanggung jawab.
 - **Master Supplier (`FormSupplier`):** Kelola rekanan distributor dan grosir pemasok buku.
-- **Master Member (`FormMember`):** Kelola pelanggan tetap toko untuk menikmati program loyalitas potongan harga 5%.
+- **Master ATK (`FormAtk`):** Kelola barang alat tulis kantor (kode, nama, kategori, satuan, harga, stok).
 - **Master User (`FormUser`):** Kelola data login seluruh staf (Admin / Kasir), reset kata sandi, dan status akun (Khusus Admin).
 
 ---
@@ -193,7 +192,7 @@ Sistem membagi pengguna menjadi dua tingkat wewenang (*Role-Based Access Control
 | **Master Kategori Buku** | ✅ | ❌ | Menu disembunyikan dari sidebar Kasir |
 | **Master Penerbit** | ✅ | ❌ | Menu disembunyikan dari sidebar Kasir |
 | **Master Supplier** | ✅ | ❌ | Menu disembunyikan dari sidebar Kasir |
-| **Master Member / Pelanggan** | ✅ | ❌ | Menu disembunyikan dari sidebar Kasir |
+| **Master ATK** | ✅ | ❌ | Menu disembunyikan dari sidebar Kasir |
 | **Manajemen User / Staf** | ✅ | ❌ | Hanya Admin yang dapat mengelola akun |
 | **Transaksi Penjualan (POS)** | ✅ | ✅ | Kasir & Admin dapat melayani kasir |
 | **Cetak Struk Belanja** | ✅ | ✅ | Bebas dicetak/preview di kedua peran |
@@ -235,7 +234,6 @@ flowchart TD
         DAO_Buku[BukuDAO / Impl]
         DAO_Penjualan[PenjualanDAO / Impl]
         DAO_Pembelian[PembelianDAO / Impl]
-        DAO_Member[MemberDAO / Impl]
         DAO_User[UserDAO / Impl]
         DAO_Lain[Kategori / Penerbit / Supplier / Retur]
     end
@@ -274,7 +272,7 @@ flowchart TD
 E:\Sistem-Informasi-Manajemen-Toko-Buku\
 ├── 📂 database/                    # Skrip skema, migrasi, dan seed data
 │   ├── 📄 db_toko_buku.sql         # Dump lengkap phpMyAdmin (skema + data siap pakai)
-│   ├── 📄 schema.sql               # Skema DDL murni (11 tabel database)
+│   ├── 📄 schema.sql               # Skema DDL murni (10 tabel database)
 │   ├── 📄 seed_demo.sql            # Data demo kaya (buku, transaksi, akun SHA-256)
 │   └── 📄 migrasi_ronde3.sql       # Skrip penambahan kolom fitur POS lanjutan
 ├── 📂 docs/                        # Dokumentasi teknis & spesifikasi produk
@@ -285,7 +283,6 @@ E:\Sistem-Informasi-Manajemen-Toko-Buku\
 │   │   ├── BukuDAO.java / BukuDAOImpl.java
 │   │   ├── PenjualanDAO.java / PenjualanDAOImpl.java
 │   │   ├── PembelianDAO.java / PembelianDAOImpl.java
-│   │   ├── MemberDAO.java / MemberDAOImpl.java
 │   │   ├── UserDAO.java / UserDAOImpl.java
 │   │   └── ... (Kategori, Penerbit, Supplier, Retur)
 │   ├── 📂 koneksi/                 # Pengelola koneksi database JDBC
@@ -315,7 +312,7 @@ E:\Sistem-Informasi-Manajemen-Toko-Buku\
 │       ├── FormRetur.java          # Halaman retur buku bermasalah
 │       ├── FormRiwayat.java        # Halaman audit dan riwayat nota transaksi
 │       ├── FormLaporan.java        # Halaman filter dan preview 6 laporan
-│       └── FormBuku, FormKategori, FormPenerbit, FormSupplier, FormMember, FormUser
+│       └── FormBuku, FormKategori, FormPenerbit, FormSupplier, FormAtk, FormUser
 ├── 📂 src/main/resources/          # Aset non-kode aplikasi
 │   ├── 📂 images/                  # Aset grafis
 │   │   └── login_bg.jpg            # Ilustrasi artistik untuk panel login
@@ -373,7 +370,7 @@ Buka terminal (PowerShell atau Command Prompt) di folder proyek:
 # 1. Buat database baru bernama db_toko_buku
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS db_toko_buku;"
 
-# 2. Import dump database lengkap (skema 11 tabel + data demo siap pakai)
+# 2. Import dump database lengkap (skema 10 tabel + data demo siap pakai)
 mysql -u root db_toko_buku < database/db_toko_buku.sql
 ```
 
@@ -392,16 +389,16 @@ mysql -u root db_toko_buku < database/db_toko_buku.sql
 6. Klik tombol **Choose File** (Pilih Berkas) dan arahkan ke file:
    `E:\Sistem-Informasi-Manajemen-Toko-Buku\database\db_toko_buku.sql`
 7. Gulir ke bawah dan klik tombol **Import** / **Go**.
-8. Pastikan pesan sukses muncul dan terdapat **11 tabel** yang terdaftar:
-   `buku`, `detail_pembelian`, `detail_penjualan`, `kategori`, `member`, `pembelian`, `penerbit`, `penjualan`, `retur`, `supplier`, `users`.
+8. Pastikan pesan sukses muncul dan terdapat **10 tabel** yang terdaftar:
+   `buku`, `detail_pembelian`, `detail_penjualan`, `kategori`, `pembelian`, `penerbit`, `penjualan`, `retur`, `supplier`, `users`.
 
 ---
 
 ### Penjelasan Berkas SQL di Folder `database/`:
 
-- **`db_toko_buku.sql` (Pilihan Utama):** Dump utuh terbaru dari phpMyAdmin yang sudah mencakup skema 11 tabel, kolom penyesuaian terbaru (`metode_bayar`, `diskon`, `deskripsi`), serta data demo buku dan transaksi lengkap.
-- **`schema.sql`:** Skema DDL murni 11 tabel tanpa data transaksi demo (hanya akun bawaan).
-- **`seed_demo.sql`:** Kumpulan data simulasi (12 varian buku lengkap, 5 member, transaksi penjualan multi-metode, pembelian, dan retur) dengan kata sandi terenkripsi SHA-256.
+- **`db_toko_buku.sql` (Pilihan Utama):** Dump utuh terbaru dari phpMyAdmin yang sudah mencakup skema 10 tabel, kolom penyesuaian terbaru (`metode_bayar`, `diskon`, `deskripsi`), serta data demo buku dan transaksi lengkap.
+- **`schema.sql`:** Skema DDL murni 10 tabel tanpa data transaksi demo (hanya akun bawaan).
+- **`seed_demo.sql`:** Kumpulan data simulasi (12 varian buku lengkap, transaksi penjualan multi-metode, pembelian, dan retur) dengan kata sandi terenkripsi SHA-256.
 - **`migrasi_ronde3.sql`:** Skrip penambahan kolom fitur POS lanjutan bagi yang telah memiliki database versi lama tanpa perlu menghapus (*drop*) data yang sudah ada.
 
 ---
@@ -499,10 +496,10 @@ Untuk memastikan seluruh modul berfungsi sempurna, Anda dapat mencoba skenario p
 
 ### Skenario 1: Verifikasi Hak Akses & Operasional Kasir
 1. Buka aplikasi, masuk dengan akun: `kasir` / `kasir123`.
-2. **Periksa Sidebar:** Pastikan menu kategori *MASTER* (Buku, Kategori, Penerbit, Supplier, Member, User) dan menu *Pembelian* tidak tampil.
+2. **Periksa Sidebar:** Pastikan menu kategori *MASTER* (Buku, Kategori, Penerbit, Supplier, ATK, User) dan menu *Pembelian* tidak tampil.
 3. **Buka Menu Penjualan (POS):**
    - Cari buku (misal: ketik `Senja` atau kode `BK-001`).
-   - Pilih member `MBR-001` (Ardiansyah Pratama) $\rightarrow$ Amati badge diskon member 5% aktif secara otomatis.
+   - Isi kolom **Diskon (%)** dan/atau **Potongan (Rp)** $\rightarrow$ Amati total belanja terhitung otomatis.
    - Tambah buku ke keranjang $\rightarrow$ Coba masukkan kuantitas melebihi stok (sistem harus menolak dengan popup peringatan).
    - Pilih metode bayar: `Tunai`, masukkan nominal bayar $\ge$ total $\rightarrow$ Klik **Simpan Transaksi**.
    - Amati jendela **Struk Dialog** muncul menampilkan format nota 42 kolom. Coba klik tombol **Salin Struk** atau **Cetak Struk**.

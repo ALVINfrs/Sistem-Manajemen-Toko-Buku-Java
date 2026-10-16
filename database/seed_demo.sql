@@ -10,16 +10,16 @@
 --
 -- Asumsi fresh-DB (dijamin Task 11): tabel kosong kecuali users berisi
 --   admin (id_user=1). Id AUTO_INCREMENT predictable seurut insert:
---     kategori 1..5, penerbit 1..3, supplier 1..3, member 1..5,
+--     kategori 1..5, penerbit 1..3, supplier 1..3,
 --     buku 1..12 (BK-001..BK-012), penjualan 1..2, pembelian 1, retur 1.
 --   Untuk USER kasir pada transaksi penjualan (b) dipakai subselect
 --     (SELECT id_user FROM users WHERE username='kasir') agar tidak
---     bergantung pada id hardcoded. Untuk buku/supplier/member DITERIMA
+--     bergantung pada id hardcoded. Untuk buku/supplier DITERIMA
 --     id seurut fresh sesuai urutan INSERT di bawah.
 --
 -- Password di-hash SHA2(x,256) MySQL (hex lowercase, sama dengan
 --   util.HashUtil.sha256 di aplikasi). Login: admin/admin123, kasir/kasir123.
--- Master (users/kategori/penerbit/supplier/member/buku) pakai INSERT IGNORE
+-- Master (users/kategori/penerbit/supplier/buku) pakai INSERT IGNORE
 --   agar re-run parsial tidak fatal; transaksi (nota/faktur/retur yang UNIQUE)
 --   pakai INSERT biasa agar duplikat GAGAL eksplisit (sinyal, bukan silent).
 -- Nomor nota dinamis-konsisten: CONCAT(prefix, DATE_FORMAT(NOW(),...))
@@ -60,14 +60,6 @@ INSERT IGNORE INTO supplier (nama_supplier, alamat, no_telp) VALUES
 ('Grosir Buku Jaya', 'Jl. Pasar Buku No. 33, Surabaya', '081345678901'),
 ('Supplier Pustaka Nusantara', 'Jl. Pustaka No. 50, Semarang', '082256789012');
 
--- ---------- MEMBER (5, master, IGNORE) -> id 1..5 ----------
-INSERT IGNORE INTO member (kode_member, nama, alamat, no_telp) VALUES
-('MBR-001', 'Budi Santoso', 'Jl. Mawar No. 5, Jakarta', '081234567001'),
-('MBR-002', 'Siti Aminah', 'Jl. Melati No. 12, Bandung', '081234567002'),
-('MBR-003', 'Agus Setiawan', 'Jl. Kenanga No. 8, Surabaya', '081234567003'),
-('MBR-004', 'Dewi Lestari', 'Jl. Anggrek No. 20, Yogyakarta', '081234567004'),
-('MBR-005', 'Rina Marlina', 'Jl. Dahlia No. 3, Semarang', '081234567005');
-
 -- ---------- BUKU (12, master, IGNORE) -> id 1..12 ----------
 -- Sebar 5 kategori & 3 penerbit; harga_beli 25000-120000;
 -- harga_jual = beli + margin 30-50%; stok awal 10-50.
@@ -98,15 +90,15 @@ INSERT IGNORE INTO buku (kode_buku, judul, penulis, id_penerbit, id_kategori, ha
 ('BK-012', 'Panduan Wirausaha Muda', 'Budi Hartono', 3, 2, 65000, 90000, 10);
 
 -- ---------- PENJUALAN (2, transaksi, INSERT biasa) -> id 1..2 ----------
--- (a) nota -0001, 2 hari lalu, admin (id 1), member 1.
+-- (a) nota -0001, 2 hari lalu, admin (id 1), tanpa member.
 --     Item: BK-001 qty 2 @65000 = 130000; BK-002 qty 1 @85000 = 85000.
 --     Total 215000; bayar = total + 5000 = 220000; kembalian 5000.
-INSERT INTO penjualan (no_nota, tanggal, id_user, id_member, total, bayar, kembalian, metode_bayar, diskon)
-VALUES (CONCAT('NJ-', DATE_FORMAT(NOW() - INTERVAL 2 DAY, '%Y%m%d'), '-0001'), NOW() - INTERVAL 2 DAY, 1, 1, 215000, 220000, 5000, 'Tunai', 0);
--- (b) nota -0002, hari ini, kasir (subselect), tanpa member, bayar pas.
+INSERT INTO penjualan (no_nota, tanggal, id_user, total, bayar, kembalian, metode_bayar, diskon)
+VALUES (CONCAT('NJ-', DATE_FORMAT(NOW() - INTERVAL 2 DAY, '%Y%m%d'), '-0001'), NOW() - INTERVAL 2 DAY, 1, 215000, 220000, 5000, 'Tunai', 0);
+-- (b) nota -0002, hari ini, kasir (subselect), bayar pas.
 --     Item: BK-003 qty 3 @35000 = 105000. Total/bayar 105000, kembalian 0.
-INSERT INTO penjualan (no_nota, tanggal, id_user, id_member, total, bayar, kembalian, metode_bayar, diskon)
-VALUES (CONCAT('NJ-', DATE_FORMAT(NOW(), '%Y%m%d'), '-0002'), NOW(), (SELECT id_user FROM users WHERE username = 'kasir'), NULL, 105000, 105000, 0, 'Tunai', 0);
+INSERT INTO penjualan (no_nota, tanggal, id_user, total, bayar, kembalian, metode_bayar, diskon)
+VALUES (CONCAT('NJ-', DATE_FORMAT(NOW(), '%Y%m%d'), '-0002'), NOW(), (SELECT id_user FROM users WHERE username = 'kasir'), 105000, 105000, 0, 'Tunai', 0);
 
 -- ---------- DETAIL PENJUALAN (transaksi, INSERT biasa) ----------
 -- id_penjualan 1 = penjualan (a); id_buku 1 = BK-001, 2 = BK-002 (fresh-DB).

@@ -1,7 +1,7 @@
 # Report Testing - Sistem Informasi Toko Buku (CV. Almira Jaya Abadi)
 
 Versi app: 1.0.0 * Tanggal testing: 2026-09-23 * DB: MySQL lokal `db_toko_buku`
-(skema final 11 tabel + `seed_demo.sql`).
+(skema final 10 tabel + `seed_demo.sql`).
 
 Hasil otomatis (mesin, hari yang sama): **E2E PROBE-T8-OK (61 checks,
 a-j, DB bersih)** + **PROBE-JAR-OK (export PDF dari shaded JAR)**.
@@ -30,9 +30,9 @@ dengan akun tersebut.
 ## 2. Isi Seed Demo (setelah import seed_demo.sql)
 
 users 2, kategori 5 (Fiksi, Non-Fiksi, Anak, Pendidikan, Komik),
-penerbit 3, supplier 3, member 5 (MBR-001..MBR-005), buku 12
-(BK-001..BK-012), penjualan 2 (nota -0001 dua hari lalu oleh admin +
-member MBR-001 total 215000; nota -0002 hari ini oleh kasir tanpa member
+penerbit 3, supplier 3, buku 12
+(BK-001..BK-012), penjualan 2 (nota -0001 dua hari lalu oleh admin
+total 215000; nota -0002 hari ini oleh kasir
 total 105000), pembelian 1 (faktur -0001 kemarin, supplier 1, total
 1050000), retur 1 (atas penjualan -0001, BK-001 qty 1, "Sampul rusak").
 Stok contoh: BK-001 = 39, BK-002 = 19, BK-003 = 47, BK-004 = 40.
@@ -42,7 +42,7 @@ Laba seed (laporan Pendapatan): 95000.
 
 1. Login -> hasil yang diharapkan: Menu Utama terbuka, semua 11 tombol
    modul tampil, sapaan "Selamat datang, Administrator (Admin)".
-2. Tiap master (Buku, Kategori, Penerbit, Supplier, Member): tambah 1 data
+2. Tiap master (Buku, Kategori, Penerbit, Supplier, ATK): tambah 1 data
    -> muncul di tabel; ubah -> tersimpan; hapus -> hilang dari tabel.
 3. POS: Penjualan -> pilih BK-001 qty 2 -> total 130000, bayar 135000,
    kembalian 5000 -> Simpan -> nota format `NJ-YYYYMMDD-NNNN`
@@ -67,7 +67,7 @@ ke isi seed).
 
 1. Login -> Menu Utama HANYA menampilkan: Penjualan, Retur, Laporan,
    Logout. BUKTI visible/hidden: tombol Buku, Kategori, Penerbit,
-   Supplier, Member, User, Pembelian TIDAK ada.
+   Supplier, ATK, User, Pembelian TIDAK ada.
 2. POS: jual BK-003 qty 1 -> nota tersimpan, stok berkurang 1.
 3. Retur: retur 1 atas nota tadi -> stok kembali.
 4. Laporan -> jenis terkunci "Penjualan", hanya menampilkan nota milik
