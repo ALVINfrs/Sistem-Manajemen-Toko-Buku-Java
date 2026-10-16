@@ -220,6 +220,8 @@ public class Login extends JFrame {
 
     public static void main(String[] args) {
         NeoBrutalTheme.apply();
-        SwingUtilities.invokeLater(() -> new Login().setVisible(true));
+        SplashScreen splash = new SplashScreen(() ->
+                SwingUtilities.invokeLater(() -> new Login().setVisible(true)));
+        splash.setVisible(true);
     }
 }
