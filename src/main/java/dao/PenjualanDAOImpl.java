@@ -349,7 +349,7 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public List<LapPendapatan> lapPendapatan(LocalDate a, LocalDate b) {
-        String sql = "SELECT p.no_nota, p.tanggal, b.judul, d.qty, b.harga_beli, d.harga_jual "
+        String sql = "SELECT p.no_nota, p.tanggal, b.judul, b.jenis, d.qty, b.harga_beli, d.harga_jual "
                 + "FROM detail_penjualan d "
                 + "JOIN penjualan p ON d.id_penjualan = p.id_penjualan "
                 + "JOIN buku b ON d.id_buku = b.id_buku "
@@ -366,11 +366,13 @@ public class PenjualanDAOImpl implements PenjualanDAO {
                     double hargaBeli = rs.getDouble("harga_beli");
                     double hargaJual = rs.getDouble("harga_jual");
                     double laba = (hargaJual - hargaBeli) * qty;
-                    list.add(new LapPendapatan(
+                    LapPendapatan lp = new LapPendapatan(
                             rs.getString("no_nota"),
                             ts == null ? null : ts.toLocalDateTime(),
                             rs.getString("judul"),
-                            qty, hargaBeli, hargaJual, laba));
+                            qty, hargaBeli, hargaJual, laba);
+                    lp.setJenis(rs.getString("jenis"));
+                    list.add(lp);
                 }
             }
             return list;
@@ -450,7 +452,7 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public List<model.LapLabaKotor> lapLabaKotor(LocalDate a, LocalDate b) {
-        String sql = "SELECT p.no_nota, p.tanggal, b.kode_buku, b.judul, dp.qty, "
+        String sql = "SELECT p.no_nota, p.tanggal, b.kode_buku, b.judul, b.jenis, dp.qty, "
                 + "b.harga_beli, dp.harga_jual, "
                 + "(dp.qty * b.harga_beli) AS total_modal, "
                 + "(dp.qty * dp.harga_jual) AS total_omset, "
@@ -476,7 +478,7 @@ public class PenjualanDAOImpl implements PenjualanDAO {
                     double omset = rs.getDouble("total_omset");
                     double laba = rs.getDouble("laba_kotor");
                     double margin = omset > 0 ? (laba / omset) * 100.0 : 0.0;
-                    list.add(new model.LapLabaKotor(
+                    model.LapLabaKotor lk = new model.LapLabaKotor(
                             rs.getString("no_nota"),
                             tgl,
                             rs.getString("kode_buku"),
@@ -488,7 +490,9 @@ public class PenjualanDAOImpl implements PenjualanDAO {
                             omset,
                             laba,
                             margin
-                    ));
+                    );
+                    lk.setJenis(rs.getString("jenis"));
+                    list.add(lk);
                 }
             }
             return list;

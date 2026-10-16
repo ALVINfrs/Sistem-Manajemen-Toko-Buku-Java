@@ -9,6 +9,7 @@
   <field name="noNota" class="java.lang.String"/>
   <field name="tanggal" class="java.time.LocalDateTime"/>
   <field name="judul" class="java.lang.String"/>
+  <field name="jenis" class="java.lang.String"/>
   <field name="qty" class="java.lang.Integer"/>
   <field name="totalModal" class="java.lang.Double"/>
   <field name="totalOmset" class="java.lang.Double"/>
@@ -36,32 +37,34 @@
     <textField><reportElement x="0" y="74" width="515" height="16"/><textElement textAlignment="Center"><font size="10"/></textElement><textFieldExpression><![CDATA["Periode: " + $P{PERIODE}]]></textFieldExpression></textField>
   </band></title>
   <columnHeader><band height="24">
-    <staticText><reportElement mode="Opaque" x="0" y="0" width="80" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[ No. Nota]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="80" y="0" width="65" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Tanggal]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="145" y="0" width="130" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Judul Buku]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="275" y="0" width="25" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Qty ]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="300" y="0" width="70" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Modal (Rp) ]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="370" y="0" width="70" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Omset (Rp) ]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="440" y="0" width="75" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Laba (Rp) ]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="0" y="0" width="70" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[ No. Nota]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="70" y="0" width="60" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Tanggal]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="130" y="0" width="110" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Judul Buku]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="240" y="0" width="60" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Jenis]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="300" y="0" width="25" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Qty ]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="325" y="0" width="60" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Modal (Rp) ]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="385" y="0" width="60" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Omset (Rp) ]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="445" y="0" width="70" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Laba (Rp) ]]></text></staticText>
   </band></columnHeader>
   <detail><band height="20">
-    <textField><reportElement x="0" y="0" width="80" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[" " + $F{noNota}]]></textFieldExpression></textField>
-    <textField><reportElement x="80" y="0" width="65" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{tanggal}.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))]]></textFieldExpression></textField>
-    <textField><reportElement x="145" y="0" width="130" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{judul}]]></textFieldExpression></textField>
-    <textField pattern="#,##0"><reportElement x="275" y="0" width="25" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{qty}]]></textFieldExpression></textField>
-    <textField pattern="#,##0"><reportElement x="300" y="0" width="70" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{totalModal}]]></textFieldExpression></textField>
-    <textField pattern="#,##0"><reportElement x="370" y="0" width="70" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{totalOmset}]]></textFieldExpression></textField>
-    <textField pattern="#,##0"><reportElement x="440" y="0" width="75" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{labaKotor}]]></textFieldExpression></textField>
+    <textField><reportElement x="0" y="0" width="70" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[" " + $F{noNota}]]></textFieldExpression></textField>
+    <textField><reportElement x="70" y="0" width="60" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{tanggal}.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))]]></textFieldExpression></textField>
+    <textField><reportElement x="130" y="0" width="110" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{judul}]]></textFieldExpression></textField>
+    <textField><reportElement x="240" y="0" width="60" height="20"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{jenis}]]></textFieldExpression></textField>
+    <textField pattern="#,##0"><reportElement x="300" y="0" width="25" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{qty}]]></textFieldExpression></textField>
+    <textField pattern="#,##0"><reportElement x="325" y="0" width="60" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{totalModal}]]></textFieldExpression></textField>
+    <textField pattern="#,##0"><reportElement x="385" y="0" width="60" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{totalOmset}]]></textFieldExpression></textField>
+    <textField pattern="#,##0"><reportElement x="445" y="0" width="70" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{labaKotor}]]></textFieldExpression></textField>
   </band></detail>
   <pageFooter><band height="20">
     <textField><reportElement x="0" y="0" width="515" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari " + $V{PAGE_COUNT}]]></textFieldExpression></textField>
   </band></pageFooter>
   <summary><band height="140">
     <line><reportElement x="0" y="4" width="515" height="1"/><graphicElement><pen lineWidth="1.0" lineStyle="Solid"/></graphicElement></line>
-    <staticText><reportElement x="145" y="8" width="130" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[TOTAL REKAPITULASI:]]></text></staticText>
-    <textField pattern="#,##0"><reportElement x="300" y="8" width="70" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{SUM_MODAL}]]></textFieldExpression></textField>
-    <textField pattern="#,##0"><reportElement x="370" y="8" width="70" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{SUM_OMSET}]]></textFieldExpression></textField>
-    <textField pattern="#,##0"><reportElement x="440" y="8" width="75" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{SUM_LABA}]]></textFieldExpression></textField>
+    <staticText><reportElement x="205" y="8" width="120" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[TOTAL REKAPITULASI:]]></text></staticText>
+    <textField pattern="#,##0"><reportElement x="325" y="8" width="60" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{SUM_MODAL}]]></textFieldExpression></textField>
+    <textField pattern="#,##0"><reportElement x="385" y="8" width="60" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{SUM_OMSET}]]></textFieldExpression></textField>
+    <textField pattern="#,##0"><reportElement x="445" y="8" width="70" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{SUM_LABA}]]></textFieldExpression></textField>
     <line><reportElement x="0" y="30" width="515" height="1"/><graphicElement><pen lineWidth="1.5" lineStyle="Solid"/></graphicElement></line>
 
     <!-- Kolom Tanda Tangan -->

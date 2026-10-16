@@ -56,7 +56,6 @@ import model.LapPenjualan;
 import model.LapRetur;
 import model.LapStok;
 import model.LapSupplier;
-import model.LapTerlaris;
 import net.sf.jasperreports.engine.JRException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -84,9 +83,7 @@ public class FormLaporan extends JPanel {
     private static final String JENIS_BUKU = "Data Master Buku";
     private static final String JENIS_PENJUALAN = "Penjualan";
     private static final String JENIS_PEMBELIAN = "Pembelian";
-    private static final String JENIS_STOK = "Stok Menipis";
     private static final String JENIS_PENDAPATAN = "Pendapatan";
-    private static final String JENIS_TERLARIS = "Buku Terlaris";
     private static final String JENIS_RETUR = "Retur Penjualan";
     private static final String JENIS_LABA_KOTOR = "Laba Kotor / Margin";
     private static final String JENIS_SUPPLIER = "Pengadaan Supplier";
@@ -103,9 +100,12 @@ public class FormLaporan extends JPanel {
     private final ReturDAO returDAO = new ReturDAOImpl();
 
     private JComboBox<String> cmbJenis;
+    private JComboBox<String> cmbFilterJenis;
     private DatePicker dpDari;
     private DatePicker dpSampai;
     private JPanel pnlTanggal;
+    private JPanel pnlFilterJenis;
+    private boolean sedangResetFilter;
 
     // KPI Card Labels
     private JLabel lblKpiData;
@@ -184,8 +184,6 @@ public class FormLaporan extends JPanel {
             cmbJenis.addItem(JENIS_PEMBELIAN);
             cmbJenis.addItem(JENIS_SUPPLIER);
             cmbJenis.addItem(JENIS_RETUR);
-            cmbJenis.addItem(JENIS_TERLARIS);
-            cmbJenis.addItem(JENIS_STOK);
             cmbJenis.addItem(JENIS_BUKU);
         } else {
             // Kasir hanya memiliki akses ke Penjualan dan Retur
@@ -193,9 +191,27 @@ public class FormLaporan extends JPanel {
             cmbJenis.addItem(JENIS_RETUR);
         }
         cmbJenis.addActionListener(e -> {
+            sedangResetFilter = true;
+            cmbFilterJenis.setSelectedItem("Semua");
+            sedangResetFilter = false;
             toggleTanggal();
             muatData();
         });
+
+        cmbFilterJenis = new JComboBox<>(new String[]{"Semua", "Buku", "ATK"});
+        cmbFilterJenis.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
+        cmbFilterJenis.setBackground(NeoBrutalTheme.SURFACE);
+        cmbFilterJenis.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        cmbFilterJenis.addActionListener(e -> {
+            if (!sedangResetFilter) {
+                muatData();
+            }
+        });
+
+        pnlFilterJenis = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        pnlFilterJenis.setBackground(NeoBrutalTheme.SURFACE);
+        pnlFilterJenis.add(filterLabel("Jenis Barang:"));
+        pnlFilterJenis.add(cmbFilterJenis);
 
         dpDari = new DatePicker();
         dpDari.setName("tglDari");
@@ -223,9 +239,12 @@ public class FormLaporan extends JPanel {
         card.add(cmbJenis, gbc);
 
         gbc.gridx = 3; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
-        card.add(pnlTanggal, gbc);
+        card.add(pnlFilterJenis, gbc);
 
         gbc.gridx = 4;
+        card.add(pnlTanggal, gbc);
+
+        gbc.gridx = 5;
         card.add(btnTerapkan, gbc);
 
         wrap.add(card, BorderLayout.CENTER);
@@ -377,7 +396,7 @@ public class FormLaporan extends JPanel {
 
     private void muatData() {
         try {
-            currentRawData = buildData();
+            currentRawData = terapkanFilterJenis(buildData(), filterTerpilih());
             setupTableColumnsAndData(currentRawData);
             updateKpiMetrics();
             updateChartVisual();
@@ -409,12 +428,12 @@ public class FormLaporan extends JPanel {
                 break;
 
             case JENIS_LABA_KOTOR:
-                columns = new String[]{"No. Nota", "Tanggal", "Kode", "Judul Buku", "Qty", "Modal Satuan", "Jual Satuan", "Total Modal", "Total Omset", "Laba Kotor", "Margin %"};
+                columns = new String[]{"No. Nota", "Tanggal", "Kode", "Judul Buku", "Jenis", "Qty", "Modal Satuan", "Jual Satuan", "Total Modal", "Total Omset", "Laba Kotor", "Margin %"};
                 for (Object o : data) {
                     LapLabaKotor l = (LapLabaKotor) o;
                     String tgl = l.getTanggal() != null ? l.getTanggal().format(FMT_TGL) : "-";
                     allTableRows.add(new Object[]{
-                            l.getNoNota(), tgl, l.getKodeBuku(), l.getJudul(),
+                            l.getNoNota(), tgl, l.getKodeBuku(), l.getJudul(), labelJenis(l.getJenis()),
                             l.getQty() + " pcs", formatRp(l.getHargaBeli()), formatRp(l.getHargaJual()),
                             formatRp(l.getTotalModal()), formatRp(l.getTotalOmset()), formatRp(l.getLabaKotor()),
                             String.format(LOCALE_ID, "%.1f%%", l.getMarginPct())
@@ -423,12 +442,12 @@ public class FormLaporan extends JPanel {
                 break;
 
             case JENIS_PENDAPATAN:
-                columns = new String[]{"No. Nota", "Tanggal", "Judul Buku", "Qty", "Harga Beli", "Harga Jual", "Keuntungan (Laba)"};
+                columns = new String[]{"No. Nota", "Tanggal", "Judul Buku", "Jenis", "Qty", "Harga Beli", "Harga Jual", "Keuntungan (Laba)"};
                 for (Object o : data) {
                     LapPendapatan p = (LapPendapatan) o;
                     String tgl = p.getTanggal() != null ? p.getTanggal().format(FMT_TGL) : "-";
                     allTableRows.add(new Object[]{
-                            p.getNoNota(), tgl, p.getJudul(), p.getQty() + " pcs",
+                            p.getNoNota(), tgl, p.getJudul(), labelJenis(p.getJenis()), p.getQty() + " pcs",
                             formatRp(p.getHargaBeli()), formatRp(p.getHargaJual()), formatRp(p.getLaba())
                     });
                 }
@@ -468,34 +487,13 @@ public class FormLaporan extends JPanel {
                 }
                 break;
 
-            case JENIS_TERLARIS:
-                columns = new String[]{"Kode Buku", "Judul Buku", "Kuantitas Terjual", "Total Omset"};
-                for (Object o : data) {
-                    LapTerlaris t = (LapTerlaris) o;
-                    allTableRows.add(new Object[]{
-                            t.getKodeBuku(), t.getJudul(), t.getTotalQty() + " pcs", formatRp(t.getTotalOmzet())
-                    });
-                }
-                break;
-
-            case JENIS_STOK:
-                columns = new String[]{"Kode Buku", "Judul Buku", "Kategori", "Penerbit", "Harga Jual", "Sisa Stok Fisik"};
-                for (Object o : data) {
-                    LapStok b = (LapStok) o;
-                    allTableRows.add(new Object[]{
-                            b.getKodeBuku(), b.getJudul(), b.getKategori(), b.getPenerbit(),
-                            formatRp(b.getHargaJual()), b.getStok() + " pcs"
-                    });
-                }
-                break;
-
             case JENIS_BUKU:
             default:
-                columns = new String[]{"Kode Buku", "Judul Buku", "Kategori", "Penerbit", "Harga Jual", "Stok"};
+                columns = new String[]{"Kode Buku", "Judul Buku", "Jenis", "Kategori", "Penerbit", "Harga Jual", "Stok"};
                 for (Object o : data) {
                     LapStok b = (LapStok) o;
                     allTableRows.add(new Object[]{
-                            b.getKodeBuku(), b.getJudul(), b.getKategori(), b.getPenerbit(),
+                            b.getKodeBuku(), b.getJudul(), labelJenis(b.getJenis()), b.getKategori(), b.getPenerbit(),
                             formatRp(b.getHargaJual()), b.getStok() + " pcs"
                     });
                 }
@@ -629,18 +627,6 @@ public class FormLaporan extends JPanel {
                 marginText = count > 0 ? formatRp(totalFinansial / count) + " /Retur" : "-";
                 break;
 
-            case JENIS_TERLARIS:
-                for (Object o : currentRawData) {
-                    LapTerlaris t = (LapTerlaris) o;
-                    totalPcs += t.getTotalQty();
-                    totalFinansial += t.getTotalOmzet();
-                }
-                lblKpiVolume.setText(totalPcs + " Pcs");
-                lblKpiFinansial.setText(formatRp(totalFinansial));
-                marginText = "Top " + Math.min(10, count);
-                break;
-
-            case JENIS_STOK:
             case JENIS_BUKU:
             default:
                 for (Object o : currentRawData) {
@@ -663,19 +649,7 @@ public class FormLaporan extends JPanel {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         JFreeChart chart;
 
-        if (JENIS_TERLARIS.equals(jenis)) {
-            int limit = Math.min(10, currentRawData.size());
-            for (int i = 0; i < limit; i++) {
-                LapTerlaris t = (LapTerlaris) currentRawData.get(i);
-                String judulPendek = t.getJudul().length() > 20 ? t.getJudul().substring(0, 18) + "..." : t.getJudul();
-                dataset.addValue(t.getTotalQty(), "Terjual (Pcs)", judulPendek);
-            }
-            chart = ChartFactory.createBarChart(
-                    "Top 10 Buku Paling Terlaris",
-                    "Judul Buku", "Kuantitas Terjual (Pcs)",
-                    dataset, PlotOrientation.HORIZONTAL, false, true, false);
-
-        } else if (JENIS_SUPPLIER.equals(jenis)) {
+        if (JENIS_SUPPLIER.equals(jenis)) {
             for (Object o : currentRawData) {
                 LapSupplier s = (LapSupplier) o;
                 dataset.addValue(s.getTotalBiaya() / 1_000_000.0, "Pengadaan (Juta Rp)", s.getNamaSupplier());
@@ -760,7 +734,7 @@ public class FormLaporan extends JPanel {
                     dataset, PlotOrientation.VERTICAL, false, true, false);
 
         } else {
-            // Data Master Buku / Stok Menipis (Distribusi Kategori)
+            // Data Master Buku (Distribusi Kategori)
             Map<String, Integer> mapKat = new HashMap<>();
             for (Object o : currentRawData) {
                 LapStok b = (LapStok) o;
@@ -882,9 +856,6 @@ public class FormLaporan extends JPanel {
         if (JENIS_BUKU.equals(jenis)) {
             return bukuDAO.lapDataBuku();
         }
-        if (JENIS_STOK.equals(jenis)) {
-            return bukuDAO.getStokMenipis();
-        }
 
         LocalDate[] periode = bacaPeriode();
         LocalDate dari = periode[0];
@@ -906,8 +877,6 @@ public class FormLaporan extends JPanel {
                 return pembelianDAO.lapSupplier(dari, sampai);
             case JENIS_RETUR:
                 return returDAO.lapRetur(dari, sampai);
-            case JENIS_TERLARIS:
-                return penjualanDAO.lapTerlaris(dari, sampai);
             default:
                 throw new IllegalStateException("Jenis laporan tidak dikenal: " + jenis);
         }
@@ -943,8 +912,6 @@ public class FormLaporan extends JPanel {
             case JENIS_PEMBELIAN: return "/reports/lap_pembelian.jrxml";
             case JENIS_SUPPLIER: return "/reports/lap_supplier.jrxml";
             case JENIS_RETUR: return "/reports/lap_retur.jrxml";
-            case JENIS_TERLARIS: return "/reports/lap_terlaris.jrxml";
-            case JENIS_STOK: return "/reports/lap_stok.jrxml";
             case JENIS_BUKU:
             default: return "/reports/lap_data_buku.jrxml";
         }
@@ -954,13 +921,48 @@ public class FormLaporan extends JPanel {
         return (String) cmbJenis.getSelectedItem();
     }
 
+    private String filterTerpilih() {
+        return cmbFilterJenis == null ? "Semua" : (String) cmbFilterJenis.getSelectedItem();
+    }
+
+    private String labelJenis(String jenis) {
+        return (jenis == null || jenis.isBlank()) ? "Buku" : jenis;
+    }
+
+    public static List<Object> terapkanFilterJenis(List<?> data, String filter) {
+        List<Object> hasil = new ArrayList<>();
+        if (filter == null || "Semua".equals(filter)) {
+            hasil.addAll(data);
+            return hasil;
+        }
+        for (Object o : data) {
+            String j = null;
+            if (o instanceof LapStok) j = ((LapStok) o).getJenis();
+            else if (o instanceof LapPendapatan) j = ((LapPendapatan) o).getJenis();
+            else if (o instanceof LapLabaKotor) j = ((LapLabaKotor) o).getJenis();
+            if (j == null) j = "Buku";
+            if (filter.equals(j)) hasil.add(o);
+        }
+        return hasil;
+    }
+
     private boolean butuhTanggal() {
         String j = jenisTerpilih();
-        return !JENIS_BUKU.equals(j) && !JENIS_STOK.equals(j);
+        return !JENIS_BUKU.equals(j);
+    }
+
+    private boolean perluFilterJenis() {
+        String j = jenisTerpilih();
+        return JENIS_BUKU.equals(j) || JENIS_PENDAPATAN.equals(j) || JENIS_LABA_KOTOR.equals(j);
     }
 
     private void toggleTanggal() {
         pnlTanggal.setVisible(butuhTanggal());
+        boolean tampilFilter = perluFilterJenis();
+        pnlFilterJenis.setVisible(tampilFilter);
+        if (!tampilFilter) {
+            cmbFilterJenis.setSelectedItem("Semua");
+        }
         revalidate();
         repaint();
     }

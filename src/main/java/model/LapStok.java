@@ -8,6 +8,7 @@ public class LapStok {
     private double hargaBeli;
     private double hargaJual;
     private int stok;
+    private String jenis;
 
     public LapStok() {}
 
@@ -76,5 +77,13 @@ public class LapStok {
 
     public void setStok(int stok) {
         this.stok = stok;
+    }
+
+    public String getJenis() {
+        return jenis;
+    }
+
+    public void setJenis(String jenis) {
+        this.jenis = jenis;
     }
 }

@@ -21,9 +21,7 @@ public class ReportCompilationTest {
         "/reports/lap_data_buku.jrxml",
         "/reports/lap_penjualan.jrxml",
         "/reports/lap_pembelian.jrxml",
-        "/reports/lap_stok.jrxml",
         "/reports/lap_pendapatan.jrxml",
-        "/reports/lap_terlaris.jrxml",
         "/reports/lap_retur.jrxml",
         "/reports/lap_laba_kotor.jrxml",
         "/reports/lap_supplier.jrxml"

@@ -230,7 +230,7 @@ public class BukuDAOImpl implements BukuDAO {
     @Override
     public List<LapStok> lapDataBuku() {
         String sql = "SELECT b.kode_buku, b.judul, COALESCE(k.nama_kategori,'-') kategori, "
-                + "COALESCE(p.nama_penerbit,'-') penerbit, b.harga_beli, b.harga_jual, b.stok "
+                + "COALESCE(p.nama_penerbit,'-') penerbit, b.harga_beli, b.harga_jual, b.stok, b.jenis "
                 + "FROM buku b "
                 + "LEFT JOIN kategori k ON b.id_kategori = k.id_kategori "
                 + "LEFT JOIN penerbit p ON b.id_penerbit = p.id_penerbit "
@@ -240,7 +240,9 @@ public class BukuDAOImpl implements BukuDAO {
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(mapLapStok(rs));
+                LapStok l = mapLapStok(rs);
+                l.setJenis(rs.getString("jenis"));
+                list.add(l);
             }
             return list;
         } catch (SQLException e) {

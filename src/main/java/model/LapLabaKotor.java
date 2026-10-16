@@ -14,6 +14,7 @@ public class LapLabaKotor {
     private double totalOmset;
     private double labaKotor;
     private double marginPct;
+    private String jenis;
 
     public LapLabaKotor() {}
 
@@ -119,5 +120,13 @@ public class LapLabaKotor {
 
     public void setMarginPct(double marginPct) {
         this.marginPct = marginPct;
+    }
+
+    public String getJenis() {
+        return jenis;
+    }
+
+    public void setJenis(String jenis) {
+        this.jenis = jenis;
     }
 }

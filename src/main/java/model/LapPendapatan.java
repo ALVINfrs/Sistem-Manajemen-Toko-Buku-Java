@@ -10,6 +10,7 @@ public class LapPendapatan {
     private double hargaBeli;
     private double hargaJual;
     private double laba;
+    private String jenis;
 
     public LapPendapatan() {}
 
@@ -78,5 +79,13 @@ public class LapPendapatan {
 
     public void setLaba(double laba) {
         this.laba = laba;
+    }
+
+    public String getJenis() {
+        return jenis;
+    }
+
+    public void setJenis(String jenis) {
+        this.jenis = jenis;
     }
 }
