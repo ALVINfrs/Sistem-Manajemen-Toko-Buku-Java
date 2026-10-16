@@ -167,7 +167,9 @@ public class StrukDialog extends JDialog {
                 }
                 appendWrappedText(sb, judul, LINE_WIDTH);
 
-                String leftCol = "  " + d.getQty() + " x " + formatAngka(d.getHargaJual());
+                String satuan = d.getSatuan();
+                String qtyTeks = d.getQty() + (satuan != null && !satuan.isBlank() ? " " + satuan : "");
+                String leftCol = "  " + qtyTeks + " x " + formatAngka(d.getHargaJual());
                 String rightCol = formatAngka(d.getSubtotal());
                 sb.append(row(leftCol, rightCol)).append("\n");
 

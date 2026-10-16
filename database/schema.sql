@@ -37,6 +37,8 @@ CREATE TABLE buku (
     harga_beli DECIMAL(10,2) NOT NULL DEFAULT 0,
     harga_jual DECIMAL(10,2) NOT NULL DEFAULT 0,
     stok INT NOT NULL DEFAULT 0,
+    jenis ENUM('Buku','ATK') NOT NULL DEFAULT 'Buku',
+    satuan VARCHAR(20) NULL,
     deskripsi TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_penerbit) REFERENCES penerbit(id_penerbit),

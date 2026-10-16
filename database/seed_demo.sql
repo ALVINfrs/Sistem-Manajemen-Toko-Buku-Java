@@ -10,8 +10,9 @@
 --
 -- Asumsi fresh-DB (dijamin Task 11): tabel kosong kecuali users berisi
 --   admin (id_user=1). Id AUTO_INCREMENT predictable seurut insert:
---     kategori 1..5, penerbit 1..3, supplier 1..3,
---     buku 1..12 (BK-001..BK-012), penjualan 1..2, pembelian 1, retur 1.
+--     kategori 1..6, penerbit 1..3, supplier 1..3,
+--     buku 1..18 (BK-001..BK-012 + ATK-001..ATK-006), penjualan 1..2,
+--     pembelian 1, retur 1.
 --   Untuk USER kasir pada transaksi penjualan (b) dipakai subselect
 --     (SELECT id_user FROM users WHERE username='kasir') agar tidak
 --     bergantung pada id hardcoded. Untuk buku/supplier DITERIMA
@@ -40,13 +41,14 @@ UPDATE users SET password = SHA2('admin123', 256) WHERE username = 'admin';
 INSERT IGNORE INTO users (username, password, nama_lengkap, role)
 VALUES ('kasir', SHA2('kasir123', 256), 'Kasir Demo', 'Kasir');
 
--- ---------- KATEGORI (5, master, IGNORE) -> id 1..5 ----------
+-- ---------- KATEGORI (6, master, IGNORE) -> id 1..6 ----------
 INSERT IGNORE INTO kategori (nama_kategori) VALUES
 ('Fiksi'),
 ('Non-Fiksi'),
 ('Anak'),
 ('Pendidikan'),
-('Komik');
+('Komik'),
+('Alat Tulis');
 
 -- ---------- PENERBIT (3, master, IGNORE) -> id 1..3 ----------
 INSERT IGNORE INTO penerbit (nama_penerbit, alamat, no_telp) VALUES
@@ -88,6 +90,20 @@ INSERT IGNORE INTO buku (kode_buku, judul, penulis, id_penerbit, id_kategori, ha
 ('BK-010', 'Garuda Sakti', 'Andi Wijaya', 1, 5, 32000, 45000, 45),
 ('BK-011', 'Rindu di Kota Tua', 'Fitri Handayani', 2, 1, 48000, 68000, 22),
 ('BK-012', 'Panduan Wirausaha Muda', 'Budi Hartono', 3, 2, 65000, 90000, 10);
+
+-- ---------- ATK (6, master, IGNORE) -> id 13..18 ----------
+-- Jenis 'ATK' + satuan wajib; penulis & penerbit NULL; kategori
+-- "Alat Tulis" (subselect agar tidak bergantung id auto-increment).
+-- ATK-001 pcs 2500->4000 stok 100 | ATK-002 pak 28000->42000 stok 40
+-- ATK-003 lusin 18000->27000 stok 60 | ATK-004 pcs 1500->2500 stok 80
+-- ATK-005 pcs 3000->5000 stok 50 | ATK-006 box 15000->24000 stok 30
+INSERT IGNORE INTO buku (kode_buku, judul, penulis, id_penerbit, id_kategori, harga_beli, harga_jual, stok, jenis, satuan) VALUES
+('ATK-001', 'Pulpen Gel Hitam 0.5', NULL, NULL, (SELECT id_kategori FROM kategori WHERE nama_kategori = 'Alat Tulis'), 2500, 4000, 100, 'ATK', 'pcs'),
+('ATK-002', 'Buku Tulis Sidu 38', NULL, NULL, (SELECT id_kategori FROM kategori WHERE nama_kategori = 'Alat Tulis'), 28000, 42000, 40, 'ATK', 'pak'),
+('ATK-003', 'Pensil 2B', NULL, NULL, (SELECT id_kategori FROM kategori WHERE nama_kategori = 'Alat Tulis'), 18000, 27000, 60, 'ATK', 'lusin'),
+('ATK-004', 'Penghapus Karet', NULL, NULL, (SELECT id_kategori FROM kategori WHERE nama_kategori = 'Alat Tulis'), 1500, 2500, 80, 'ATK', 'pcs'),
+('ATK-005', 'Penggaris 30cm', NULL, NULL, (SELECT id_kategori FROM kategori WHERE nama_kategori = 'Alat Tulis'), 3000, 5000, 50, 'ATK', 'pcs'),
+('ATK-006', 'Spidol Whiteboard', NULL, NULL, (SELECT id_kategori FROM kategori WHERE nama_kategori = 'Alat Tulis'), 15000, 24000, 30, 'ATK', 'box');
 
 -- ---------- PENJUALAN (2, transaksi, INSERT biasa) -> id 1..2 ----------
 -- (a) nota -0001, 2 hari lalu, admin (id 1), tanpa member.

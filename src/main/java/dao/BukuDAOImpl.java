@@ -16,7 +16,8 @@ public class BukuDAOImpl implements BukuDAO {
 
     private static final String BASE_SELECT =
             "SELECT b.id_buku, b.kode_buku, b.judul, b.penulis, b.id_penerbit, b.id_kategori, "
-            + "p.nama_penerbit, k.nama_kategori, b.harga_beli, b.harga_jual, b.stok, b.deskripsi "
+            + "p.nama_penerbit, k.nama_kategori, b.harga_beli, b.harga_jual, b.stok, "
+            + "b.jenis, b.satuan, b.deskripsi "
             + "FROM buku b "
             + "LEFT JOIN penerbit p ON b.id_penerbit = p.id_penerbit "
             + "LEFT JOIN kategori k ON b.id_kategori = k.id_kategori";
@@ -36,6 +37,8 @@ public class BukuDAOImpl implements BukuDAO {
         b.setHargaBeli(rs.getDouble("harga_beli"));
         b.setHargaJual(rs.getDouble("harga_jual"));
         b.setStok(rs.getInt("stok"));
+        b.setJenis(rs.getString("jenis"));
+        b.setSatuan(rs.getString("satuan"));
         b.setDeskripsi(rs.getString("deskripsi"));
         return b;
     }
@@ -55,7 +58,7 @@ public class BukuDAOImpl implements BukuDAO {
     @Override
     public boolean insert(Buku b) {
         String sql = "INSERT INTO buku (kode_buku, judul, penulis, id_penerbit, id_kategori, "
-                + "harga_beli, harga_jual, stok, deskripsi) VALUES (?,?,?,?,?,?,?,?,?)";
+                + "harga_beli, harga_jual, stok, jenis, satuan, deskripsi) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
         try (Connection c = Koneksi.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, b.getKodeBuku());
@@ -66,7 +69,9 @@ public class BukuDAOImpl implements BukuDAO {
             ps.setDouble(6, b.getHargaBeli());
             ps.setDouble(7, b.getHargaJual());
             ps.setInt(8, b.getStok());
-            ps.setString(9, b.getDeskripsi());
+            ps.setString(9, b.getJenis());
+            ps.setString(10, b.getSatuan());
+            ps.setString(11, b.getDeskripsi());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Gagal insert buku: " + e.getMessage(), e);
@@ -76,7 +81,7 @@ public class BukuDAOImpl implements BukuDAO {
     @Override
     public boolean update(Buku b) {
         String sql = "UPDATE buku SET kode_buku=?, judul=?, penulis=?, id_penerbit=?, id_kategori=?, "
-                + "harga_beli=?, harga_jual=?, stok=?, deskripsi=? WHERE id_buku=?";
+                + "harga_beli=?, harga_jual=?, stok=?, jenis=?, satuan=?, deskripsi=? WHERE id_buku=?";
         try (Connection c = Koneksi.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, b.getKodeBuku());
@@ -87,8 +92,10 @@ public class BukuDAOImpl implements BukuDAO {
             ps.setDouble(6, b.getHargaBeli());
             ps.setDouble(7, b.getHargaJual());
             ps.setInt(8, b.getStok());
-            ps.setString(9, b.getDeskripsi());
-            ps.setInt(10, b.getIdBuku());
+            ps.setString(9, b.getJenis());
+            ps.setString(10, b.getSatuan());
+            ps.setString(11, b.getDeskripsi());
+            ps.setInt(12, b.getIdBuku());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Gagal update buku: " + e.getMessage(), e);
@@ -160,6 +167,63 @@ public class BukuDAOImpl implements BukuDAO {
             return list;
         } catch (SQLException e) {
             throw new RuntimeException("Gagal cari buku: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<Buku> getAllByJenis(String jenis) {
+        String sql = BASE_SELECT + " WHERE b.jenis=? ORDER BY b.id_buku";
+        List<Buku> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, jenis);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(map(rs));
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil buku by jenis: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<Buku> searchByJenis(String jenis, String keyword) {
+        String sql = BASE_SELECT + " WHERE (b.kode_buku LIKE ? OR b.judul LIKE ?) AND b.jenis=? "
+                + "ORDER BY b.id_buku";
+        List<Buku> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            String kw = "%" + keyword + "%";
+            ps.setString(1, kw);
+            ps.setString(2, kw);
+            ps.setString(3, jenis);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(map(rs));
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal cari buku by jenis: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Buku getByKode(String kode) {
+        String sql = BASE_SELECT + " WHERE b.kode_buku=?";
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, kode);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return map(rs);
+                }
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil buku by kode: " + e.getMessage(), e);
         }
     }
 

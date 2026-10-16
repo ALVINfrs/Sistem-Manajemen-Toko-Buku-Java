@@ -1,13 +1,16 @@
 -- ============================================================
--- Migrasi Ronde 4 — Hapus Member
+-- Migrasi Ronde 4 — Hapus Member + Kolom ATK (jenis/satuan)
 -- File: database/migrasi_ronde4.sql
 --
 -- Run-book:
 --   mysql -u root db_toko_buku < database/migrasi_ronde4.sql
 --
--- Efek: penjualan DROP FK id_member (nama asli: penjualan_ibfk_2),
---   DROP COLUMN id_member, DROP TABLE member.
--- Aman di-run ulang (idempoten): FK hanya di-drop bila masih ada.
+-- Efek:
+--   1) penjualan DROP FK id_member (nama asli: penjualan_ibfk_2),
+--      DROP COLUMN id_member, DROP TABLE member.
+--   2) buku ADD COLUMN jenis ENUM('Buku','ATK') NOT NULL DEFAULT 'Buku'
+--      + satuan VARCHAR(20) NULL (pcs/pak/lusin/box/rim; NULL utk Buku).
+-- Aman di-run ulang (idempoten): FK/kolom hanya di-drop/ditambah bila perlu.
 -- ============================================================
 
 SET @fk := (
@@ -29,3 +32,7 @@ DEALLOCATE PREPARE stmt;
 
 ALTER TABLE penjualan DROP COLUMN IF EXISTS id_member;
 DROP TABLE IF EXISTS member;
+
+-- Bagian ATK (Task 18)
+ALTER TABLE buku ADD COLUMN IF NOT EXISTS jenis ENUM('Buku','ATK') NOT NULL DEFAULT 'Buku' AFTER stok;
+ALTER TABLE buku ADD COLUMN IF NOT EXISTS satuan VARCHAR(20) NULL AFTER jenis;

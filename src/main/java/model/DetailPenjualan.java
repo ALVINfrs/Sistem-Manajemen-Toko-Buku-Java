@@ -9,6 +9,7 @@ public class DetailPenjualan {
     private int qty;
     private double hargaJual;
     private double subtotal;
+    private transient String satuan;
 
     public DetailPenjualan() {}
 
@@ -87,5 +88,13 @@ public class DetailPenjualan {
 
     public void setSubtotal(double subtotal) {
         this.subtotal = subtotal;
+    }
+
+    public String getSatuan() {
+        return satuan;
+    }
+
+    public void setSatuan(String satuan) {
+        this.satuan = satuan;
     }
 }

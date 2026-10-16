@@ -113,7 +113,7 @@ public class FormPenjualan extends JPanel {
         pnlCari.add(btnCari, BorderLayout.EAST);
         card.add(pnlCari, BorderLayout.CENTER);
 
-        modelHasil = new DefaultTableModel(new String[]{"Kode", "Judul", "Harga", "Stok"}, 0) {
+        modelHasil = new DefaultTableModel(new String[]{"Kode", "Judul", "Jenis", "Harga", "Stok"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -149,7 +149,7 @@ public class FormPenjualan extends JPanel {
         lbl.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
         card.add(lbl, BorderLayout.NORTH);
 
-        modelCart = new DefaultTableModel(new String[]{"Kode", "Judul", "Harga", "Qty", "Subtotal"}, 0) {
+        modelCart = new DefaultTableModel(new String[]{"Kode", "Judul", "Jenis", "Harga", "Qty", "Subtotal"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -278,8 +278,18 @@ public class FormPenjualan extends JPanel {
         }
         modelHasil.setRowCount(0);
         for (Buku b : hasilCari) {
-            modelHasil.addRow(new Object[]{b.getKodeBuku(), b.getJudul(), b.getHargaJual(), b.getStok()});
+            modelHasil.addRow(new Object[]{b.getKodeBuku(), b.getJudul(), jenisTampil(b),
+                    b.getHargaJual(), b.getStok()});
         }
+    }
+
+    private String jenisTampil(Buku b) {
+        return b.getJenis() != null && !b.getJenis().isBlank() ? b.getJenis() : "Buku";
+    }
+
+    private String qtyTampil(CartRow r) {
+        String satuan = r.buku.getSatuan();
+        return r.qty + (satuan != null && !satuan.isBlank() ? " " + satuan : "");
     }
 
     private void tambahKeKeranjang() {
@@ -419,8 +429,8 @@ public class FormPenjualan extends JPanel {
         modelCart.setRowCount(0);
         for (CartRow r : cart) {
             modelCart.addRow(new Object[]{
-                    r.buku.getKodeBuku(), r.buku.getJudul(), r.buku.getHargaJual(),
-                    r.qty, r.qty * r.buku.getHargaJual()
+                    r.buku.getKodeBuku(), r.buku.getJudul(), jenisTampil(r.buku), r.buku.getHargaJual(),
+                    qtyTampil(r), r.qty * r.buku.getHargaJual()
             });
         }
         double subtotal = hitungSubtotal();
@@ -529,6 +539,7 @@ public class FormPenjualan extends JPanel {
                 d.setQty(r.qty);
                 d.setHargaJual(r.buku.getHargaJual());
                 d.setSubtotal(r.qty * r.buku.getHargaJual());
+                d.setSatuan(r.buku.getSatuan());
                 items.add(d);
             }
             penjualanDAO.saveWithDetail(h, items);

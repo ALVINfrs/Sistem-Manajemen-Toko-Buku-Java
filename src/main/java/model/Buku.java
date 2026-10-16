@@ -12,9 +12,13 @@ public class Buku {
     private double hargaBeli;
     private double hargaJual;
     private int stok;
+    private String jenis;
+    private String satuan;
     private String deskripsi;
 
-    public Buku() {}
+    public Buku() {
+        this.jenis = "Buku";
+    }
 
     public Buku(int idBuku, String kodeBuku, String judul, String penulis,
                 Integer idPenerbit, Integer idKategori,
@@ -119,6 +123,22 @@ public class Buku {
 
     public void setStok(int stok) {
         this.stok = stok;
+    }
+
+    public String getJenis() {
+        return jenis;
+    }
+
+    public void setJenis(String jenis) {
+        this.jenis = jenis;
+    }
+
+    public String getSatuan() {
+        return satuan;
+    }
+
+    public void setSatuan(String satuan) {
+        this.satuan = satuan;
     }
 
     public String getDeskripsi() {

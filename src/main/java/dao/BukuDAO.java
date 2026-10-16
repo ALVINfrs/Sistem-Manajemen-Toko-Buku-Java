@@ -11,6 +11,9 @@ public interface BukuDAO {
     List<Buku> getAll();
     Buku getById(int id);
     List<Buku> search(String keyword);
+    List<Buku> getAllByJenis(String jenis);
+    List<Buku> searchByJenis(String jenis, String keyword);
+    Buku getByKode(String kode);
     List<model.LapStok> lapDataBuku();
     List<model.LapStok> getStokMenipis();
     List<LapGrafik> countByKategori();

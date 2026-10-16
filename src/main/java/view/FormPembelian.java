@@ -99,7 +99,7 @@ public class FormPembelian extends JPanel {
         pnlJudulBar.add(lblFakturDraft, BorderLayout.EAST);
         pnlNorth.add(pnlJudulBar, BorderLayout.NORTH);
 
-        JLabel lblHint = new JLabel("<html><b>Alur Pengadaan:</b> 1) Pilih Rekanan Supplier 2) Pilih buku dari katalog + tentukan Qty & Harga Beli 3) Klik Tambah 4) Klik Simpan Faktur untuk auto-restock & cetak bukti penerimaan barang.</html>");
+        JLabel lblHint = new JLabel("<html><b>Alur Pengadaan:</b> 1) Pilih Rekanan Supplier 2) Pilih item dari katalog + tentukan Qty & Harga Beli (berlaku untuk Buku & ATK) 3) Klik Tambah 4) Klik Simpan Faktur untuk auto-restock & cetak bukti penerimaan barang.</html>");
         lblHint.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         lblHint.setForeground(Color.BLACK);
         pnlNorth.add(lblHint, BorderLayout.SOUTH);
@@ -205,7 +205,7 @@ public class FormPembelian extends JPanel {
         card.add(lbl, BorderLayout.NORTH);
 
         modelItem = new DefaultTableModel(
-                new String[]{"Kode", "Judul", "Stok Lama", "Qty Beli", "Stok Baru", "Harga Beli", "Subtotal"}, 0) {
+                new String[]{"Kode", "Judul", "Jenis", "Stok Lama", "Qty Beli", "Stok Baru", "Harga Beli", "Subtotal"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -420,6 +420,7 @@ public class FormPembelian extends JPanel {
             modelItem.addRow(new Object[]{
                     r.buku.getKodeBuku(),
                     r.buku.getJudul(),
+                    r.buku.getJenis() != null && !r.buku.getJenis().isBlank() ? r.buku.getJenis() : "Buku",
                     stokLama,
                     r.qty,
                     stokBaru,

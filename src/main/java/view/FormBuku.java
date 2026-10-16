@@ -270,7 +270,7 @@ public class FormBuku extends JPanel {
     }
 
     public void loadTable() {
-        isiTabel(bukuDAO.getAll());
+        isiTabel(bukuDAO.getAllByJenis("Buku"));
     }
 
     public void cari(String keyword) {
@@ -278,7 +278,7 @@ public class FormBuku extends JPanel {
             loadTable();
             return;
         }
-        isiTabel(bukuDAO.search(keyword.trim()));
+        isiTabel(bukuDAO.searchByJenis("Buku", keyword.trim()));
     }
 
     private void isiTabel(List<Buku> list) {
