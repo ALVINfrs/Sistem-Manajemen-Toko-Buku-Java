@@ -257,7 +257,7 @@ public class PenjualanDAOImpl implements PenjualanDAO {
 
     @Override
     public List<DetailPenjualan> getDetailByPenjualan(int idPenjualan) {
-        String sql = "SELECT d.id_detail, d.id_penjualan, d.id_buku, b.kode_buku, b.judul, "
+        String sql = "SELECT d.id_detail, d.id_penjualan, d.id_buku, b.kode_buku, b.judul, b.satuan, "
                 + "d.qty, d.harga_jual, d.subtotal "
                 + "FROM detail_penjualan d "
                 + "JOIN buku b ON d.id_buku = b.id_buku "
@@ -274,6 +274,7 @@ public class PenjualanDAOImpl implements PenjualanDAO {
                     d.setIdBuku(rs.getInt("id_buku"));
                     d.setKodeBuku(rs.getString("kode_buku"));
                     d.setJudul(rs.getString("judul"));
+                    d.setSatuan(rs.getString("satuan"));
                     d.setQty(rs.getInt("qty"));
                     d.setHargaJual(rs.getDouble("harga_jual"));
                     d.setSubtotal(rs.getDouble("subtotal"));
