@@ -94,21 +94,21 @@ Berikut adalah rincian fungsionalitas modul-modul yang telah selesai dibangun da
 - **Kartu Metrik KPI Real-Time:**
   - 💰 *Omzet Hari Ini*: Akumulasi pendapatan kotor hari ini dalam format Rupiah.
   - 🧾 *Transaksi Hari Ini*: Jumlah nota transaksi yang berhasil diselesaikan hari ini.
-  - 📚 *Item Terjual Hari Ini*: Total eksemplar buku yang terjual hari ini.
-  - ⚠️ *Stok Menipis*: Jumlah varian judul buku yang memiliki stok $\le 5$ pcs.
+  - 📦 *Item Terjual Hari Ini*: Total item barang (buku maupun ATK) yang terjual hari ini.
+  - ⚠️ *Stok Menipis*: Jumlah varian barang yang memiliki stok $\le 5$ pcs.
 - **Visualisasi Grafik JFreeChart:**
   - 📈 *Grafik Tren Omzet 7 Hari*: Bar chart interaktif pendapatan harian selama sepekan.
-  - 🏆 *Top 5 Buku Terlaris*: Horizontal bar chart peringkat buku yang paling banyak terjual bulan ini.
-- **Watchlist Stok Kritis:** Tabel peringatan cepat di bagian bawah dashboard yang menampilkan daftar buku dengan stok kritis beserta tombol pengingat restock.
+  - 🏆 *Top 5 Barang Terlaris*: Horizontal bar chart peringkat barang yang paling banyak terjual bulan ini.
+- **Watchlist Stok Kritis:** Tabel peringatan cepat di bagian bawah dashboard yang menampilkan daftar barang dengan stok kritis beserta tombol pengingat restock.
 
 ---
 
 ### 2. 💳 Point of Sale (POS) Penjualan Pintar (`FormPenjualan`)
-- **Pencarian Buku Real-time:** Cari instan berdasarkan kode buku, judul, maupun penulis.
+- **Pencarian Barang Real-time:** Cari instan berdasarkan kode, nama, maupun penulis; hasil campur Buku + ATK dengan kolom Jenis dan tampilan satuan (mis. `2 pak`).
 - **Keranjang Belanja Dinamis:** Tambah/kurang kuantitas, hapus item, dan proteksi otomatis agar kasir tidak dapat menginput kuantitas melebihi stok yang tersedia di rak.
 - **Sistem Diskon Fleksibel:**
   - Diskon persen (%) bebas untuk semua role, dihitung dari subtotal sebelum potongan.
-  - Kolom input potongan nominal (Rp) untuk diskon promo khusus/spesial.
+  - Kolom input potongan nominal (Rp) untuk diskon promo khusus/spesial; total = (subtotal − persen%) − nominal.
 - **Multi-Metode Pembayaran:** Pilihan pembayaran fleksibel:
   - 💵 **Tunai**: Validasi nominal bayar $\ge$ total belanja dengan perhitungan kembalian otomatis.
   - 💳 **Transfer Bank**: Pembayaran non-tunai via transfer rekening.
@@ -134,7 +134,7 @@ Berikut adalah rincian fungsionalitas modul-modul yang telah selesai dibangun da
 
 ---
 
-### 5. 🔄 Modul Retur Buku (`FormRetur`)
+### 5. 🔄 Modul Retur Barang (`FormRetur`)
 - **Validasi Integritas Nota:** Kasir/Admin menginput nomor nota penjualan; sistem memverifikasi keabsahan nota dan memuat item-item yang dibeli pada nota tersebut.
 - **Proteksi Kuantitas Retur:** Kuantitas buku yang diretur tidak boleh melebihi kuantitas pembelian awal.
 - **Pemulihan Stok Otomatis:** Ketika retur disimpan, stok buku terkait pada database otomatis bertambah kembali ke inventaris.
@@ -143,8 +143,8 @@ Berikut adalah rincian fungsionalitas modul-modul yang telah selesai dibangun da
 ---
 
 ### 6. 📥 Pengadaan & Pembelian / Restock (`FormPembelian`)
-- **Pembelian Multi-Item dari Supplier:** Pilih supplier resmi, tentukan buku yang dipesan, kuantitas beli, dan harga beli grosir.
-- **Penambahan Stok Otomatis:** Menyimpan faktur pembelian akan secara otomatis menambah stok buku di sistem inventaris.
+- **Pembelian Multi-Item dari Supplier:** Pilih supplier resmi, tentukan buku/ATK yang dipesan, kuantitas beli, dan harga beli grosir.
+- **Penambahan Stok Otomatis:** Menyimpan faktur pembelian akan secara otomatis menambah stok barang di sistem inventaris.
 - **Penomoran Faktur Unik:** Auto-generate nomor faktur pembelian berformat `FB-YYYYMMDD-NNNN`.
 
 ---
@@ -159,17 +159,20 @@ Berikut adalah rincian fungsionalitas modul-modul yang telah selesai dibangun da
 
 ---
 
-### 8. 📑 6 Jenis Laporan Eksekutif JasperReports (`FormLaporan`)
-Sistem terintegrasi dengan JasperReports 6.21 untuk menyusun laporan formal dengan filter periode tanggal:
-1. 📘 **Laporan Data Buku:** Katalog seluruh inventaris buku, harga beli, harga jual, dan stok saat ini.
-2. 💵 **Laporan Penjualan:** Rekapitulasi penjualan per rentang tanggal beserta nama kasir dan metode bayar.
-3. 🚚 **Laporan Pembelian:** Rekapitulasi belanja stok ke supplier per periode.
-4. ⚠️ **Laporan Stok Menipis:** Laporan prioritas restock untuk buku dengan stok di bawah ambang batas minimum.
-5. 📈 **Laporan Pendapatan & Laba:** Analisis keuangan komprehensif yang menghitung laba bersih toko per periode:
+### 8. 📑 7 Jenis Laporan Eksekutif JasperReports (`FormLaporan`)
+Sistem terintegrasi dengan JasperReports 6.21 untuk menyusun laporan formal dengan filter periode tanggal plus filter jenis barang (Semua/Buku/ATK) untuk laporan berbasis barang:
+1. 📦 **Laporan Data Master Barang:** Katalog seluruh inventaris (buku + ATK) dengan kolom Jenis, harga, dan stok saat ini.
+2. 💵 **Laporan Penjualan:** Rekapitulasi penjualan per rentang tanggal beserta nama kasir, metode bayar, dan kolom Diskon.
+3. 📊 **Laporan Laba Kotor / Margin:** Rincian modal vs omset per item (dengan kolom Jenis) beserta margin persen.
+4. 📈 **Laporan Pendapatan & Laba:** Analisis keuntungan per item (dengan kolom Jenis):
    $$\text{Laba} = (\text{Harga Jual} - \text{Harga Beli}) \times \text{Qty Terjual}$$
-6. 🏆 **Laporan Buku Terlaris:** Peringkat buku dengan volume penjualan tertinggi untuk mendukung keputusan pengadaan berikutnya.
+5. 🚚 **Laporan Pembelian:** Rekapitulasi belanja stok ke supplier per periode.
+6. 🤝 **Laporan Pengadaan Supplier:** Total belanja dan volume per mitra supplier.
+7. ↩️ **Laporan Retur Penjualan:** Daftar retur per periode beserta refund dana.
 
-> Semua laporan dapat dilihat langsung di jendela **JasperViewer** interaktif dan dapat diekspor menjadi dokumen **PDF** dengan sekali klik.
+Laporan Buku Terlaris dan Stok Menipis tidak lagi di menu laporan — keduanya tampil live di Dashboard. Kasir hanya dapat membuka laporan Penjualan dan Retur.
+
+> Semua laporan dapat dilihat langsung di jendela **JasperViewer** interaktif dan dapat diekspor menjadi dokumen **PDF**/**Excel (.xlsx)** dengan sekali klik.
 
 ---
 
@@ -178,6 +181,13 @@ Sistem terintegrasi dengan JasperReports 6.21 untuk menyusun laporan formal deng
 - **Registrasi Cepat Kasir (`RegisterDialog`):** Calon staf kasir dapat mendaftarkan akun secara mandiri melalui tombol "Daftar Akun Kasir" di form login, dengan peran default otomatis sebagai Kasir.
 - **Dialog Profil Pengguna (`ProfilSaya`):** Pengguna yang sedang login dapat memperbarui nama lengkap dan mengubah kata sandi mereka secara langsung dari bilah atas aplikasi.
 - **Manajemen Sesi Terisolasi (`Sesi.java`):** Menyimpan identitas pengguna aktif di memori aplikasi dan membersihkannya secara menyeluruh saat tombol Logout ditekan.
+
+---
+
+### 10. 🚀 Splash Startup Bertahap (`SplashScreen`)
+- **Jendela Pembuka Neobrutalism:** Logo toko + progress bar + label tahap sebelum form Login tampil.
+- **Tahap Berurutan:** Menyiapkan tampilan → Menghubungkan database → Memuat data master → Menyiapkan ikon → Siap.
+- **Gagal Database Terlihat Jelas:** Bila MySQL tidak terhubung, splash menampilkan pesan merah + tombol Tutup (tidak hang tanpa kabar).
 
 ---
 
