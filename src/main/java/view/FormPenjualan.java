@@ -473,7 +473,8 @@ public class FormPenjualan extends JPanel {
         double nominal = bacaPotongan();
         if (Double.isNaN(persen)) persen = 0;
         if (Double.isNaN(nominal)) nominal = 0;
-        String errDiskon = validasiDiskon(persen, nominal, subtotal);
+        double sisaSetelahPersen = subtotal - Math.round(subtotal * persen / 100.0);
+        String errDiskon = validasiDiskon(persen, nominal, sisaSetelahPersen);
         if (errDiskon != null) {
             JOptionPane.showMessageDialog(this, errDiskon,
                     "Validasi", JOptionPane.ERROR_MESSAGE);
