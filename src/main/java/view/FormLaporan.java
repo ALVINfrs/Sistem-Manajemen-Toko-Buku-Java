@@ -395,6 +395,11 @@ public class FormLaporan extends JPanel {
     // =========================================================================
 
     private void muatData() {
+        // Guard init-order: listener combo bisa fire saat konstruksi
+        // (setSelectedItem fire walau nilai sama) sebelum tabel dibangun.
+        if (modelPreview == null || tblPreview == null) {
+            return;
+        }
         try {
             currentRawData = terapkanFilterJenis(buildData(), filterTerpilih());
             setupTableColumnsAndData(currentRawData);
@@ -521,6 +526,9 @@ public class FormLaporan extends JPanel {
     }
 
     private void filterTabelLive() {
+        if (modelPreview == null) {
+            return;
+        }
         String kw = txtCariLive != null ? txtCariLive.getText().trim().toLowerCase() : "";
         if (kw.isEmpty()) {
             modelPreview.setRowCount(0);
