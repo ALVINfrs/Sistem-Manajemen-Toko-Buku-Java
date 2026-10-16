@@ -234,7 +234,7 @@ public class FormRetur extends JPanel {
 
         // Tabel Item dalam Nota
         modelItem = new DefaultTableModel(
-                new String[]{"No", "Kode", "Judul Buku", "Qty Beli", "Sudah", "Sisa", "Harga Jual"}, 0) {
+                new String[]{"No", "Kode", "Nama Barang", "Qty Beli", "Sudah", "Sisa", "Harga Jual"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -370,7 +370,7 @@ public class FormRetur extends JPanel {
 
         // Tabel Riwayat
         modelRiwayat = new DefaultTableModel(
-                new String[]{"No. Retur", "Tanggal", "No. Nota Asli", "Kode Buku", "Judul Buku", "Qty", "Harga Satuan", "Total Refund", "Alasan"}, 0) {
+                new String[]{"No. Retur", "Tanggal", "No. Nota Asli", "Kode", "Nama Barang", "Qty", "Harga Satuan", "Total Refund", "Alasan"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;

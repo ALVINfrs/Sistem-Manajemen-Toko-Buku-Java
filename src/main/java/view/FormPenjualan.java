@@ -92,7 +92,7 @@ public class FormPenjualan extends JPanel {
         card.setBackground(NeoBrutalTheme.SURFACE);
         card.setBorder(new NeoShadowBorder());
 
-        JLabel lbl = new JLabel("Cari Buku");
+        JLabel lbl = new JLabel("Cari Barang");
         lbl.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
         card.add(lbl, BorderLayout.NORTH);
 

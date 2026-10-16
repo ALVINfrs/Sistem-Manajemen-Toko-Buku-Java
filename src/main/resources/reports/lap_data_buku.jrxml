@@ -26,12 +26,12 @@
     <staticText><reportElement x="0" y="24" width="515" height="15"/><textElement textAlignment="Center"><font size="8"/></textElement><text><![CDATA[Jl. Raya Legok No.22, RT.6/RW.004, Jatimekar, Kec. Jatiasih, Kota Bks, Jawa Barat 17415 | Telp: 0851-5651-8509]]></text></staticText>
     <line><reportElement x="0" y="42" width="515" height="1"/><graphicElement><pen lineWidth="2.0" lineStyle="Solid"/></graphicElement></line>
     <line><reportElement x="0" y="45" width="515" height="1"/><graphicElement><pen lineWidth="0.5" lineStyle="Solid"/></graphicElement></line>
-    <staticText><reportElement x="0" y="52" width="515" height="22"/><textElement textAlignment="Center"><font size="13" isBold="true"/></textElement><text><![CDATA[LAPORAN MASTER DATA BUKU]]></text></staticText>
+    <staticText><reportElement x="0" y="52" width="515" height="22"/><textElement textAlignment="Center"><font size="13" isBold="true"/></textElement><text><![CDATA[LAPORAN MASTER DATA BARANG]]></text></staticText>
     <textField><reportElement x="0" y="74" width="515" height="16"/><textElement textAlignment="Center"><font size="10"/></textElement><textFieldExpression><![CDATA["Periode: " + $P{PERIODE}]]></textFieldExpression></textField>
   </band></title>
   <columnHeader><band height="24">
     <staticText><reportElement mode="Opaque" x="0" y="0" width="70" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[ Kode]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="70" y="0" width="145" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Judul Buku]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="70" y="0" width="145" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Nama Barang]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="215" y="0" width="60" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Jenis]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="275" y="0" width="70" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Kategori]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="345" y="0" width="80" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Penerbit]]></text></staticText>
@@ -52,8 +52,8 @@
   </band></pageFooter>
   <summary><band height="140">
     <line><reportElement x="0" y="4" width="515" height="1"/><graphicElement><pen lineWidth="1.0" lineStyle="Solid"/></graphicElement></line>
-    <staticText><reportElement x="70" y="8" width="165" height="20"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[TOTAL MASTER BUKU:]]></text></staticText>
-    <textField pattern="#,##0"><reportElement x="235" y="8" width="80" height="20"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{TOTAL_BUKU} + " Judul"]]></textFieldExpression></textField>
+    <staticText><reportElement x="70" y="8" width="165" height="20"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[TOTAL MASTER BARANG:]]></text></staticText>
+    <textField pattern="#,##0"><reportElement x="235" y="8" width="80" height="20"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{TOTAL_BUKU} + " Barang"]]></textFieldExpression></textField>
     <staticText><reportElement x="375" y="8" width="110" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Total Stok Fisik:]]></text></staticText>
     <textField pattern="#,##0"><reportElement x="485" y="8" width="30" height="20"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{TOTAL_STOK}]]></textFieldExpression></textField>
     <line><reportElement x="0" y="30" width="515" height="1"/><graphicElement><pen lineWidth="1.5" lineStyle="Solid"/></graphicElement></line>

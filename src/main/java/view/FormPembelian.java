@@ -135,7 +135,7 @@ public class FormPembelian extends JPanel {
         lblSupplierInfo.setForeground(new Color(0x55, 0x55, 0x55));
         pnlTop.add(lblSupplierInfo);
 
-        pnlTop.add(new JLabel("Cari Buku di Katalog:"));
+        pnlTop.add(new JLabel("Cari Barang di Katalog:"));
         JPanel pnlCari = new JPanel(new BorderLayout(6, 0));
         pnlCari.setBackground(NeoBrutalTheme.SURFACE);
         txtCari = new JTextField();

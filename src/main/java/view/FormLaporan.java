@@ -80,7 +80,7 @@ import util.Sesi;
 
 public class FormLaporan extends JPanel {
 
-    private static final String JENIS_BUKU = "Data Master Buku";
+    private static final String JENIS_BUKU = "Data Master Barang";
     private static final String JENIS_PENJUALAN = "Penjualan";
     private static final String JENIS_PEMBELIAN = "Pembelian";
     private static final String JENIS_PENDAPATAN = "Pendapatan";
@@ -262,7 +262,7 @@ public class FormLaporan extends JPanel {
         lblKpiMargin = new JLabel("0%", SwingConstants.CENTER);
 
         strip.add(createKpiCard("TOTAL DATA", lblKpiData, new Color(224, 231, 255))); // Soft blue
-        strip.add(createKpiCard("TOTAL VOLUME BUKU", lblKpiVolume, new Color(254, 240, 138))); // Soft yellow
+        strip.add(createKpiCard("TOTAL VOLUME BARANG", lblKpiVolume, new Color(254, 240, 138))); // Soft yellow
         strip.add(createKpiCard("TOTAL NOMINAL FINANSIAL", lblKpiFinansial, NeoBrutalTheme.PRIMARY)); // Neo Mint
         strip.add(createKpiCard("RATA-RATA / MARGIN", lblKpiMargin, new Color(254, 205, 211))); // Soft rose
 
@@ -433,7 +433,7 @@ public class FormLaporan extends JPanel {
                 break;
 
             case JENIS_LABA_KOTOR:
-                columns = new String[]{"No. Nota", "Tanggal", "Kode", "Judul Buku", "Jenis", "Qty", "Modal Satuan", "Jual Satuan", "Total Modal", "Total Omset", "Laba Kotor", "Margin %"};
+                columns = new String[]{"No. Nota", "Tanggal", "Kode", "Nama Barang", "Jenis", "Qty", "Modal Satuan", "Jual Satuan", "Total Modal", "Total Omset", "Laba Kotor", "Margin %"};
                 for (Object o : data) {
                     LapLabaKotor l = (LapLabaKotor) o;
                     String tgl = l.getTanggal() != null ? l.getTanggal().format(FMT_TGL) : "-";
@@ -447,7 +447,7 @@ public class FormLaporan extends JPanel {
                 break;
 
             case JENIS_PENDAPATAN:
-                columns = new String[]{"No. Nota", "Tanggal", "Judul Buku", "Jenis", "Qty", "Harga Beli", "Harga Jual", "Keuntungan (Laba)"};
+                columns = new String[]{"No. Nota", "Tanggal", "Nama Barang", "Jenis", "Qty", "Harga Beli", "Harga Jual", "Keuntungan (Laba)"};
                 for (Object o : data) {
                     LapPendapatan p = (LapPendapatan) o;
                     String tgl = p.getTanggal() != null ? p.getTanggal().format(FMT_TGL) : "-";
@@ -481,7 +481,7 @@ public class FormLaporan extends JPanel {
                 break;
 
             case JENIS_RETUR:
-                columns = new String[]{"No. Retur", "Tanggal", "No. Nota Asli", "Kode Buku", "Judul Buku", "Qty", "Harga Satuan", "Refund Dana", "Alasan"};
+                columns = new String[]{"No. Retur", "Tanggal", "No. Nota Asli", "Kode", "Nama Barang", "Qty", "Harga Satuan", "Refund Dana", "Alasan"};
                 for (Object o : data) {
                     LapRetur r = (LapRetur) o;
                     String tgl = r.getTanggal() != null ? r.getTanggal().format(FMT_TGL) : "-";
@@ -494,7 +494,7 @@ public class FormLaporan extends JPanel {
 
             case JENIS_BUKU:
             default:
-                columns = new String[]{"Kode Buku", "Judul Buku", "Jenis", "Kategori", "Penerbit", "Harga Jual", "Stok"};
+                columns = new String[]{"Kode", "Nama Barang", "Jenis", "Kategori", "Penerbit", "Harga Jual", "Stok"};
                 for (Object o : data) {
                     LapStok b = (LapStok) o;
                     allTableRows.add(new Object[]{
@@ -742,7 +742,7 @@ public class FormLaporan extends JPanel {
                     dataset, PlotOrientation.VERTICAL, false, true, false);
 
         } else {
-            // Data Master Buku (Distribusi Kategori)
+            // Data Master Barang (Distribusi Kategori)
             Map<String, Integer> mapKat = new HashMap<>();
             for (Object o : currentRawData) {
                 LapStok b = (LapStok) o;

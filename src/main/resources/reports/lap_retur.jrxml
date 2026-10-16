@@ -29,14 +29,14 @@
     <staticText><reportElement x="0" y="24" width="515" height="15"/><textElement textAlignment="Center"><font size="8"/></textElement><text><![CDATA[Jl. Raya Legok No.22, RT.6/RW.004, Jatimekar, Kec. Jatiasih, Kota Bks, Jawa Barat 17415 | Telp: 0851-5651-8509]]></text></staticText>
     <line><reportElement x="0" y="42" width="515" height="1"/><graphicElement><pen lineWidth="2.0" lineStyle="Solid"/></graphicElement></line>
     <line><reportElement x="0" y="45" width="515" height="1"/><graphicElement><pen lineWidth="0.5" lineStyle="Solid"/></graphicElement></line>
-    <staticText><reportElement x="0" y="52" width="515" height="22"/><textElement textAlignment="Center"><font size="13" isBold="true"/></textElement><text><![CDATA[LAPORAN RETUR PENJUALAN BUKU]]></text></staticText>
+    <staticText><reportElement x="0" y="52" width="515" height="22"/><textElement textAlignment="Center"><font size="13" isBold="true"/></textElement><text><![CDATA[LAPORAN RETUR PENJUALAN]]></text></staticText>
     <textField><reportElement x="0" y="74" width="515" height="16"/><textElement textAlignment="Center"><font size="10"/></textElement><textFieldExpression><![CDATA["Periode: " + $P{PERIODE}]]></textFieldExpression></textField>
   </band></title>
   <columnHeader><band height="24">
     <staticText><reportElement mode="Opaque" x="0" y="0" width="90" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[ No. Retur]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="90" y="0" width="75" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Tanggal]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="165" y="0" width="80" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[No. Nota]]></text></staticText>
-    <staticText><reportElement mode="Opaque" x="245" y="0" width="125" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Buku / Judul]]></text></staticText>
+    <staticText><reportElement mode="Opaque" x="245" y="0" width="125" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Nama Barang]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="370" y="0" width="35" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Qty ]]></text></staticText>
     <staticText><reportElement mode="Opaque" x="405" y="0" width="110" height="24" backcolor="#1E293B" forecolor="#FFFFFF"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Refund (Rp) ]]></text></staticText>
   </band></columnHeader>
