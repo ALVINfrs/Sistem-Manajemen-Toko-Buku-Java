@@ -7,12 +7,9 @@ import dao.KategoriDAOImpl;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +23,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -38,7 +34,6 @@ import org.kordamp.ikonli.materialdesign2.MaterialDesignM;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignP;
 import org.kordamp.ikonli.swing.FontIcon;
 import util.NeoBrutalTheme;
-import util.NeoShadowBorder;
 import util.Validasi;
 
 public class FormKategori extends JPanel {
@@ -71,8 +66,8 @@ public class FormKategori extends JPanel {
         };
         table = new JTable(model);
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane scroll = new JScrollPane(table);
-        scroll.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        NeoTableStyle.apply(table);
+        JScrollPane scroll = NeoTableStyle.wrap(table);
 
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) isiFieldDariBaris();
@@ -90,20 +85,15 @@ public class FormKategori extends JPanel {
     }
 
     private JPanel buildNorth() {
-        JPanel pnl = new JPanel(new BorderLayout(8, 8));
-        pnl.setBackground(NeoBrutalTheme.BG);
-        JLabel lblJudul = new JLabel("Data Kategori");
-        lblJudul.setFont(new Font("Segoe UI Black", Font.BOLD, 22));
-        lblJudul.setForeground(Color.BLACK);
-        pnl.add(lblJudul, BorderLayout.WEST);
-
         JPanel pnlSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        pnlSearch.setBackground(NeoBrutalTheme.BG);
-        JLabel lblCari = new JLabel("Cari", FontIcon.of(MaterialDesignM.MAGNIFY, 20, Color.BLACK),
-                SwingConstants.LEFT);
-        lblCari.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        txtSearch = new JTextField(20);
-        txtSearch.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        pnlSearch.setOpaque(false);
+
+        JLabel lblCari = NeoFormStyle.label("Cari");
+        lblCari.setIcon(FontIcon.of(MaterialDesignM.MAGNIFY, 18, NeoBrutalTheme.INK));
+        lblCari.setIconTextGap(5);
+
+        txtSearch = NeoFormStyle.field("search");
+        txtSearch.setColumns(20);
         txtSearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { cari(txtSearch.getText()); }
             @Override public void removeUpdate(DocumentEvent e) { cari(txtSearch.getText()); }
@@ -111,45 +101,44 @@ public class FormKategori extends JPanel {
         });
         pnlSearch.add(lblCari);
         pnlSearch.add(txtSearch);
-        pnl.add(pnlSearch, BorderLayout.EAST);
-        return pnl;
+
+        return new NeoPageHeader("MASTER DATA", "Data Kategori",
+                "Kelompokkan buku dan ATK agar katalog rapi.", pnlSearch);
     }
 
     private JPanel buildInputCard() {
-        JPanel card = new JPanel(new GridBagLayout());
-        card.setBackground(NeoBrutalTheme.SURFACE);
-        card.setBorder(new NeoShadowBorder());
+        JPanel card = NeoFormStyle.card(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 8, 5, 8);
+        gbc.insets = new Insets(4, 8, 4, 8);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
 
-        txtNama = new JTextField(16);
-        txtNama.setName("nama_kategori");
-        txtNama.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        txtDeskripsi = new JTextField(16);
-        txtDeskripsi.setName("deskripsi");
-        txtDeskripsi.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        txtNama = NeoFormStyle.field("nama_kategori");
+        txtDeskripsi = NeoFormStyle.field("deskripsi");
 
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0;
-        JLabel lbl = new JLabel("Nama Kategori");
-        lbl.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        card.add(lbl, gbc);
+        card.add(NeoFormStyle.section("Nama Kategori"), gbc);
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         card.add(txtNama, gbc);
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.weightx = 0;
-        JLabel lblDeskripsi = new JLabel("Deskripsi");
-        lblDeskripsi.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        card.add(lblDeskripsi, gbc);
+        card.add(NeoFormStyle.section("Deskripsi"), gbc);
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         card.add(txtDeskripsi, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        card.add(javax.swing.Box.createGlue(), gbc);
         return card;
     }
 
@@ -174,30 +163,8 @@ public class FormKategori extends JPanel {
         return pnl;
     }
 
-    private JButton styledButton(String teks, FontIcon ikon, Color bg) {
-        JButton b = new JButton(teks, ikon);
-        b.setIconTextGap(8);
-        b.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        b.setBackground(bg);
-        b.setForeground(Color.BLACK);
-        b.setBorder(new NeoShadowBorder());
-        b.setFocusPainted(false);
-        addPressEffect(b);
-        return b;
-    }
-
-    private void addPressEffect(JButton btn) {
-        btn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                btn.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                btn.setBorder(new NeoShadowBorder());
-            }
-        });
+    private NeoButton styledButton(String teks, FontIcon ikon, Color bg) {
+        return NeoFormStyle.button(teks, ikon, bg);
     }
 
     public void loadTable() {
