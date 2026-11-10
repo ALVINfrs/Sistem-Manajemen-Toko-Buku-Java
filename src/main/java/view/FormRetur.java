@@ -405,7 +405,7 @@ public class FormRetur extends JPanel {
         String tgl = p.getTanggal() != null ? p.getTanggal().format(FMT_TGL) : "-";
         String cust = "Umum";
 
-        lblInfoNota.setText("ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾ Nota: " + p.getNoNota() + " | Tgl: " + tgl + " | Pelanggan: " + cust + " | Total: " + formatRp(p.getTotal()));
+        lblInfoNota.setText("Nota: " + p.getNoNota() + " | Tgl: " + tgl + " | Pelanggan: " + cust + " | Total: " + formatRp(p.getTotal()));
         refreshItem();
         resetFormInput();
     }
@@ -442,15 +442,15 @@ public class FormRetur extends JPanel {
     private void itemNotaDipilih() {
         int row = tblItem.getSelectedRow();
         if (row < 0 || row >= detailNota.size()) {
-            lblItemPilihan.setText("ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Klik salah satu item buku pada tabel di atas untuk retur.");
-            lblRefundInfo.setText("ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â° Uang Kembali (Refund): Rp 0");
+            lblItemPilihan.setText("Klik salah satu item buku pada tabel di atas untuk retur.");
+            lblRefundInfo.setText("Uang Kembali (Refund): Rp 0");
             return;
         }
         DetailPenjualan d = detailNota.get(row);
         int sudah = returDAO.getReturQty(nota.getIdPenjualan(), d.getIdBuku());
         int sisa = d.getQty() - sudah;
 
-        lblItemPilihan.setText("ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â° [" + d.getKodeBuku() + "] " + d.getJudul()
+        lblItemPilihan.setText("[" + d.getKodeBuku() + "] " + d.getJudul()
                 + " | Harga: " + formatRp(d.getHargaJual())
                 + " | Maksimal retur: " + sisa + " pcs");
 
@@ -458,7 +458,7 @@ public class FormRetur extends JPanel {
             txtQty.setText("0");
             txtQty.setEnabled(false);
             txtAlasan.setEnabled(false);
-            lblRefundInfo.setText("ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Semua kuantitas buku ini sudah selesai diretur.");
+            lblRefundInfo.setText("Semua kuantitas buku ini sudah selesai diretur.");
         } else {
             txtQty.setEnabled(true);
             txtAlasan.setEnabled(true);
@@ -472,13 +472,13 @@ public class FormRetur extends JPanel {
     private void updateLiveRefund() {
         int row = tblItem.getSelectedRow();
         if (row < 0 || row >= detailNota.size()) {
-            lblRefundInfo.setText("ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â° Uang Kembali (Refund): Rp 0");
+            lblRefundInfo.setText("Uang Kembali (Refund): Rp 0");
             return;
         }
         DetailPenjualan d = detailNota.get(row);
         String text = txtQty.getText().trim();
         if (text.isEmpty()) {
-            lblRefundInfo.setText("ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â° Uang Kembali (Refund): Rp 0");
+            lblRefundInfo.setText("Uang Kembali (Refund): Rp 0");
             return;
         }
         try {
@@ -487,15 +487,15 @@ public class FormRetur extends JPanel {
             int sisa = d.getQty() - sudah;
 
             if (q <= 0) {
-                lblRefundInfo.setText("ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Qty retur harus minimal 1 pcs");
+                lblRefundInfo.setText("Qty retur harus minimal 1 pcs");
             } else if (q > sisa) {
-                lblRefundInfo.setText("ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Melebihi batas sisa (" + sisa + " pcs)!");
+                lblRefundInfo.setText("Melebihi batas sisa (" + sisa + " pcs)!");
             } else {
                 double refund = q * d.getHargaJual();
-                lblRefundInfo.setText("ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â° Uang Kembali (Refund): " + formatRp(refund) + " (" + q + " x " + formatRp(d.getHargaJual()) + ")");
+                lblRefundInfo.setText("Uang Kembali (Refund): " + formatRp(refund) + " (" + q + " x " + formatRp(d.getHargaJual()) + ")");
             }
         } catch (NumberFormatException e) {
-            lblRefundInfo.setText("ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Masukkan angka kuantitas yang valid");
+            lblRefundInfo.setText("Masukkan angka kuantitas yang valid");
         }
     }
 
@@ -505,8 +505,8 @@ public class FormRetur extends JPanel {
         txtAlasan.setText("");
         txtQty.setEnabled(true);
         txtAlasan.setEnabled(true);
-        lblItemPilihan.setText("ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Klik salah satu item buku pada tabel di atas untuk retur.");
-        lblRefundInfo.setText("ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â° Uang Kembali (Refund): Rp 0");
+        lblItemPilihan.setText("Klik salah satu item buku pada tabel di atas untuk retur.");
+        lblRefundInfo.setText("Uang Kembali (Refund): Rp 0");
     }
 
     private void doSimpan() {
@@ -551,10 +551,10 @@ public class FormRetur extends JPanel {
         double totalRefund = qtyRetur * d.getHargaJual();
         int konfirm = JOptionPane.showConfirmDialog(this,
                 "Konfirmasi Penyelesaian Retur:\n"
-                + "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Buku: [" + d.getKodeBuku() + "] " + d.getJudul() + "\n"
-                + "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Qty Retur: " + qtyRetur + " pcs\n"
-                + "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Alasan: " + alasan + "\n"
-                + "ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Total Refund (Dana Kembali): " + formatRp(totalRefund) + "\n\n"
+                + "Buku: [" + d.getKodeBuku() + "] " + d.getJudul() + "\n"
+                + "Qty Retur: " + qtyRetur + " pcs\n"
+                + "Alasan: " + alasan + "\n"
+                + "Total Refund (Dana Kembali): " + formatRp(totalRefund) + "\n\n"
                 + "Lanjutkan simpan dan cetak bukti retur?",
                 "Konfirmasi Retur", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
@@ -640,7 +640,7 @@ public class FormRetur extends JPanel {
             });
         }
 
-        lblRiwayatSummary.setText("ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã‚Â  Total: " + list.size() + " Transaksi Retur | "
+        lblRiwayatSummary.setText("Total: " + list.size() + " Transaksi Retur | "
                 + totalPcs + " Pcs Buku Masuk Gudang | Total Dana Refund: " + formatRp(totalRefundSemua));
     }
 
