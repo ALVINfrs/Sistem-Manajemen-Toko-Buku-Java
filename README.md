@@ -73,7 +73,7 @@ Sistem ini didesain secara spesifik untuk memberikan dampak nyata bagi operasion
 
 Sistem ini mengusung bahasa visual **Neobrutalism** yang diimplementasikan di atas engine **FlatLaf**:
 - **Border Hitam Tegas + Hard Shadow:** Border 2–4px solid hitam, bayangan offset tanpa blur (`NeoShadowBorder`), dan `arc 0` di seluruh komponen (tanpa rounded corner).
-- **Palet Warna Berani (Ronde 6):**
+- **Palet Warna Berani (Ronde 6–7):**
   - `BRAND_MAROON`: Maroon Logo (`#7A0B2E`)
   - `BRAND_TEAL`: Teal Logo (`#00A7C4`)
   - `BACKGROUND`: Cream Hangat (`#FFFBEA`)
@@ -84,6 +84,9 @@ Sistem ini mengusung bahasa visual **Neobrutalism** yang diimplementasikan di at
 - **Tipografi Display + Aksen Mono:** Judul memakai *Arial Black*/*Bahnschrift*/*Segoe UI Black*; aksen label memakai *Consolas*/*Cascadia Mono*; teks body memakai *Segoe UI* (semua font sistem, tanpa file font tambahan).
 - **Motion System Ringan (`util.Motion`):** Animasi berbasis `javax.swing.Timer` + easing (stagger entrance, press feedback, shake error, curtain wipe) tanpa dependency animasi baru.
 - **Tiga Layar Pertama Redesign (Ronde 6):** Splash 900×560 dengan ticker + 5 segmen progress + shape drift; Login 1080×680 split-screen maroon/cream; Register halaman penuh teal/cream dalam window yang sama.
+- **Shell Internal Neobrutalism (Ronde 7):** Sidebar maroon 240px, konten cream, dan top bar cream; menu aktif teal dengan border hitam + hard shadow; transisi modul fade + slide 160ms tanpa animasi berlebihan.
+- **Shared Skin Internal:** `NeoPageHeader` (kicker mono + judul display + subtitle), `NeoFormStyle` (field, combo, card, label, tombol), `NeoTableStyle` (header hitam + baris cream/putih), `NeoChartStyle`, `NeoButton`, dan `SidebarButton` dipakai konsisten di seluruh halaman internal.
+- **Dashboard Hybrid Editorial:** Hero omzet maroon dengan aksen kuning, tiga kartu KPI, dua chart, dan tabel stok menipis; chart memakai axis hitam tebal, bar flat + outline, serta hard shadow.
 - **Top Bar Dinamis:** Dilengkapi jam digital *live second counter*, tanggal format bahasa Indonesia, badge status peran, dan navigasi menu *Profil Saya*.
 
 ---
@@ -93,14 +96,15 @@ Sistem ini mengusung bahasa visual **Neobrutalism** yang diimplementasikan di at
 Berikut adalah rincian fungsionalitas modul-modul yang telah selesai dibangun dan teruji pada source code:
 
 ### 1. 📊 Dashboard Interaktif & Analitik Penjualan (`FormDashboard`)
-- **Kartu Metrik KPI Real-Time:**
-  - 💰 *Omzet Hari Ini*: Akumulasi pendapatan kotor hari ini dalam format Rupiah.
-  - 🧾 *Transaksi Hari Ini*: Jumlah nota transaksi yang berhasil diselesaikan hari ini.
-  - 📦 *Item Terjual Hari Ini*: Total item barang (buku maupun ATK) yang terjual hari ini.
-  - ⚠️ *Stok Menipis*: Jumlah varian barang yang memiliki stok $\le 5$ pcs.
-- **Visualisasi Grafik JFreeChart:**
-  - 📈 *Grafik Tren Omzet 7 Hari*: Bar chart interaktif pendapatan harian selama sepekan.
-  - 🏆 *Top 5 Barang Terlaris*: Horizontal bar chart peringkat barang yang paling banyak terjual bulan ini.
+- **Hero Omzet + Tiga KPI:**
+  - 💰 *Omzet Hari Ini*: hero maroon dengan aksen kuning, akumulasi pendapatan kotor hari ini dalam format Rupiah.
+  - 🧾 *Transaksi Hari Ini*: jumlah nota transaksi yang berhasil diselesaikan hari ini.
+  - 📦 *Item Terjual Hari Ini*: total item barang (buku maupun ATK) yang terjual hari ini.
+  - ⚠️ *Stok Menipis*: jumlah varian barang yang memiliki stok $\le 5$ pcs.
+- **Visualisasi Grafik Neobrutalism:**
+  - 📈 *Grafik Tren Omzet 7 Hari*: bar chart pendapatan harian selama sepekan.
+  - 🏆 *Top 5 Barang Terlaris*: bar chart peringkat barang yang paling banyak terjual bulan ini.
+  - Axis hitam tebal, bar flat dengan outline hitam, grid tipis, dan hard shadow; empty state tetap menampilkan panel chart dengan subtitle informatif.
 - **Watchlist Stok Kritis:** Tabel peringatan cepat di bagian bawah dashboard yang menampilkan daftar barang dengan stok kritis beserta tombol pengingat restock.
 
 ---
@@ -163,6 +167,8 @@ Berikut adalah rincian fungsionalitas modul-modul yang telah selesai dibangun da
 
 ### 8. 📑 7 Jenis Laporan Eksekutif JasperReports (`FormLaporan`)
 Sistem terintegrasi dengan JasperReports 6.21 untuk menyusun laporan formal dengan filter periode tanggal plus filter jenis barang (Semua/Buku/ATK) untuk laporan berbasis barang:
+
+> Struktur FormLaporan tetap seperti sebelumnya (filter, 4 KPI, tab Tabel/Grafik, dan export). Ronde 7 hanya menyamakan visual: header shared, filter card, KPI card berwarna, tabel neobrutalism, dan chart bertema.
 1. 📦 **Laporan Data Master Barang:** Katalog seluruh inventaris (buku + ATK) dengan kolom Jenis, harga, dan stok saat ini.
 2. 💵 **Laporan Penjualan:** Rekapitulasi penjualan per rentang tanggal beserta nama kasir, metode bayar, dan kolom Diskon.
 3. 📊 **Laporan Laba Kotor / Margin:** Rincian modal vs omset per item (dengan kolom Jenis) beserta margin persen.
@@ -314,6 +320,7 @@ E:\Sistem-Informasi-Manajemen-Toko-Buku\
 │   │   ├── NotaGenerator.java      # Generator nomor dokumen transaksi otomatis
 │   │   ├── NeoBrutalTheme.java     # Definisi warna, font, & styling Neobrutalism
 │   │   ├── NeoShadowBorder.java    # Custom border bayangan tebal solid
+│   │   ├── NeoChartStyle.java      # Styling chart: axis hitam, bar flat, hard shadow
 │   │   ├── Motion.java             # Timer + easing untuk animasi Swing
 │   │   └── Validasi.java           # Utilitas validasi input pengguna
 │   └── 📂 view/                    # Komponen Antarmuka Grafis (Swing Forms)
@@ -323,15 +330,23 @@ E:\Sistem-Informasi-Manajemen-Toko-Buku\
 │       ├── AuthScaffold.java       # Kerangka panel brand + form + ticker auth
 │       ├── SplashScreen.java       # Jendela splash + tahap inisialisasi + curtain exit
 │       ├── SplashBrandPanel.java   # Panel logo + shape drift splash
-│       ├── MenuUtama.java          # Frame utama aplikasi (Sidebar + Content Switcher)
+│       ├── MenuUtama.java          # Frame utama (sidebar maroon + top bar + content switcher)
+│       ├── SidebarButton.java      # Tombol menu sidebar dengan state aktif teal
+│       ├── MotionPanel.java        # Panel fade/slide untuk transisi modul
+│       ├── NeoPageHeader.java      # Header halaman: kicker mono + judul display + subtitle
+│       ├── NeoFormStyle.java       # Skin shared field, combo, card, label, dan tombol
+│       ├── NeoTableStyle.java      # Skin shared tabel + scrollpane
+│       ├── NeoButton.java          # Tombol hard shadow + press feedback
 │       ├── ProfilSaya.java         # Dialog ubah profil dan password pengguna
-│       ├── FormDashboard.java      # Halaman dasbor metrik dan grafik penjualan
+│       ├── FormDashboard.java      # Hero omzet + KPI + 2 chart + tabel stok
 │       ├── FormPenjualan.java      # Halaman Point of Sale (POS) kasir
 │       ├── StrukDialog.java        # Pratinjau dan pencetakan struk belanja kasir
+│       ├── StrukReturDialog.java   # Bukti retur bertema neobrutalism
+│       ├── FakturPembelianDialog.java # Faktur pembelian bertema neobrutalism
 │       ├── FormPembelian.java      # Halaman pengadaan barang dari supplier
 │       ├── FormRetur.java          # Halaman retur buku bermasalah
 │       ├── FormRiwayat.java        # Halaman audit dan riwayat nota transaksi
-│       ├── FormLaporan.java        # Halaman filter dan preview 6 laporan
+│       ├── FormLaporan.java        # Halaman filter dan preview 7 laporan
 │       └── FormBuku, FormKategori, FormPenerbit, FormSupplier, FormAtk, FormUser
 ├── 📂 src/main/resources/          # Aset non-kode aplikasi
 │   ├── 📂 images/                  # Aset grafis
@@ -496,7 +511,7 @@ Setelah mengimpor database (`db_toko_buku.sql` atau `seed_demo.sql`), Anda dapat
 
 | Username | Password | Peran (Role) | Akses Fitur Utama |
 |---|:---:|:---:|---|
-| **`admin`** | **`admin123`** | **Admin** | Seluruh Modul: Master Data, User, Transaksi POS, Restock, Retur, 6 Laporan Lengkap |
+| **`admin`** | **`admin123`** | **Admin** | Seluruh Modul: Master Data, User, Transaksi POS, Restock, Retur, 7 Laporan Lengkap |
 | **`kasir`** | **`kasir123`** | **Kasir** | Modul Kasir: POS Penjualan, Retur Pelanggan, Riwayat Transaksi Pribadi, Laporan Penjualan Pribadi |
 
 > [!IMPORTANT]
@@ -534,7 +549,7 @@ Untuk memastikan seluruh modul berfungsi sempurna, Anda dapat mencoba skenario p
 
 ### Skenario 2: Operasional Penuh Administrator
 1. Buka aplikasi, masuk dengan akun: `admin` / `admin123`.
-2. **Dashboard Interaktif:** Perhatikan angka KPI omzet dan transaksi bertambah sesuai penjualan yang dilakukan kasir tadi. Amati grafik JFreeChart yang terisi secara dinamis.
+2. **Dashboard Interaktif:** Perhatikan hero omzet maroon, tiga kartu KPI (transaksi, item terjual, stok menipis), dua chart neobrutalism, dan tabel stok menipis. Angka KPI dan grafik bertambah sesuai penjualan yang dilakukan kasir tadi.
 3. **Master Data:** Buka menu **Buku**, coba tambah data judul buku baru, edit harganya, atau lakukan pencarian live.
 4. **Pembelian / Restock:** Buka menu **Pembelian**, pilih supplier, pilih buku, tentukan jumlah stok yang dipasok, dan klik Simpan. Kembali ke master buku untuk memverifikasi stoknya telah bertambah.
 5. **Retur Barang:** Buka menu **Retur**, ketik nomor nota penjualan kasir sebelumnya. Pilih buku yang ingin diretur, isi kuantitas dan alasan $\rightarrow$ Klik Simpan. Verifikasi stok buku di master bertambah kembali.
