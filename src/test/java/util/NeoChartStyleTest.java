@@ -87,4 +87,27 @@ class NeoChartStyleTest {
         assertInstanceOf(CompoundBorder.class, card.getBorder());
         assertEquals(NeoBrutalTheme.SURFACE, card.getBackground());
     }
+
+    @Test
+    void centerCardCapsWidthAndKeepsItCentered() {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        dataset.addValue(10, "Omzet", "Sen");
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Tes", "Hari", "Rp", dataset,
+                PlotOrientation.VERTICAL, false, true, false);
+
+        JPanel card = NeoChartStyle.card(chart);
+        JPanel host = NeoChartStyle.centerCard(card, 800);
+
+        host.setSize(1200, 300);
+        host.doLayout();
+        assertEquals(800, card.getWidth());
+        assertEquals(200, card.getX());
+        assertEquals(300, card.getHeight());
+
+        host.setSize(700, 300);
+        host.doLayout();
+        assertEquals(700, card.getWidth());
+        assertEquals(0, card.getX());
+    }
 }

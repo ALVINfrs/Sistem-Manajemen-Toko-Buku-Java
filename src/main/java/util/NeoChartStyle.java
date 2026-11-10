@@ -103,6 +103,40 @@ public final class NeoChartStyle {
         return card;
     }
 
+    /**
+     * Memusatkan card chart dan membatasi lebarnya agar plot tidak melar
+     * saat window dimaksimalkan.
+     */
+    public static JPanel centerCard(JPanel card, int maxWidth) {
+        return new CenteredCard(card, maxWidth);
+    }
+
+    private static final class CenteredCard extends JPanel {
+
+        private final JPanel card;
+        private final int maxWidth;
+
+        CenteredCard(JPanel card, int maxWidth) {
+            super(null);
+            this.card = card;
+            this.maxWidth = Math.max(1, maxWidth);
+            setOpaque(false);
+            add(card);
+        }
+
+        @Override
+        public void doLayout() {
+            int lebar = Math.min(getWidth(), maxWidth);
+            int x = Math.max(0, (getWidth() - lebar) / 2);
+            card.setBounds(x, 0, lebar, getHeight());
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return card.getPreferredSize();
+        }
+    }
+
     private static void styleAxis(Axis axis) {
         if (axis == null) {
             return;

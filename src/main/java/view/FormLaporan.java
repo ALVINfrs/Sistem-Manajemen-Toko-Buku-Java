@@ -748,12 +748,9 @@ public class FormLaporan extends JPanel {
         String judulChart = chart.getTitle() != null ? chart.getTitle().getText() : "";
         chart.setTitle((String) null);
 
-        JPanel pnlChart = new JPanel(new BorderLayout(0, 6));
-        pnlChart.setOpaque(false);
         JLabel lblJudulChart = new JLabel(judulChart);
         lblJudulChart.setFont(NeoBrutalTheme.display(14));
         lblJudulChart.setForeground(NeoBrutalTheme.INK);
-        pnlChart.add(lblJudulChart, BorderLayout.NORTH);
 
         JPanel chartCard = NeoChartStyle.card(chart);
         for (java.awt.Component isi : chartCard.getComponents()) {
@@ -762,7 +759,15 @@ public class FormLaporan extends JPanel {
                 isi.setMinimumSize(new Dimension(0, 0));
             }
         }
-        pnlChart.add(chartCard, BorderLayout.CENTER);
+
+        JPanel chartBody = new JPanel(new BorderLayout(0, 6));
+        chartBody.setOpaque(false);
+        chartBody.add(lblJudulChart, BorderLayout.NORTH);
+        chartBody.add(chartCard, BorderLayout.CENTER);
+
+        JPanel pnlChart = new JPanel(new BorderLayout());
+        pnlChart.setOpaque(false);
+        pnlChart.add(NeoChartStyle.centerCard(chartBody, 800), BorderLayout.CENTER);
 
         pnlChartContainer.add(pnlChart, BorderLayout.CENTER);
         pnlChartContainer.revalidate();
