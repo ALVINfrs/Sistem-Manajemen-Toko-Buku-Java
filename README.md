@@ -72,16 +72,18 @@ Sistem ini didesain secara spesifik untuk memberikan dampak nyata bagi operasion
 ## 🎨 3. Desain UI Neobrutalism Modern
 
 Sistem ini mengusung bahasa visual **Neobrutalism** yang diimplementasikan di atas engine **FlatLaf**:
-- **Border Hitam Tegas (2px Solid Black):** Memberikan batas kontras tinggi yang jelas antar komponen.
-- **Hard Offset Shadow (Tanpa Blur):** Efek bayangan tegas khas retro-pop modern (`NeoShadowBorder`).
-- **Palet Warna Segar & Berkarakter:**
+- **Border Hitam Tegas + Hard Shadow:** Border 2–4px solid hitam, bayangan offset tanpa blur (`NeoShadowBorder`), dan `arc 0` di seluruh komponen (tanpa rounded corner).
+- **Palet Warna Berani (Ronde 6):**
+  - `BRAND_MAROON`: Maroon Logo (`#7A0B2E`)
+  - `BRAND_TEAL`: Teal Logo (`#00A7C4`)
+  - `BACKGROUND`: Cream Hangat (`#FFFBEA`)
   - `SURFACE`: Putih Bersih (`#FFFFFF`)
-  - `BACKGROUND`: Abu-abu Lembut (`#F8F9FA`)
-  - `PRIMARY ACCENT`: Kuning Cerah Pop (`#FFE600`)
-  - `SECONDARY ACCENT`: Biru Lembut (`#BDE0FE`)
-  - `SUCCESS`: Hijau Mint Neon (`#A3E635`)
-  - `DANGER`: Merah Coral (`#F87171`)
-- **Tipografi Bersih & Tegas:** Menggunakan keluarga font *Segoe UI Black* dan *Segoe UI Semibold* untuk hirarki teks yang mudah dibaca.
+  - `PRIMARY`: Coral Pop (`#FF5A5F`), `SECONDARY`: Cobalt (`#4D9DE0`)
+  - `SUCCESS`: Teal Mint (`#2EC4B6`), `WARNING`: Kuning (`#FFB703`), `DANGER`: Merah (`#E63946`)
+  - `INK`: Hitam Pekat (`#000000`)
+- **Tipografi Display + Aksen Mono:** Judul memakai *Arial Black*/*Bahnschrift*/*Segoe UI Black*; aksen label memakai *Consolas*/*Cascadia Mono*; teks body memakai *Segoe UI* (semua font sistem, tanpa file font tambahan).
+- **Motion System Ringan (`util.Motion`):** Animasi berbasis `javax.swing.Timer` + easing (stagger entrance, press feedback, shake error, curtain wipe) tanpa dependency animasi baru.
+- **Tiga Layar Pertama Redesign (Ronde 6):** Splash 900×560 dengan ticker + 5 segmen progress + shape drift; Login 1080×680 split-screen maroon/cream; Register halaman penuh teal/cream dalam window yang sama.
 - **Top Bar Dinamis:** Dilengkapi jam digital *live second counter*, tanggal format bahasa Indonesia, badge status peran, dan navigasi menu *Profil Saya*.
 
 ---
@@ -178,16 +180,19 @@ Laporan Buku Terlaris dan Stok Menipis tidak lagi di menu laporan — keduanya t
 
 ### 9. 🔐 Keamanan, Autentikasi & Profil Pengguna
 - **Enkripsi Sandi SHA-256:** Password disimpan dalam bentuk hash heksadesimal lowercase (`util.HashUtil`), bukan plain text.
-- **Registrasi Cepat Kasir (`RegisterDialog`):** Calon staf kasir dapat mendaftarkan akun secara mandiri melalui tombol "Daftar Akun Kasir" di form login, dengan peran default otomatis sebagai Kasir.
+- **Registrasi Mandiri Kasir (`RegisterPage`):** Calon staf kasir mendaftar dari tombol "Daftar Akun" di layar Login. Register tampil sebagai halaman penuh di window yang sama (bukan dialog), memakai transisi curtain, dan akun baru otomatis berperan Kasir.
+- **Error Inline Tanpa Popup:** Kesalahan login/register ditampilkan sebagai label merah di bawah field disertai animasi *shake*; tidak ada `JOptionPane` yang menghalangi alur.
+- **Toggle Lihat Password:** Ikon mata (`EYE`/`EYE_OFF`) pada field password Login dan Register.
 - **Dialog Profil Pengguna (`ProfilSaya`):** Pengguna yang sedang login dapat memperbarui nama lengkap dan mengubah kata sandi mereka secara langsung dari bilah atas aplikasi.
 - **Manajemen Sesi Terisolasi (`Sesi.java`):** Menyimpan identitas pengguna aktif di memori aplikasi dan membersihkannya secara menyeluruh saat tombol Logout ditekan.
 
 ---
 
 ### 10. 🚀 Splash Startup Bertahap (`SplashScreen`)
-- **Jendela Pembuka Neobrutalism:** Logo toko + progress bar + label tahap sebelum form Login tampil.
+- **Jendela Pembuka Neobrutalism 900×560:** Logo toko ukuran besar di kartu cream, wordmark **CV. Almira Jaya Abadi**, ticker teal berjalan, dan lima blok progress.
+- **Shape Drift & Curtain Exit:** Bentuk geometris (bintang/plus/lingkaran/kotak) bergerak halus; setelah siap, splash keluar dengan *curtain wipe* ke atas dan langsung menampilkan Login.
 - **Tahap Berurutan:** Menyiapkan tampilan → Menghubungkan database → Memuat data master → Menyiapkan ikon → Siap.
-- **Gagal Database Terlihat Jelas:** Bila MySQL tidak terhubung, splash menampilkan pesan merah + tombol Tutup (tidak hang tanpa kabar).
+- **Gagal Database Terlihat Jelas:** Bila MySQL tidak terhubung, splash menampilkan pesan merah + tombol Tutup (tidak hang tanpa kabar, tanpa retry otomatis).
 
 ---
 
@@ -309,10 +314,15 @@ E:\Sistem-Informasi-Manajemen-Toko-Buku\
 │   │   ├── NotaGenerator.java      # Generator nomor dokumen transaksi otomatis
 │   │   ├── NeoBrutalTheme.java     # Definisi warna, font, & styling Neobrutalism
 │   │   ├── NeoShadowBorder.java    # Custom border bayangan tebal solid
+│   │   ├── Motion.java             # Timer + easing untuk animasi Swing
 │   │   └── Validasi.java           # Utilitas validasi input pengguna
 │   └── 📂 view/                    # Komponen Antarmuka Grafis (Swing Forms)
-│       ├── Login.java              # Form login utama
-│       ├── RegisterDialog.java     # Dialog pendaftaran mandiri akun Kasir
+│       ├── Login.java              # Router Login/Register (CardLayout + curtain)
+│       ├── LoginPage.java          # Halaman form login split-screen
+│       ├── RegisterPage.java       # Halaman penuh pendaftaran akun Kasir
+│       ├── AuthScaffold.java       # Kerangka panel brand + form + ticker auth
+│       ├── SplashScreen.java       # Jendela splash + tahap inisialisasi + curtain exit
+│       ├── SplashBrandPanel.java   # Panel logo + shape drift splash
 │       ├── MenuUtama.java          # Frame utama aplikasi (Sidebar + Content Switcher)
 │       ├── ProfilSaya.java         # Dialog ubah profil dan password pengguna
 │       ├── FormDashboard.java      # Halaman dasbor metrik dan grafik penjualan
@@ -325,7 +335,7 @@ E:\Sistem-Informasi-Manajemen-Toko-Buku\
 │       └── FormBuku, FormKategori, FormPenerbit, FormSupplier, FormAtk, FormUser
 ├── 📂 src/main/resources/          # Aset non-kode aplikasi
 │   ├── 📂 images/                  # Aset grafis
-│   │   └── login_bg.jpg            # Ilustrasi artistik untuk panel login
+│   │   └── logo_ajb_transparent.png # Logo toko (dipakai apa adanya di splash/auth)
 │   └── 📂 reports/                 # Desain template laporan JasperReports
 │       ├── lap_data_buku.jrxml
 │       ├── lap_penjualan.jrxml
@@ -496,7 +506,7 @@ Setelah mengimpor database (`db_toko_buku.sql` atau `seed_demo.sql`), Anda dapat
 > INSERT INTO users (username, password, nama_lengkap, role)
 > VALUES ('kasir2', SHA2('kasir123', 256), 'Kasir Shift 2', 'Kasir');
 > ```
-> Atau lebih mudah gunakan tombol **"Daftar Akun Kasir"** pada layar login aplikasi yang otomatis mengenkripsi kata sandi secara aman.
+> Atau lebih mudah gunakan tombol **"DAFTAR AKUN"** pada layar login aplikasi yang otomatis mengenkripsi kata sandi secara aman.
 
 ---
 
@@ -559,13 +569,7 @@ Untuk memastikan seluruh modul berfungsi sempurna, Anda dapat mencoba skenario p
 
 ---
 
-### 🔴 Kendala 4: Gambar Latar Belakang Login Tidak Tampil
-- **Penyebab:** Path gambar tidak ditemukan saat dipanggil dari environment custom.
-- **Solusi:** Sistem sudah memiliki mekanisme *graceful fallback*. Jika file `src/main/resources/images/login_bg.jpg` tidak terdeteksi, panel kiri login akan otomatis beralih menampilkan ikon vektor buku dan palet warna Neobrutalism yang elegan tanpa menyebabkan aplikasi crash.
-
----
-
-### 🔴 Kendala 5: Ekspor Laporan PDF Gagal atau Error JasperReports
+### 🔴 Kendala 4: Ekspor Laporan PDF Gagal atau Error JasperReports
 - **Penyebab:** Folder tujuan ekspor tidak memiliki hak akses tulis (*write permissions*) atau pustaka dependency shade bentrok.
 - **Solusi:**
   1. Pastikan Anda memilih folder penyimpanan yang memiliki hak akses penuh (misal: folder `Documents` atau `Desktop`).

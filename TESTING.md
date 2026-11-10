@@ -1,12 +1,14 @@
 # Report Testing - Sistem Informasi Toko Buku (CV. Almira Jaya Abadi)
 
-Versi app: 1.0.0 * Tanggal testing: 2026-10-16 * DB: MySQL lokal `db_toko_buku`
+Versi app: 1.0.0 * Tanggal testing: 2026-11-10 * DB: MySQL lokal `db_toko_buku`
 (skema final 10 tabel + `seed_demo.sql` + `migrasi_ronde4.sql`).
 
-Hasil otomatis (mesin, hari yang sama): **PROBE-T24-OK (32 checks:
-POS campur + diskon, retur, pembelian ATK, 7 laporan + filter, dashboard,
-splash, DB bersih)** + **`mvn test` 7/7** + **`mvn package` BUILD SUCCESS**
-+ **APP-ALIVE-15S:True** (JAR `sistem-toko-buku-1.0.0.jar`).
+Hasil otomatis (mesin, hari yang sama): **PROBE-R6-FINAL-OK** (splash → login
+admin → dashboard → logout → login baru → register `TEST-R6-E2E` → cleanup),
+**ProbeR6Auth OK** (3× Login↔Register, validasi, `TEST-R6` COUNT 0) +
+**`mvn test` 10/10** + **`mvn package` BUILD SUCCESS** + **APP-ALIVE-15S:True**
+(window `CV. Almira Jaya Abadi - Login`, 1080×680, tampil pada detik ke-10).
+Screenshot final: `splash.png`, `login.png`, `register.png`, `jar-smoke.png`.
 File ini = panduan testing manual untuk Gus.
 
 ## 1. Akun + Cara Masuk
@@ -22,12 +24,15 @@ membandingkan hash SHA-256, jadi DB skema-saja tidak bisa login;
 import `seed_demo.sql` (normalisasi ke `SHA2('admin123', 256)`) agar
 `admin/admin123` bisa login.
 
-Login: jalankan app (`view.Login`), isi username + password, klik Login.
-Salah satu salah -> popup "Username atau password salah", tetap di login.
+Login: jalankan app (`view.Login`), isi username + password, klik **MASUK**
+(atau tekan Enter). Salah satu salah -> label merah inline
+"Username atau password salah" + field bergetar, tetap di layar Login.
 
-Register: di layar login klik "Daftar Akun Kasir" -> isi username, nama,
-password + konfirmasi -> akun baru otomatis Kasir -> tutup dialog -> login
-dengan akun tersebut.
+Register: di layar Login klik **DAFTAR AKUN** -> halaman Register penuh
+terbuka di window yang sama (curtain wipe). Isi username, nama, password +
+konfirmasi -> **BUAT AKUN** -> akun baru otomatis Kasir -> kembali ke Login
+dengan info hijau "Akun berhasil dibuat. Silakan masuk." Tombol **KEMBALI**
+membatalkan tanpa menyimpan.
 
 ## 2. Isi Seed Demo (setelah import seed_demo.sql + migrasi_ronde4.sql)
 
@@ -42,8 +47,10 @@ Tanpa tabel member (dihapus ronde 4); kolom `buku.jenis` (Buku/ATK) +
 
 ## 3. Skenario Admin (login sebagai admin/admin123)
 
-1. Jalankan app: splash bertahap tampil (tampilan -> database ->
-   data master -> ikon -> Siap) -> layar Login.
+1. Jalankan app: splash 900×560 tampil (logo + wordmark CV. Almira Jaya
+   Abadi + ticker berjalan + 5 blok progress + shape drift) dengan tahap
+   tampilan → database → data master → ikon → Siap; lalu curtain wipe ke
+   atas membuka layar Login.
 2. Login -> hasil yang diharapkan: Menu Utama terbuka, semua tombol
    modul tampil (Buku, Kategori, Penerbit, Supplier, ATK, User,
    Penjualan, Pembelian, Retur, Riwayat, Laporan, Logout).
@@ -101,11 +108,51 @@ ke isi seed).
 - Label "Buku" di konteks campur (Cari Buku, Judul Buku, LAPORAN MASTER
   DATA BUKU) -> rename gaya campur: judul besar "Barang", detail ikut
   kolom Jenis (ronde 5).
+- Ticker Login/Register tampak transparan/ghost -> `TickerPanel` turunan
+  `JComponent` tidak otomatis mengecat background; fix: isi background
+  eksplisit di `paintComponent` sebelum teks (ronde 6).
+- Wordmark lama "ALMIRA JAYA ABADI" -> disamakan menjadi
+  **"CV. Almira Jaya Abadi"** di splash, Login, Register, curtain, dan ticker
+  (ronde 6).
 
-## 6. Batasan yang Diketahui
+## 6. Skenario UI Auth (Ronde 6)
 
-- Foto login: bila `images/login_bg.jpg` hilang dari classpath, panel kiri
-  memakai fallback ikon (bukan error).
+Jalankan aplikasi (JAR atau `view.Login`), lalu periksa:
+
+### Splash
+1. Splash 900×560 muncul: logo toko utuh di kartu cream, wordmark
+   **CV. Almira Jaya Abadi**, ticker teal berjalan, lima blok progress,
+   dan shape drift halus.
+2. Tunggu kelima tahap selesai -> curtain wipe ke atas -> layar Login
+   tampil tanpa jeda blank.
+3. Matikan MySQL lalu jalankan ulang: status merah
+   "Database tidak terhubung..." + tombol **TUTUP** (tanpa retry, tidak hang).
+
+### Login
+1. Klik **MASUK** dengan field kosong -> label merah
+   "Username dan password wajib diisi" + field bergetar (tanpa popup).
+2. Isi username benar + password salah -> label merah
+   "Username atau password salah", tetap di Login.
+3. Klik ikon mata -> password terlihat; klik lagi -> tersembunyi.
+4. Tekan **Enter** di field -> aksi login berjalan (default button).
+5. Klik **DAFTAR AKUN** -> transisi curtain ke Register di window yang sama
+   (tidak ada window baru/flicker).
+
+### Register
+1. Kosongkan username/nama -> "Username dan nama lengkap wajib diisi".
+2. Password < 4 karakter -> "Password minimal 4 karakter".
+3. Konfirmasi berbeda -> "Password dan konfirmasi tidak sama".
+4. Pakai username yang sudah ada -> "Username sudah dipakai".
+5. Isi valid -> **BUAT AKUN** -> kembali ke Login + info hijau
+   "Akun berhasil dibuat. Silakan masuk."; akun baru berperan Kasir.
+6. Klik **KEMBALI** -> kembali ke Login tanpa menyimpan.
+7. Ulangi Login↔Register 3× cepat -> semua transisi selesai, tidak stuck.
+
+Catatan: animasi berjalan di EDT dengan durasi pendek; input tetap responsif
+dan validasi auth tidak memakai `JOptionPane`.
+
+## 7. Batasan yang Diketahui
+
 - Database harus MySQL lokal (`localhost:3306`, user `root`, tanpa
   password, DB `db_toko_buku`); ganti di `koneksi/Koneksi.java` bila beda.
 - Laporan butuh data pada periode yang dipilih; periode kosong -> viewer/

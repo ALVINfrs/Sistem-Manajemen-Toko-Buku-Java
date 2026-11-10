@@ -111,10 +111,10 @@ Helper baru di `NeoBrutalTheme`: `display(int size)`, `mono(int size)`,
   Background: 10 shape (bintang/plus/lingkaran/kotak) warna kuning/coral/
   cobalt/teal, drift vertikal sinus 6px, timer 33ms.
 - Kanan: kicker mono "SISTEM INFORMASI MANAJEMEN TOKO"; wordmark dua baris
-  "ALMIRA JAYA" / "ABADI" display 36; label tahap mono 12; `SegmentProgress`
+  "CV. Almira Jaya" / "Abadi" display 36; label tahap mono 12; `SegmentProgress`
   5 blok 280×18; label status mono 10; tombol "Tutup" (hidden, hanya saat DB gagal).
 - Ticker teal: teks berulang
-  `"  TOKO BUKU  •  ALAT TULIS  •  SISTEM INFORMASI MANAJEMEN  •  ALMIRA JAYA ABADI  •"`,
+  `"  TOKO BUKU  •  ALAT TULIS  •  SISTEM INFORMASI MANAJEMEN  •  CV. ALMIRA JAYA ABADI  •"`,
   40px/detik.
 - Logo stamp: scale 0.85 → 1.05 → 1.0, 420ms `EASE_OUT_BACK`.
 - Tahap worker (tetap): (1) "Menyiapkan tampilan..." (2) "Menghubungkan database..."
@@ -132,8 +132,8 @@ Helper baru di `NeoBrutalTheme`: `display(int size)`, `mono(int size)`,
   `"CV. Almira Jaya Abadi - Login"`.
 - `AuthScaffold`: split; kiri 440px maroon, kanan cream, bawah ticker 34px.
 - Kiri: sticker teal "TOKO BUKU & ALAT TULIS" rotasi -3°; kartu logo 260×260
-  (logo 170); wordmark dua baris display 30 putih; alamat toko mono 10
-  (dipotong satu baris).
+  (logo 170); wordmark dua baris "CV. Almira Jaya" / "Abadi" display 30 putih;
+  alamat toko mono 10 (dipotong satu baris).
 - Kanan (max width 420, center):
   - kicker mono "SISTEM INFORMASI"
   - judul "MASUK" display 56
@@ -153,7 +153,8 @@ Helper baru di `NeoBrutalTheme`: `display(int size)`, `mono(int size)`,
 ### 7.3 Register (`view.RegisterPage`)
 
 - Halaman penuh di window yang sama; kiri 440px teal, kanan cream, ticker bawah.
-- Kiri: sticker kuning "AKUN KASIR BARU" rotasi +3°; kartu logo; wordmark hitam.
+- Kiri: sticker kuning "AKUN KASIR BARU" rotasi +3°; kartu logo; wordmark dua
+  baris "CV. Almira Jaya" / "Abadi" display 30 hitam.
 - Kanan: kicker "PENDAFTARAN"; judul "DAFTAR" display 52; subtitle
   "Buat akun kasir baru untuk mulai bekerja."; field USERNAME, NAMA LENGKAP,
   PASSWORD, KONFIRMASI (name `username`, `nama_lengkap`, `password`,
@@ -174,7 +175,7 @@ Helper baru di `NeoBrutalTheme`: `display(int size)`, `mono(int size)`,
 ### 7.4 Transisi curtain (`view.Login`)
 
 - Root `JLayeredPane`: base = `pageHost` (`CardLayout`, halaman `login`/`register`),
-  overlay = panel curtain maroon (logo kecil + wordmark cream + strip teal).
+  overlay = panel curtain maroon (logo kecil + wordmark cream "CV. Almira Jaya Abadi" + strip teal).
 - `showPage(nama)`:
   1. curtain set bounds `(0, -h, w, h)` + visible.
   2. slide down 340ms `EASE_IN_OUT_CUBIC` sampai menutup.
