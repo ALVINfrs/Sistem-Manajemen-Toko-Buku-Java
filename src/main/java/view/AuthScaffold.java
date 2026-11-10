@@ -111,7 +111,7 @@ public class AuthScaffold extends JPanel {
         add(rightPanel, BorderLayout.CENTER);
 
         TickerPanel ticker = new TickerPanel(
-                "  TOKO BUKU  •  ALAT TULIS  •  SISTEM INFORMASI MANAJEMEN  •  ALMIRA JAYA ABADI  •  ",
+                "  TOKO BUKU  •  ALAT TULIS  •  SISTEM INFORMASI MANAJEMEN  •  CV. ALMIRA JAYA ABADI  •  ",
                 NeoBrutalTheme.BRAND_TEAL, NeoBrutalTheme.INK);
         add(ticker, BorderLayout.SOUTH);
     }

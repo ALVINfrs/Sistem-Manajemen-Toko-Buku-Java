@@ -46,7 +46,7 @@ public class LoginPage extends JPanel {
 
         JPanel form = buildForm();
         scaffold = new AuthScaffold(NeoBrutalTheme.BRAND_MAROON, Color.WHITE,
-                "TOKO BUKU & ALAT TULIS", new String[]{"ALMIRA JAYA", "ABADI"}, form);
+                "TOKO BUKU & ALAT TULIS", new String[]{"CV. Almira Jaya", "Abadi"}, form);
         add(scaffold, BorderLayout.CENTER);
 
         btnLogin.addActionListener(e -> onLogin.run());

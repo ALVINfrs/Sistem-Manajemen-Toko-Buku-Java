@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -94,13 +95,13 @@ public class SplashScreen extends JWindow {
         content.add(kicker);
         content.add(Box.createVerticalStrut(8));
 
-        JLabel word1 = new JLabel("ALMIRA JAYA");
+        JLabel word1 = new JLabel("CV. Almira Jaya");
         word1.setFont(NeoBrutalTheme.display(36));
         word1.setForeground(NeoBrutalTheme.INK);
         word1.setAlignmentX(Component.LEFT_ALIGNMENT);
         content.add(word1);
 
-        JLabel word2 = new JLabel("ABADI");
+        JLabel word2 = new JLabel("Abadi");
         word2.setFont(NeoBrutalTheme.display(36));
         word2.setForeground(NeoBrutalTheme.INK);
         word2.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -146,7 +147,7 @@ public class SplashScreen extends JWindow {
         root.add(right, BorderLayout.CENTER);
 
         ticker = new TickerPanel(
-                "  TOKO BUKU  •  ALAT TULIS  •  SISTEM INFORMASI MANAJEMEN  •  ALMIRA JAYA ABADI  •  ",
+                "  TOKO BUKU  •  ALAT TULIS  •  SISTEM INFORMASI MANAJEMEN  •  CV. ALMIRA JAYA ABADI  •  ",
                 NeoBrutalTheme.BRAND_TEAL, NeoBrutalTheme.INK);
         root.add(ticker, BorderLayout.SOUTH);
 
@@ -219,7 +220,23 @@ public class SplashScreen extends JWindow {
         final int startY = getY();
         Motion.animate(520, Motion.EASE_IN_OUT_CUBIC,
                 p -> setLocation(getX(), startY - (int) Math.round(p * (getHeight() + 40))),
-                this::dispose);
+                () -> {
+                    dispose();
+                    bringNextWindowToFront();
+                });
+    }
+
+    /**
+     * Setelah splash hilang, minta window berikutnya (Login) tampil di depan.
+     */
+    private void bringNextWindowToFront() {
+        for (Window w : Window.getWindows()) {
+            if (w != this && w.isShowing()) {
+                w.toFront();
+                w.requestFocus();
+                return;
+            }
+        }
     }
 
     private void lblStatusSet(final String teks) {

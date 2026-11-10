@@ -66,6 +66,8 @@ public class TickerPanel extends JComponent {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        g.setColor(getBackground());
+        g.fillRect(0, 0, getWidth(), getHeight());
         Graphics2D g2 = (Graphics2D) g.create();
         int height = getHeight();
         g2.setColor(NeoBrutalTheme.INK);

@@ -49,7 +49,7 @@ public class RegisterPage extends JPanel {
 
         JPanel form = buildForm();
         scaffold = new AuthScaffold(NeoBrutalTheme.BRAND_TEAL, Color.BLACK,
-                "AKUN KASIR BARU", new String[]{"ALMIRA JAYA", "ABADI"}, form);
+                "AKUN KASIR BARU", new String[]{"CV. Almira Jaya", "Abadi"}, form);
         add(scaffold, BorderLayout.CENTER);
 
         btnBack.addActionListener(e -> onBack.run());

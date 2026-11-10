@@ -141,7 +141,7 @@ public class Login extends JFrame {
         center.add(logo);
         center.add(Box.createVerticalStrut(10));
 
-        JLabel wordmark = new JLabel("ALMIRA JAYA ABADI");
+        JLabel wordmark = new JLabel("CV. Almira Jaya Abadi");
         wordmark.setFont(NeoBrutalTheme.display(20));
         wordmark.setForeground(NeoBrutalTheme.BG);
         wordmark.setAlignmentX(CENTER_ALIGNMENT);
