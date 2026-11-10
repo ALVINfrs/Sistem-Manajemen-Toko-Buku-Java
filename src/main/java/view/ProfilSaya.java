@@ -3,7 +3,6 @@ package view;
 import dao.UserDAO;
 import dao.UserDAOImpl;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -18,7 +17,6 @@ import javax.swing.JTextField;
 import model.User;
 import util.HashUtil;
 import util.NeoBrutalTheme;
-import util.NeoShadowBorder;
 import util.Sesi;
 
 public class ProfilSaya extends JDialog {
@@ -39,57 +37,60 @@ public class ProfilSaya extends JDialog {
         getContentPane().setBackground(NeoBrutalTheme.BG);
         ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
+        JPanel pnlHeader = new JPanel(new BorderLayout(0, 2));
+        pnlHeader.setOpaque(false);
+        pnlHeader.add(NeoFormStyle.section("Akun Saya"), BorderLayout.NORTH);
         JLabel lblJudul = new JLabel("Profil Saya");
-        lblJudul.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
-        add(lblJudul, BorderLayout.NORTH);
+        lblJudul.setFont(NeoBrutalTheme.display(20));
+        lblJudul.setForeground(NeoBrutalTheme.INK);
+        pnlHeader.add(lblJudul, BorderLayout.SOUTH);
+        add(pnlHeader, BorderLayout.NORTH);
 
-        JPanel form = new JPanel(new GridLayout(0, 2, 8, 8));
-        form.setBackground(NeoBrutalTheme.SURFACE);
-        form.setBorder(BorderFactory.createCompoundBorder(
-                new NeoShadowBorder(),
-                BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+        JPanel form = NeoFormStyle.card(new GridLayout(0, 2, 8, 8));
 
         String username = Sesi.userLogin != null ? Sesi.userLogin.getUsername() : "-";
         String nama = Sesi.userLogin != null ? Sesi.userLogin.getNamaLengkap() : "";
         lblUsername = new JLabel(username);
         lblUsername.setName("profil_username");
-        lblUsername.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        txtNama = new JTextField(nama);
-        txtNama.setName("profil_nama_field");
-        txtNama.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        lblUsername.setFont(NeoBrutalTheme.body(java.awt.Font.BOLD, 13));
+        lblUsername.setForeground(NeoBrutalTheme.INK);
+        txtNama = NeoFormStyle.field("profil_nama_field");
+        txtNama.setText(nama);
         pfBaru = new JPasswordField();
         pfBaru.setName("profil_pass_baru");
-        pfBaru.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        pfBaru.setFont(NeoBrutalTheme.body(java.awt.Font.PLAIN, 13));
+        pfBaru.setBackground(NeoBrutalTheme.SURFACE);
+        pfBaru.setForeground(NeoBrutalTheme.INK);
+        pfBaru.setCaretColor(NeoBrutalTheme.INK);
+        pfBaru.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(NeoBrutalTheme.INK, 2),
+                BorderFactory.createEmptyBorder(5, 8, 5, 8)));
         pfKonfirmasi = new JPasswordField();
         pfKonfirmasi.setName("profil_pass_konfirmasi");
-        pfKonfirmasi.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        pfKonfirmasi.setFont(NeoBrutalTheme.body(java.awt.Font.PLAIN, 13));
+        pfKonfirmasi.setBackground(NeoBrutalTheme.SURFACE);
+        pfKonfirmasi.setForeground(NeoBrutalTheme.INK);
+        pfKonfirmasi.setCaretColor(NeoBrutalTheme.INK);
+        pfKonfirmasi.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(NeoBrutalTheme.INK, 2),
+                BorderFactory.createEmptyBorder(5, 8, 5, 8)));
 
-        form.add(new JLabel("Username"));
+        form.add(NeoFormStyle.label("Username"));
         form.add(lblUsername);
-        form.add(new JLabel("Nama Lengkap"));
+        form.add(NeoFormStyle.label("Nama Lengkap"));
         form.add(txtNama);
-        form.add(new JLabel("Password Baru"));
+        form.add(NeoFormStyle.label("Password Baru"));
         form.add(pfBaru);
-        form.add(new JLabel("Konfirmasi"));
+        form.add(NeoFormStyle.label("Konfirmasi"));
         form.add(pfKonfirmasi);
         add(form, BorderLayout.CENTER);
 
-        JPanel aksi = new JPanel();
-        aksi.setBackground(NeoBrutalTheme.BG);
-        JButton btnSimpan = new JButton("Simpan");
+        JPanel aksi = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 8, 0));
+        aksi.setOpaque(false);
+        JButton btnSimpan = NeoFormStyle.button("Simpan", null, NeoBrutalTheme.SUCCESS);
         btnSimpan.setName("profil_simpan");
-        btnSimpan.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        btnSimpan.setBackground(NeoBrutalTheme.SUCCESS);
-        btnSimpan.setForeground(Color.BLACK);
-        btnSimpan.setBorder(new NeoShadowBorder());
-        btnSimpan.setFocusPainted(false);
         btnSimpan.addActionListener(e -> simpan());
-        JButton btnBatal = new JButton("Batal");
-        btnBatal.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        btnBatal.setBackground(NeoBrutalTheme.SURFACE);
-        btnBatal.setForeground(Color.BLACK);
-        btnBatal.setBorder(new NeoShadowBorder());
-        btnBatal.setFocusPainted(false);
+        JButton btnBatal = NeoFormStyle.button("Batal", null, NeoBrutalTheme.SECONDARY);
         btnBatal.addActionListener(e -> dispose());
         aksi.add(btnSimpan);
         aksi.add(btnBatal);

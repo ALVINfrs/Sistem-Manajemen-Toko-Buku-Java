@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.print.PrinterException;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
@@ -16,6 +14,7 @@ import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -70,47 +69,25 @@ public class StrukDialog extends JDialog {
         scroll.getVerticalScrollBar().setUnitIncrement(16);
         add(scroll, BorderLayout.CENTER);
 
-        JButton btnCetak = new JButton("Cetak Struk",
-                FontIcon.of(MaterialDesignP.PRINTER, 18, Color.BLACK));
-        btnCetak.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        btnCetak.setBackground(NeoBrutalTheme.PRIMARY);
-        btnCetak.setForeground(Color.BLACK);
-        btnCetak.setBorder(new NeoShadowBorder());
-        btnCetak.setFocusPainted(false);
+        JPanel pnlHeader = new JPanel(new BorderLayout(0, 2));
+        pnlHeader.setOpaque(false);
+        pnlHeader.add(NeoFormStyle.section("Bukti Transaksi"), BorderLayout.NORTH);
+        JLabel lblJudul = new JLabel("Struk Penjualan");
+        lblJudul.setFont(NeoBrutalTheme.display(20));
+        lblJudul.setForeground(NeoBrutalTheme.INK);
+        pnlHeader.add(lblJudul, BorderLayout.SOUTH);
+        add(pnlHeader, BorderLayout.NORTH);
+
+        JButton btnCetak = NeoFormStyle.button("Cetak Struk",
+                FontIcon.of(MaterialDesignP.PRINTER, 16, NeoBrutalTheme.INK),
+                NeoBrutalTheme.PRIMARY);
         btnCetak.addActionListener(e -> doCetak());
-        btnCetak.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                btnCetak.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-            }
 
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                btnCetak.setBorder(new NeoShadowBorder());
-            }
-        });
-
-        JButton btnTutup = new JButton("Tutup");
-        btnTutup.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        btnTutup.setBackground(NeoBrutalTheme.SECONDARY);
-        btnTutup.setForeground(Color.BLACK);
-        btnTutup.setBorder(new NeoShadowBorder());
-        btnTutup.setFocusPainted(false);
+        JButton btnTutup = NeoFormStyle.button("Tutup", null, NeoBrutalTheme.SECONDARY);
         btnTutup.addActionListener(e -> dispose());
-        btnTutup.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                btnTutup.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-            }
 
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                btnTutup.setBorder(new NeoShadowBorder());
-            }
-        });
-
-        JPanel pnlBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        pnlBtn.setBackground(NeoBrutalTheme.BG);
+        JPanel pnlBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        pnlBtn.setOpaque(false);
         pnlBtn.add(btnCetak);
         pnlBtn.add(btnTutup);
         add(pnlBtn, BorderLayout.SOUTH);

@@ -24,7 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -36,10 +35,7 @@ import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignD;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignM;
 import org.kordamp.ikonli.swing.FontIcon;
-import util.ComboItem;
-import util.AppConfig;
 import util.NeoBrutalTheme;
-import util.NeoShadowBorder;
 import util.NotaGenerator;
 import util.Sesi;
 
@@ -73,9 +69,9 @@ public class FormPenjualan extends JPanel {
         setBackground(NeoBrutalTheme.BG);
         setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-        JLabel lblJudul = new JLabel("Penjualan (POS)");
-        lblJudul.setFont(new Font("Segoe UI Black", Font.BOLD, 22));
-        add(lblJudul, BorderLayout.NORTH);
+        add(new NeoPageHeader("TRANSAKSI", "Penjualan (POS)",
+                "Cari barang, susun keranjang, dan selesaikan transaksi.", null),
+                BorderLayout.NORTH);
 
         JPanel cols = new JPanel(new GridLayout(1, 3, 12, 0));
         cols.setBackground(NeoBrutalTheme.BG);
@@ -85,33 +81,32 @@ public class FormPenjualan extends JPanel {
         add(cols, BorderLayout.CENTER);
 
         refreshCart();
+        cariBuku("");
     }
 
     private JPanel buildKiri() {
-        JPanel card = new JPanel(new BorderLayout(8, 8));
-        card.setBackground(NeoBrutalTheme.SURFACE);
-        card.setBorder(new NeoShadowBorder());
+        JPanel card = NeoFormStyle.card(new BorderLayout(8, 8));
+        card.add(NeoFormStyle.section("Cari Barang"), BorderLayout.NORTH);
 
-        JLabel lbl = new JLabel("Cari Barang");
-        lbl.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
-        card.add(lbl, BorderLayout.NORTH);
+        JPanel body = new JPanel(new BorderLayout(6, 6));
+        body.setOpaque(false);
 
         JPanel pnlCari = new JPanel(new BorderLayout(6, 6));
-        pnlCari.setBackground(NeoBrutalTheme.SURFACE);
-        txtCari = new JTextField();
-        txtCari.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        pnlCari.setOpaque(false);
+        txtCari = NeoFormStyle.field("cari");
+        txtCari.setColumns(10);
         txtCari.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { cariBuku(txtCari.getText()); }
             @Override public void removeUpdate(DocumentEvent e) { cariBuku(txtCari.getText()); }
             @Override public void changedUpdate(DocumentEvent e) { cariBuku(txtCari.getText()); }
         });
         JButton btnCari = styledButton("Cari",
-                FontIcon.of(MaterialDesignM.MAGNIFY, 18, Color.BLACK),
+                FontIcon.of(MaterialDesignM.MAGNIFY, 16, NeoBrutalTheme.INK),
                 NeoBrutalTheme.SECONDARY);
         btnCari.addActionListener(e -> cariBuku(txtCari.getText()));
         pnlCari.add(txtCari, BorderLayout.CENTER);
         pnlCari.add(btnCari, BorderLayout.EAST);
-        card.add(pnlCari, BorderLayout.CENTER);
+        body.add(pnlCari, BorderLayout.NORTH);
 
         modelHasil = new DefaultTableModel(new String[]{"Kode", "Judul", "Jenis", "Harga", "Stok"}, 0) {
             @Override
@@ -120,34 +115,32 @@ public class FormPenjualan extends JPanel {
             }
         };
         tblHasil = new JTable(modelHasil);
+        NeoTableStyle.apply(tblHasil);
+        tblHasil.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        int[] lebarHasil = {58, 135, 48, 68, 42};
+        for (int i = 0; i < lebarHasil.length; i++) {
+            tblHasil.getColumnModel().getColumn(i).setPreferredWidth(lebarHasil[i]);
+        }
         tblHasil.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) tambahKeKeranjang();
             }
         });
-        JScrollPane scroll = new JScrollPane(tblHasil);
-        scroll.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        JScrollPane scroll = NeoTableStyle.wrap(tblHasil);
+        body.add(scroll, BorderLayout.CENTER);
 
         JButton btnTambah = styledButton("Tambah", null, NeoBrutalTheme.SUCCESS);
         btnTambah.addActionListener(e -> tambahKeKeranjang());
+        body.add(btnTambah, BorderLayout.SOUTH);
 
-        JPanel pnlBawah = new JPanel(new BorderLayout(6, 6));
-        pnlBawah.setBackground(NeoBrutalTheme.SURFACE);
-        pnlBawah.add(scroll, BorderLayout.CENTER);
-        pnlBawah.add(btnTambah, BorderLayout.SOUTH);
-        card.add(pnlBawah, BorderLayout.SOUTH);
+        card.add(body, BorderLayout.CENTER);
         return card;
     }
 
     private JPanel buildTengah() {
-        JPanel card = new JPanel(new BorderLayout(8, 8));
-        card.setBackground(NeoBrutalTheme.SURFACE);
-        card.setBorder(new NeoShadowBorder());
-
-        JLabel lbl = new JLabel("Keranjang");
-        lbl.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
-        card.add(lbl, BorderLayout.NORTH);
+        JPanel card = NeoFormStyle.card(new BorderLayout(8, 8));
+        card.add(NeoFormStyle.section("Keranjang"), BorderLayout.NORTH);
 
         modelCart = new DefaultTableModel(new String[]{"Kode", "Judul", "Jenis", "Harga", "Qty", "Subtotal"}, 0) {
             @Override
@@ -156,16 +149,21 @@ public class FormPenjualan extends JPanel {
             }
         };
         tblCart = new JTable(modelCart);
-        JScrollPane scroll = new JScrollPane(tblCart);
-        scroll.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        NeoTableStyle.apply(tblCart);
+        tblCart.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        int[] lebarCart = {55, 120, 45, 68, 45, 80};
+        for (int i = 0; i < lebarCart.length; i++) {
+            tblCart.getColumnModel().getColumn(i).setPreferredWidth(lebarCart[i]);
+        }
+        JScrollPane scroll = NeoTableStyle.wrap(tblCart);
         card.add(scroll, BorderLayout.CENTER);
 
-        JPanel pnlQty = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        pnlQty.setBackground(NeoBrutalTheme.SURFACE);
+        JPanel pnlQty = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        pnlQty.setOpaque(false);
         JButton btnPlus = styledButton("+", null, NeoBrutalTheme.SUCCESS);
         JButton btnMinus = styledButton("-", null, NeoBrutalTheme.WARNING);
         JButton btnHapus = styledButton("Hapus",
-                FontIcon.of(MaterialDesignD.DELETE, 18, Color.BLACK),
+                FontIcon.of(MaterialDesignD.DELETE, 16, NeoBrutalTheme.INK),
                 NeoBrutalTheme.DANGER);
         btnPlus.addActionListener(e -> ubahQty(1));
         btnMinus.addActionListener(e -> ubahQty(-1));
@@ -178,25 +176,19 @@ public class FormPenjualan extends JPanel {
     }
 
     private JPanel buildKanan() {
-        JPanel card = new JPanel(new GridLayout(0, 1, 6, 6));
-        card.setBackground(NeoBrutalTheme.SURFACE);
-        card.setBorder(new NeoShadowBorder());
+        JPanel card = NeoFormStyle.card(new GridLayout(0, 1, 3, 3));
+        card.add(NeoFormStyle.section("Ringkasan"));
 
-        JLabel lbl = new JLabel("Ringkasan");
-        lbl.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
-        card.add(lbl);
-
-        card.add(new JLabel("Metode Bayar"));
+        card.add(NeoFormStyle.label("Metode Bayar"));
         cmbMetode = new JComboBox<>(new String[]{"Tunai", "Transfer", "QRIS"});
-        cmbMetode.setBackground(NeoBrutalTheme.SURFACE);
-        cmbMetode.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        cmbMetode.setName("metode_bayar");
+        NeoFormStyle.styleCombo(cmbMetode);
         cmbMetode.addActionListener(e -> refreshCart());
         card.add(cmbMetode);
 
-        card.add(new JLabel("Diskon (%)"));
-        txtDiskonPersen = new JTextField("0");
-        txtDiskonPersen.setName("diskon_persen");
-        txtDiskonPersen.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        card.add(NeoFormStyle.label("Diskon (%)"));
+        txtDiskonPersen = NeoFormStyle.field("diskon_persen");
+        txtDiskonPersen.setText("0");
         txtDiskonPersen.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { refreshCart(); }
             @Override public void removeUpdate(DocumentEvent e) { refreshCart(); }
@@ -204,10 +196,9 @@ public class FormPenjualan extends JPanel {
         });
         card.add(txtDiskonPersen);
 
-        card.add(new JLabel("Potongan (Rp)"));
-        txtPotongan = new JTextField("0");
-        txtPotongan.setName("potongan");
-        txtPotongan.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        card.add(NeoFormStyle.label("Potongan (Rp)"));
+        txtPotongan = NeoFormStyle.field("potongan");
+        txtPotongan.setText("0");
         txtPotongan.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { refreshCart(); }
             @Override public void removeUpdate(DocumentEvent e) { refreshCart(); }
@@ -216,18 +207,17 @@ public class FormPenjualan extends JPanel {
         card.add(txtPotongan);
 
         lblDiskon = new JLabel(" ");
-        lblDiskon.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 12));
+        lblDiskon.setFont(NeoBrutalTheme.body(java.awt.Font.PLAIN, 11));
+        lblDiskon.setForeground(NeoBrutalTheme.TEXT_MUTED);
         card.add(lblDiskon);
 
         lblTotal = new JLabel("Total: 0");
-        lblTotal.setFont(new Font("Segoe UI Black", Font.BOLD, 22));
-        lblTotal.setForeground(NeoBrutalTheme.PRIMARY);
+        lblTotal.setFont(NeoBrutalTheme.display(20));
+        lblTotal.setForeground(NeoBrutalTheme.BRAND_MAROON);
         card.add(lblTotal);
 
-        card.add(new JLabel("Bayar"));
-        txtBayar = new JTextField();
-        txtBayar.setName("bayar");
-        txtBayar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        card.add(NeoFormStyle.label("Bayar"));
+        txtBayar = NeoFormStyle.field("bayar");
         txtBayar.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { hitungKembalian(); }
             @Override public void removeUpdate(DocumentEvent e) { hitungKembalian(); }
@@ -236,38 +226,20 @@ public class FormPenjualan extends JPanel {
         card.add(txtBayar);
 
         lblKembalian = new JLabel("Kembalian: 0");
-        lblKembalian.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
-        lblKembalian.setForeground(NeoBrutalTheme.PRIMARY);
+        lblKembalian.setFont(NeoBrutalTheme.display(18));
+        lblKembalian.setForeground(NeoBrutalTheme.BRAND_MAROON);
         card.add(lblKembalian);
 
         JButton btnBayar = styledButton("Bayar / Simpan",
-                FontIcon.of(MaterialDesignC.CONTENT_SAVE, 18, Color.BLACK),
+                FontIcon.of(MaterialDesignC.CONTENT_SAVE, 16, NeoBrutalTheme.INK),
                 NeoBrutalTheme.PRIMARY);
         btnBayar.addActionListener(e -> doSimpan());
         card.add(btnBayar);
         return card;
     }
 
-    private JButton styledButton(String teks, FontIcon ikon, Color bg) {
-        JButton b = ikon == null ? new JButton(teks) : new JButton(teks, ikon);
-        b.setIconTextGap(8);
-        b.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        b.setBackground(bg);
-        b.setForeground(Color.BLACK);
-        b.setBorder(new NeoShadowBorder());
-        b.setFocusPainted(false);
-        b.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                b.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                b.setBorder(new NeoShadowBorder());
-            }
-        });
-        return b;
+    private NeoButton styledButton(String teks, FontIcon ikon, Color bg) {
+        return NeoFormStyle.button(teks, ikon, bg);
     }
 
     private void cariBuku(String keyword) {

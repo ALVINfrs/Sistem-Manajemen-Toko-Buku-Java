@@ -4,7 +4,6 @@ import com.github.lgooddatepicker.components.DatePicker;
 import dao.PenjualanDAO;
 import dao.PenjualanDAOImpl;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
@@ -20,6 +19,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -37,7 +37,6 @@ import model.Penjualan;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignM;
 import org.kordamp.ikonli.swing.FontIcon;
 import util.NeoBrutalTheme;
-import util.NeoShadowBorder;
 import util.Sesi;
 
 public class FormRiwayat extends JPanel {
@@ -58,9 +57,9 @@ public class FormRiwayat extends JPanel {
         setBackground(NeoBrutalTheme.BG);
         setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-        JLabel lblJudul = new JLabel("Riwayat Nota");
-        lblJudul.setFont(new Font("Segoe UI Black", Font.BOLD, 22));
-        add(lblJudul, BorderLayout.NORTH);
+        add(new NeoPageHeader("TRANSAKSI", "Riwayat Nota",
+                "Telusuri nota penjualan, buka ulang struk, dan cetak bila perlu.",
+                null), BorderLayout.NORTH);
 
         add(buildFilter(), BorderLayout.CENTER);
     }
@@ -69,33 +68,31 @@ public class FormRiwayat extends JPanel {
         JPanel wrap = new JPanel(new BorderLayout(8, 8));
         wrap.setBackground(NeoBrutalTheme.BG);
 
-        JPanel card = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 8));
-        card.setBackground(NeoBrutalTheme.SURFACE);
-        card.setBorder(new NeoShadowBorder());
+        JPanel card = NeoFormStyle.card(new FlowLayout(FlowLayout.LEFT, 8, 4));
 
-        card.add(new JLabel("Dari"));
+        card.add(NeoFormStyle.label("Dari"));
         dpDari = new DatePicker();
         dpDari.setName("tglDari");
         dpDari.setDate(LocalDate.now().minusDays(30));
         dpDari.addDateChangeListener(e -> reloadData());
         card.add(dpDari);
 
-        card.add(new JLabel("Sampai"));
+        card.add(NeoFormStyle.label("Sampai"));
         dpSampai = new DatePicker();
         dpSampai.setName("tglSampai");
         dpSampai.setDateToToday();
         dpSampai.addDateChangeListener(e -> reloadData());
         card.add(dpSampai);
 
-        txtCari = new JTextField(16);
-        txtCari.setName("cari_nota");
-        txtCari.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        txtCari = NeoFormStyle.field("cari_nota");
+        txtCari.setColumns(16);
         txtCari.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { applyFilter(); }
             @Override public void removeUpdate(DocumentEvent e) { applyFilter(); }
             @Override public void changedUpdate(DocumentEvent e) { applyFilter(); }
         });
-        card.add(new JLabel(FontIcon.of(MaterialDesignM.MAGNIFY, 18, Color.BLACK)));
+        JLabel lblCari = new JLabel(FontIcon.of(MaterialDesignM.MAGNIFY, 16, NeoBrutalTheme.INK));
+        card.add(lblCari);
         card.add(txtCari);
         wrap.add(card, BorderLayout.NORTH);
 
@@ -107,6 +104,7 @@ public class FormRiwayat extends JPanel {
             }
         };
         tblRiwayat = new JTable(modelRiwayat);
+        NeoTableStyle.apply(tblRiwayat);
         tblRiwayat.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -121,13 +119,26 @@ public class FormRiwayat extends JPanel {
                 bukaStruk();
             }
         });
-        JScrollPane scroll = new JScrollPane(tblRiwayat);
-        scroll.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        JScrollPane scroll = NeoTableStyle.wrap(tblRiwayat);
         wrap.add(scroll, BorderLayout.CENTER);
 
-        JLabel lblHint = new JLabel("Klik 2x / Enter pada baris untuk buka struk (cetak ulang)");
-        lblHint.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 12));
-        wrap.add(lblHint, BorderLayout.SOUTH);
+        JPanel pnlBottom = new JPanel(new BorderLayout(8, 0));
+        pnlBottom.setOpaque(false);
+        JLabel lblHint = new JLabel("Klik 2x / Enter pada baris untuk buka struk.");
+        lblHint.setFont(NeoBrutalTheme.body(java.awt.Font.PLAIN, 11));
+        lblHint.setForeground(NeoBrutalTheme.TEXT_MUTED);
+        pnlBottom.add(lblHint, BorderLayout.WEST);
+
+        JPanel pnlBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+        pnlBtn.setOpaque(false);
+        JButton btnBuka = NeoFormStyle.button("Buka Struk", null, NeoBrutalTheme.PRIMARY);
+        btnBuka.addActionListener(e -> bukaStruk());
+        JButton btnSegarkan = NeoFormStyle.button("Segarkan", null, NeoBrutalTheme.SECONDARY);
+        btnSegarkan.addActionListener(e -> reloadData());
+        pnlBtn.add(btnBuka);
+        pnlBtn.add(btnSegarkan);
+        pnlBottom.add(pnlBtn, BorderLayout.EAST);
+        wrap.add(pnlBottom, BorderLayout.SOUTH);
 
         reloadData();
         return wrap;

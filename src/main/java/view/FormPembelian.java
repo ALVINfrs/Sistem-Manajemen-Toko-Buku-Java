@@ -11,9 +11,10 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.Insets;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -38,13 +38,10 @@ import model.DetailPembelian;
 import model.Pembelian;
 import model.Supplier;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
-import org.kordamp.ikonli.materialdesign2.MaterialDesignD;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignM;
-import org.kordamp.ikonli.materialdesign2.MaterialDesignR;
 import org.kordamp.ikonli.swing.FontIcon;
 import util.ComboItem;
 import util.NeoBrutalTheme;
-import util.NeoShadowBorder;
 import util.NotaGenerator;
 import util.Sesi;
 import util.Validasi;
@@ -84,25 +81,19 @@ public class FormPembelian extends JPanel {
         setBackground(NeoBrutalTheme.BG);
         setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-        JPanel pnlNorth = new JPanel(new BorderLayout(6, 6));
+        JPanel pnlNorth = new JPanel(new BorderLayout(0, 6));
         pnlNorth.setBackground(NeoBrutalTheme.BG);
 
-        JPanel pnlJudulBar = new JPanel(new BorderLayout());
-        pnlJudulBar.setBackground(NeoBrutalTheme.BG);
-        JLabel lblJudul = new JLabel("Pembelian & Pengadaan Buku");
-        lblJudul.setFont(new Font("Segoe UI Black", Font.BOLD, 22));
-        pnlJudulBar.add(lblJudul, BorderLayout.WEST);
-
         lblFakturDraft = new JLabel("Draft No. Faktur: -");
-        lblFakturDraft.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        lblFakturDraft.setForeground(new Color(0x33, 0x33, 0x99));
-        pnlJudulBar.add(lblFakturDraft, BorderLayout.EAST);
-        pnlNorth.add(pnlJudulBar, BorderLayout.NORTH);
+        lblFakturDraft.setFont(NeoBrutalTheme.mono(10));
+        lblFakturDraft.setForeground(NeoBrutalTheme.TEXT_MUTED);
+        JPanel pnlDraft = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        pnlDraft.setOpaque(false);
+        pnlDraft.add(lblFakturDraft);
 
-        JLabel lblHint = new JLabel("<html><b>Alur Pengadaan:</b> 1) Pilih Rekanan Supplier 2) Pilih item dari katalog + tentukan Qty & Harga Beli (berlaku untuk Buku & ATK) 3) Klik Tambah 4) Klik Simpan Faktur untuk auto-restock & cetak bukti penerimaan barang.</html>");
-        lblHint.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        lblHint.setForeground(Color.BLACK);
-        pnlNorth.add(lblHint, BorderLayout.SOUTH);
+        pnlNorth.add(new NeoPageHeader("TRANSAKSI", "Pembelian & Pengadaan",
+                "Pilih supplier â†’ isi qty & harga beli â†’ tambah â†’ simpan faktur.", pnlDraft),
+                BorderLayout.NORTH);
         add(pnlNorth, BorderLayout.NORTH);
 
         JPanel cols = new JPanel(new GridLayout(1, 2, 12, 0));
@@ -117,41 +108,55 @@ public class FormPembelian extends JPanel {
     }
 
     private JPanel buildKiri() {
-        JPanel card = new JPanel(new BorderLayout(8, 8));
-        card.setBackground(NeoBrutalTheme.SURFACE);
-        card.setBorder(new NeoShadowBorder());
+        JPanel card = NeoFormStyle.card(new BorderLayout(8, 8));
 
-        JPanel pnlTop = new JPanel(new GridLayout(0, 1, 4, 4));
-        pnlTop.setBackground(NeoBrutalTheme.SURFACE);
-        pnlTop.add(new JLabel("Pilih Supplier (Vendor Kulakan):"));
-        cmbSupplier = new JComboBox<>();
-        cmbSupplier.setBackground(NeoBrutalTheme.SURFACE);
-        cmbSupplier.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        JPanel pnlTop = new JPanel(new GridBagLayout());
+        pnlTop.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(2, 0, 2, 0);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0;
+        pnlTop.add(NeoFormStyle.label("Pilih Supplier"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        cmbSupplier = NeoFormStyle.combo();
         cmbSupplier.addActionListener(e -> updateSupplierInfo());
-        pnlTop.add(cmbSupplier);
+        pnlTop.add(cmbSupplier, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
         lblSupplierInfo = new JLabel("Pilih supplier untuk melihat alamat & kontak.");
-        lblSupplierInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-        lblSupplierInfo.setForeground(new Color(0x55, 0x55, 0x55));
-        pnlTop.add(lblSupplierInfo);
+        lblSupplierInfo.setFont(NeoBrutalTheme.body(java.awt.Font.ITALIC, 10));
+        lblSupplierInfo.setForeground(NeoBrutalTheme.TEXT_MUTED);
+        pnlTop.add(lblSupplierInfo, gbc);
 
-        pnlTop.add(new JLabel("Cari Barang di Katalog:"));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weightx = 0;
+        pnlTop.add(NeoFormStyle.label("Cari Barang"), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
         JPanel pnlCari = new JPanel(new BorderLayout(6, 0));
-        pnlCari.setBackground(NeoBrutalTheme.SURFACE);
-        txtCari = new JTextField();
-        txtCari.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        pnlCari.setOpaque(false);
+        txtCari = NeoFormStyle.field("cari");
         txtCari.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { cariBuku(txtCari.getText()); }
             @Override public void removeUpdate(DocumentEvent e) { cariBuku(txtCari.getText()); }
             @Override public void changedUpdate(DocumentEvent e) { cariBuku(txtCari.getText()); }
         });
         JButton btnCari = styledButton("Cari",
-                FontIcon.of(MaterialDesignM.MAGNIFY, 18, Color.BLACK),
+                FontIcon.of(MaterialDesignM.MAGNIFY, 16, NeoBrutalTheme.INK),
                 NeoBrutalTheme.SECONDARY);
         btnCari.addActionListener(e -> cariBuku(txtCari.getText()));
         pnlCari.add(txtCari, BorderLayout.CENTER);
         pnlCari.add(btnCari, BorderLayout.EAST);
-        pnlTop.add(pnlCari);
+        pnlTop.add(pnlCari, gbc);
         card.add(pnlTop, BorderLayout.NORTH);
 
         modelHasil = new DefaultTableModel(new String[]{"Kode", "Judul", "Harga Beli", "Stok Toko"}, 0) {
@@ -165,30 +170,27 @@ public class FormPembelian extends JPanel {
         tblHasil.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) isiHargaBeliOtomatis();
         });
-        JScrollPane scroll = new JScrollPane(tblHasil);
-        scroll.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        NeoTableStyle.apply(tblHasil);
+        JScrollPane scroll = NeoTableStyle.wrap(tblHasil);
         card.add(scroll, BorderLayout.CENTER);
 
-        JPanel pnlTambah = new JPanel(new GridLayout(0, 2, 6, 6));
-        pnlTambah.setBackground(NeoBrutalTheme.SURFACE);
-        txtQty = new JTextField("1");
-        txtQty.setName("qty");
-        txtQty.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        txtHargaBeli = new JTextField();
-        txtHargaBeli.setName("harga_beli");
-        txtHargaBeli.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        pnlTambah.add(new JLabel("Qty Beli (Pcs):"));
-        pnlTambah.add(new JLabel("Harga Beli Satuan (Rp):"));
+        JPanel pnlTambah = new JPanel(new GridLayout(0, 2, 4, 4));
+        pnlTambah.setOpaque(false);
+        txtQty = NeoFormStyle.field("qty");
+        txtQty.setText("1");
+        txtHargaBeli = NeoFormStyle.field("harga_beli");
+        pnlTambah.add(NeoFormStyle.label("Qty Beli"));
+        pnlTambah.add(NeoFormStyle.label("Harga Beli Satuan"));
         pnlTambah.add(txtQty);
         pnlTambah.add(txtHargaBeli);
 
-        JButton btnTambah = styledButton("Tambahkan ke Keranjang Faktur",
-                FontIcon.of(MaterialDesignC.CART_ARROW_DOWN, 18, Color.BLACK),
+        JButton btnTambah = styledButton("Tambah ke Faktur",
+                FontIcon.of(MaterialDesignC.CART_ARROW_DOWN, 16, NeoBrutalTheme.INK),
                 NeoBrutalTheme.SUCCESS);
         btnTambah.addActionListener(e -> tambahItem());
 
         JPanel pnlBawah = new JPanel(new BorderLayout(6, 6));
-        pnlBawah.setBackground(NeoBrutalTheme.SURFACE);
+        pnlBawah.setOpaque(false);
         pnlBawah.add(pnlTambah, BorderLayout.CENTER);
         pnlBawah.add(btnTambah, BorderLayout.SOUTH);
         card.add(pnlBawah, BorderLayout.SOUTH);
@@ -196,13 +198,8 @@ public class FormPembelian extends JPanel {
     }
 
     private JPanel buildKanan() {
-        JPanel card = new JPanel(new BorderLayout(8, 8));
-        card.setBackground(NeoBrutalTheme.SURFACE);
-        card.setBorder(new NeoShadowBorder());
-
-        JLabel lbl = new JLabel("Daftar Buku Masuk (Keranjang Faktur)");
-        lbl.setFont(new Font("Segoe UI Semibold", Font.BOLD, 14));
-        card.add(lbl, BorderLayout.NORTH);
+        JPanel card = NeoFormStyle.card(new BorderLayout(8, 8));
+        card.add(NeoFormStyle.section("Daftar Barang Masuk"), BorderLayout.NORTH);
 
         modelItem = new DefaultTableModel(
                 new String[]{"Kode", "Judul", "Jenis", "Stok Lama", "Qty Beli", "Stok Baru", "Harga Beli", "Subtotal"}, 0) {
@@ -212,39 +209,41 @@ public class FormPembelian extends JPanel {
             }
         };
         tblItem = new JTable(modelItem);
-        JScrollPane scroll = new JScrollPane(tblItem);
-        scroll.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        NeoTableStyle.apply(tblItem);
+        tblItem.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        int[] lebar = {55, 130, 50, 62, 55, 58, 72, 82};
+        for (int i = 0; i < lebar.length; i++) {
+            tblItem.getColumnModel().getColumn(i).setPreferredWidth(lebar[i]);
+        }
+        JScrollPane scroll = NeoTableStyle.wrap(tblItem);
         card.add(scroll, BorderLayout.CENTER);
 
         JPanel pnlBawah = new JPanel(new BorderLayout(6, 6));
-        pnlBawah.setBackground(NeoBrutalTheme.SURFACE);
+        pnlBawah.setOpaque(false);
 
-        JPanel pnlMetrics = new JPanel(new GridLayout(2, 1, 2, 2));
-        pnlMetrics.setBackground(NeoBrutalTheme.SURFACE);
+        JPanel pnlMetrics = new JPanel(new GridLayout(2, 1, 1, 1));
+        pnlMetrics.setOpaque(false);
         lblSummaryItem = new JLabel("Total: 0 jenis buku | 0 pcs");
-        lblSummaryItem.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 13));
+        lblSummaryItem.setFont(NeoBrutalTheme.body(java.awt.Font.PLAIN, 11));
+        lblSummaryItem.setForeground(NeoBrutalTheme.TEXT_MUTED);
         lblTotal = new JLabel("Total Biaya: Rp 0");
-        lblTotal.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
-        lblTotal.setForeground(NeoBrutalTheme.PRIMARY);
+        lblTotal.setFont(NeoBrutalTheme.display(18));
+        lblTotal.setForeground(NeoBrutalTheme.BRAND_MAROON);
         pnlMetrics.add(lblSummaryItem);
         pnlMetrics.add(lblTotal);
         pnlBawah.add(pnlMetrics, BorderLayout.NORTH);
 
-        JPanel pnlBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        pnlBtn.setBackground(NeoBrutalTheme.SURFACE);
+        JPanel pnlBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+        pnlBtn.setOpaque(false);
 
-        JButton btnReset = styledButton("Reset / Kosongkan",
-                FontIcon.of(MaterialDesignR.REFRESH, 18, Color.BLACK),
-                NeoBrutalTheme.SECONDARY);
+        JButton btnReset = styledButton("Reset", null, NeoBrutalTheme.SECONDARY);
         btnReset.addActionListener(e -> doResetKeranjang());
 
-        JButton btnHapus = styledButton("Hapus Baris",
-                FontIcon.of(MaterialDesignD.DELETE, 18, Color.BLACK),
-                NeoBrutalTheme.DANGER);
+        JButton btnHapus = styledButton("Hapus", null, NeoBrutalTheme.DANGER);
         btnHapus.addActionListener(e -> hapusItem());
 
-        JButton btnSimpan = styledButton("Simpan Faktur Pembelian",
-                FontIcon.of(MaterialDesignC.CONTENT_SAVE, 18, Color.BLACK),
+        JButton btnSimpan = styledButton("Simpan",
+                FontIcon.of(MaterialDesignC.CONTENT_SAVE, 16, NeoBrutalTheme.INK),
                 NeoBrutalTheme.PRIMARY);
         btnSimpan.addActionListener(e -> doSimpan());
 
@@ -256,26 +255,8 @@ public class FormPembelian extends JPanel {
         return card;
     }
 
-    private JButton styledButton(String teks, FontIcon ikon, Color bg) {
-        JButton b = ikon == null ? new JButton(teks) : new JButton(teks, ikon);
-        b.setIconTextGap(8);
-        b.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        b.setBackground(bg);
-        b.setForeground(Color.BLACK);
-        b.setBorder(new NeoShadowBorder());
-        b.setFocusPainted(false);
-        b.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                b.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                b.setBorder(new NeoShadowBorder());
-            }
-        });
-        return b;
+    private NeoButton styledButton(String teks, FontIcon ikon, Color bg) {
+        return NeoFormStyle.button(teks, ikon, bg);
     }
 
     private void updateDraftFaktur() {
@@ -307,7 +288,7 @@ public class FormPembelian extends JPanel {
             if (s.getIdSupplier() == selected.id) {
                 String almt = (s.getAlamat() != null && !s.getAlamat().isBlank()) ? s.getAlamat() : "-";
                 String telp = (s.getNoTelp() != null && !s.getNoTelp().isBlank()) ? s.getNoTelp() : "-";
-                lblSupplierInfo.setText("<html>📍 <b>Alamat:</b> " + almt + " &nbsp;|&nbsp; 📞 <b>Telp:</b> " + telp + "</html>");
+                lblSupplierInfo.setText("<html>ðŸ“ <b>Alamat:</b> " + almt + " &nbsp;|&nbsp; ðŸ“ž <b>Telp:</b> " + telp + "</html>");
                 return;
             }
         }
