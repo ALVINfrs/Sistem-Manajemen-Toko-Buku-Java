@@ -38,6 +38,12 @@ public final class NeoChartStyle {
     public static void apply(JFreeChart chart) {
         chart.setBackgroundPaint(NeoBrutalTheme.SURFACE);
         chart.setBorderVisible(false);
+        if (chart.getTitle() != null) {
+            chart.getTitle().setFont(NeoBrutalTheme.display(14));
+            chart.getTitle().setPaint(NeoBrutalTheme.INK);
+            chart.getTitle().setBorder(new org.jfree.chart.block.BlockBorder(
+                    0, 0, 0, 6));
+        }
 
         CategoryPlot plot = chart.getCategoryPlot();
         plot.setBackgroundPaint(NeoBrutalTheme.BG);
@@ -80,6 +86,7 @@ public final class NeoChartStyle {
         panel.setBackground(NeoBrutalTheme.SURFACE);
         panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         panel.setPreferredSize(new Dimension(500, 300));
+        panel.setMinimumSize(new Dimension(0, 0));
         panel.setMouseWheelEnabled(false);
         panel.setDomainZoomable(false);
         panel.setRangeZoomable(false);

@@ -18,12 +18,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.text.NumberFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,10 +57,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignE;
@@ -75,6 +69,7 @@ import report.ReportHelper;
 import util.AppConfig;
 import util.ExcelExporter;
 import util.NeoBrutalTheme;
+import util.NeoChartStyle;
 import util.NeoShadowBorder;
 import util.Sesi;
 
@@ -151,31 +146,18 @@ public class FormLaporan extends JPanel {
         JPanel wrap = new JPanel(new BorderLayout(8, 8));
         wrap.setBackground(NeoBrutalTheme.BG);
 
-        // Judul Dashboard
-        JPanel pnlTitle = new JPanel(new BorderLayout(4, 2));
-        pnlTitle.setOpaque(false);
-        JLabel lblJudul = new JLabel("Pusat Laporan & Analisis Bisnis");
-        lblJudul.setFont(new Font("Segoe UI Black", Font.BOLD, 22));
-        lblJudul.setForeground(Color.BLACK);
-        JLabel lblSub = new JLabel("Rekapitulasi performa finansial, volume stok gudang, tren kurva grafik, dan cetak dokumen resmi");
-        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lblSub.setForeground(new Color(90, 90, 90));
-        pnlTitle.add(lblJudul, BorderLayout.NORTH);
-        pnlTitle.add(lblSub, BorderLayout.SOUTH);
-        wrap.add(pnlTitle, BorderLayout.NORTH);
+        wrap.add(new NeoPageHeader("LAPORAN", "Pusat Laporan",
+                "Rekap performa, cetak dokumen, dan ekspor data.", null),
+                BorderLayout.NORTH);
 
         // Filter Card
-        JPanel card = new JPanel(new GridBagLayout());
-        card.setBackground(NeoBrutalTheme.SURFACE);
-        card.setBorder(new NeoShadowBorder());
+        JPanel card = NeoFormStyle.card(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 10, 6, 10);
+        gbc.insets = new Insets(4, 8, 4, 8);
         gbc.anchor = GridBagConstraints.WEST;
 
-        cmbJenis = new JComboBox<>();
-        cmbJenis.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        cmbJenis.setBackground(NeoBrutalTheme.SURFACE);
-        cmbJenis.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        cmbJenis = NeoFormStyle.combo();
+        cmbJenis.setName("jenis_laporan");
 
         if (Sesi.isAdmin()) {
             cmbJenis.addItem(JENIS_PENJUALAN);
@@ -199,9 +181,8 @@ public class FormLaporan extends JPanel {
         });
 
         cmbFilterJenis = new JComboBox<>(new String[]{"Semua", "Buku", "ATK"});
-        cmbFilterJenis.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        cmbFilterJenis.setBackground(NeoBrutalTheme.SURFACE);
-        cmbFilterJenis.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        cmbFilterJenis.setName("filter_jenis");
+        NeoFormStyle.styleCombo(cmbFilterJenis);
         cmbFilterJenis.addActionListener(e -> {
             if (!sedangResetFilter) {
                 muatData();
@@ -209,8 +190,8 @@ public class FormLaporan extends JPanel {
         });
 
         pnlFilterJenis = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        pnlFilterJenis.setBackground(NeoBrutalTheme.SURFACE);
-        pnlFilterJenis.add(filterLabel("Jenis Barang:"));
+        pnlFilterJenis.setOpaque(false);
+        pnlFilterJenis.add(filterLabel("Jenis Barang"));
         pnlFilterJenis.add(cmbFilterJenis);
 
         dpDari = new DatePicker();
@@ -221,31 +202,38 @@ public class FormLaporan extends JPanel {
         dpSampai.setDateToToday();
 
         pnlTanggal = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        pnlTanggal.setBackground(NeoBrutalTheme.SURFACE);
-        pnlTanggal.add(filterLabel("Periode: Dari"));
+        pnlTanggal.setOpaque(false);
+        pnlTanggal.add(filterLabel("Periode"));
         pnlTanggal.add(dpDari);
         pnlTanggal.add(filterLabel("s.d."));
         pnlTanggal.add(dpSampai);
 
-        JButton btnTerapkan = styledButton("Terapkan Filter",
-                FontIcon.of(MaterialDesignC.CHECK_BOLD, 16, Color.BLACK),
+        JButton btnTerapkan = styledButton("Terapkan",
+                FontIcon.of(MaterialDesignC.CHECK_BOLD, 16, NeoBrutalTheme.INK),
                 NeoBrutalTheme.PRIMARY);
         btnTerapkan.addActionListener(e -> muatData());
 
+        cmbJenis.setMinimumSize(new Dimension(170, 34));
+
         gbc.gridx = 0; gbc.gridy = 0;
-        card.add(filterLabel("Jenis Laporan:"), gbc);
-        gbc.gridx = 1; gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 0.5;
+        card.add(filterLabel("Jenis"), gbc);
+        gbc.gridx = 1; gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 0.6;
         card.add(cmbJenis, gbc);
 
-        gbc.gridx = 3; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
-        card.add(pnlFilterJenis, gbc);
-
-        gbc.gridx = 4;
+        gbc.gridx = 2; gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE; gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.WEST;
         card.add(pnlTanggal, gbc);
 
-        gbc.gridx = 5;
+        gbc.gridx = 3;
+        gbc.anchor = GridBagConstraints.EAST;
         card.add(btnTerapkan, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridwidth = 4;
+        gbc.anchor = GridBagConstraints.WEST;
+        card.add(pnlFilterJenis, gbc);
 
         wrap.add(card, BorderLayout.CENTER);
         toggleTanggal();
@@ -261,32 +249,32 @@ public class FormLaporan extends JPanel {
         lblKpiFinansial = new JLabel("Rp 0", SwingConstants.CENTER);
         lblKpiMargin = new JLabel("0%", SwingConstants.CENTER);
 
-        strip.add(createKpiCard("TOTAL DATA", lblKpiData, new Color(224, 231, 255))); // Soft blue
-        strip.add(createKpiCard("TOTAL VOLUME BARANG", lblKpiVolume, new Color(254, 240, 138))); // Soft yellow
-        strip.add(createKpiCard("TOTAL NOMINAL FINANSIAL", lblKpiFinansial, NeoBrutalTheme.PRIMARY)); // Neo Mint
-        strip.add(createKpiCard("RATA-RATA / MARGIN", lblKpiMargin, new Color(254, 205, 211))); // Soft rose
+        strip.add(createKpiCard("kpi_data", "Total Data", lblKpiData, NeoBrutalTheme.SECONDARY));
+        strip.add(createKpiCard("kpi_volume", "Total Volume", lblKpiVolume, NeoBrutalTheme.WARNING));
+        strip.add(createKpiCard("kpi_finansial", "Total Finansial", lblKpiFinansial, NeoBrutalTheme.BRAND_TEAL));
+        strip.add(createKpiCard("kpi_margin", "Rata-rata / Margin", lblKpiMargin, NeoBrutalTheme.PRIMARY));
 
         return strip;
     }
 
-    private JPanel createKpiCard(String title, JLabel valueLabel, Color bg) {
-        JPanel card = new JPanel(new BorderLayout(4, 4));
+    private JPanel createKpiCard(String name, String title, JLabel valueLabel, Color bg) {
+        JPanel card = new JPanel(new BorderLayout(2, 1));
+        card.setName(name);
         card.setBackground(bg);
-        card.setBorder(new NeoShadowBorder());
+        card.setBorder(BorderFactory.createCompoundBorder(
+                new NeoShadowBorder(),
+                BorderFactory.createEmptyBorder(4, 8, 4, 8)));
 
-        JLabel lblTitle = new JLabel(title, SwingConstants.CENTER);
-        lblTitle.setFont(new Font("Segoe UI Semibold", Font.BOLD, 11));
-        lblTitle.setForeground(new Color(60, 60, 60));
+        JLabel lblTitle = new JLabel(title, SwingConstants.LEFT);
+        lblTitle.setFont(NeoBrutalTheme.mono(10));
+        lblTitle.setForeground(NeoBrutalTheme.INK);
 
-        valueLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 17));
-        valueLabel.setForeground(Color.BLACK);
+        valueLabel.setFont(NeoBrutalTheme.display(18));
+        valueLabel.setForeground(NeoBrutalTheme.INK);
+        valueLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
         card.add(lblTitle, BorderLayout.NORTH);
         card.add(valueLabel, BorderLayout.CENTER);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                new NeoShadowBorder(),
-                BorderFactory.createEmptyBorder(6, 8, 6, 8)
-        ));
         return card;
     }
 
@@ -296,7 +284,9 @@ public class FormLaporan extends JPanel {
         wrap.setBorder(new NeoShadowBorder());
 
         tabCenter = new JTabbedPane();
-        tabCenter.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
+        tabCenter.setFont(NeoBrutalTheme.display(12));
+        tabCenter.setBackground(NeoBrutalTheme.SURFACE);
+        tabCenter.setForeground(NeoBrutalTheme.INK);
 
         // 1. Tab Tabel Preview
         JPanel pnlTabTabel = new JPanel(new BorderLayout(6, 6));
@@ -304,12 +294,9 @@ public class FormLaporan extends JPanel {
         pnlTabTabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         JPanel pnlSearch = new JPanel(new BorderLayout(8, 0));
-        pnlSearch.setBackground(NeoBrutalTheme.SURFACE);
-        JLabel lblCari = new JLabel("Pencarian Live di Tabel:");
-        lblCari.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
-        txtCariLive = new JTextField();
-        txtCariLive.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        txtCariLive.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        pnlSearch.setOpaque(false);
+        JLabel lblCari = NeoFormStyle.label("Pencarian Live");
+        txtCariLive = NeoFormStyle.field("cari_live");
         txtCariLive.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent e) { filterTabelLive(); }
             @Override public void removeUpdate(DocumentEvent e) { filterTabelLive(); }
@@ -326,28 +313,26 @@ public class FormLaporan extends JPanel {
             }
         };
         tblPreview = new JTable(modelPreview);
-        tblPreview.setRowHeight(25);
         tblPreview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tblPreview.getTableHeader().setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
-        tblPreview.getTableHeader().setBackground(new Color(241, 245, 249));
-        JScrollPane scroll = new JScrollPane(tblPreview);
-        scroll.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        NeoTableStyle.apply(tblPreview);
+        JScrollPane scroll = NeoTableStyle.wrap(tblPreview);
         pnlTabTabel.add(scroll, BorderLayout.CENTER);
 
         lblStatusTabel = new JLabel("Memuat data...");
-        lblStatusTabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblStatusTabel.setFont(NeoBrutalTheme.body(java.awt.Font.PLAIN, 11));
+        lblStatusTabel.setForeground(NeoBrutalTheme.TEXT_MUTED);
         pnlTabTabel.add(lblStatusTabel, BorderLayout.SOUTH);
 
         // 2. Tab Kurva & Grafik Visual (JFreeChart)
-        pnlChartContainer = new JPanel(new BorderLayout());
-        pnlChartContainer.setBackground(Color.WHITE);
+        pnlChartContainer = new JPanel(new BorderLayout(0, 6));
+        pnlChartContainer.setBackground(NeoBrutalTheme.SURFACE);
         pnlChartContainer.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         tabCenter.addTab("Tabel Data Preview",
-                FontIcon.of(MaterialDesignF.FORMAT_LIST_BULLETED, 16, Color.BLACK),
+                FontIcon.of(MaterialDesignF.FORMAT_LIST_BULLETED, 16, NeoBrutalTheme.INK),
                 pnlTabTabel);
         tabCenter.addTab("Kurva & Grafik Visual",
-                FontIcon.of(MaterialDesignC.CHART_LINE, 16, Color.BLACK),
+                FontIcon.of(MaterialDesignC.CHART_LINE, 16, NeoBrutalTheme.INK),
                 pnlChartContainer);
 
         wrap.add(tabCenter, BorderLayout.CENTER);
@@ -362,22 +347,22 @@ public class FormLaporan extends JPanel {
         pnlButtons.setOpaque(false);
 
         JButton btnSegarkan = styledButton("Segarkan",
-                FontIcon.of(MaterialDesignR.REFRESH, 18, Color.BLACK),
+                FontIcon.of(MaterialDesignR.REFRESH, 16, NeoBrutalTheme.INK),
                 NeoBrutalTheme.SECONDARY);
         btnSegarkan.addActionListener(e -> muatData());
 
         JButton btnPrint = styledButton("Pratinjau PDF",
-                FontIcon.of(MaterialDesignM.MONITOR, 18, Color.BLACK),
-                new Color(199, 210, 254)); // Soft indigo
+                FontIcon.of(MaterialDesignM.MONITOR, 16, NeoBrutalTheme.INK),
+                NeoBrutalTheme.BRAND_TEAL);
         btnPrint.addActionListener(e -> doTampilkanPdf());
 
         JButton btnExportPdf = styledButton("Export PDF",
-                FontIcon.of(MaterialDesignE.EXPORT, 18, Color.BLACK),
-                new Color(254, 205, 211)); // Soft rose
+                FontIcon.of(MaterialDesignE.EXPORT, 16, NeoBrutalTheme.INK),
+                NeoBrutalTheme.WARNING);
         btnExportPdf.addActionListener(e -> doExportPdf());
 
         JButton btnExportExcel = styledButton("Export Excel (.xlsx)",
-                FontIcon.of(MaterialDesignF.FILE_EXCEL_BOX, 18, Color.BLACK),
+                FontIcon.of(MaterialDesignF.FILE_EXCEL_BOX, 16, NeoBrutalTheme.INK),
                 NeoBrutalTheme.PRIMARY);
         btnExportExcel.addActionListener(e -> doExportExcel());
 
@@ -758,26 +743,28 @@ public class FormLaporan extends JPanel {
                     dataset, PlotOrientation.VERTICAL, false, true, false);
         }
 
-        // Styling Chart
-        chart.setBackgroundPaint(Color.WHITE);
-        CategoryPlot plot = chart.getCategoryPlot();
-        plot.setBackgroundPaint(new Color(248, 250, 252));
-        plot.setDomainGridlinePaint(new Color(226, 232, 240));
-        plot.setRangeGridlinePaint(new Color(203, 213, 225));
+        // Styling Chart neobrutalism
+        NeoChartStyle.apply(chart);
+        String judulChart = chart.getTitle() != null ? chart.getTitle().getText() : "";
+        chart.setTitle((String) null);
 
-        if (plot.getRenderer() instanceof BarRenderer) {
-            BarRenderer br = (BarRenderer) plot.getRenderer();
-            br.setSeriesPaint(0, new Color(14, 165, 233)); // Sky blue
-            br.setDrawBarOutline(true);
-            br.setSeriesOutlinePaint(0, Color.BLACK);
-        } else if (plot.getRenderer() instanceof LineAndShapeRenderer) {
-            LineAndShapeRenderer lr = (LineAndShapeRenderer) plot.getRenderer();
-            lr.setSeriesPaint(0, new Color(16, 185, 129)); // Emerald green
+        JPanel pnlChart = new JPanel(new BorderLayout(0, 6));
+        pnlChart.setOpaque(false);
+        JLabel lblJudulChart = new JLabel(judulChart);
+        lblJudulChart.setFont(NeoBrutalTheme.display(14));
+        lblJudulChart.setForeground(NeoBrutalTheme.INK);
+        pnlChart.add(lblJudulChart, BorderLayout.NORTH);
+
+        JPanel chartCard = NeoChartStyle.card(chart);
+        for (java.awt.Component isi : chartCard.getComponents()) {
+            if (isi instanceof ChartPanel) {
+                isi.setPreferredSize(new Dimension(0, 0));
+                isi.setMinimumSize(new Dimension(0, 0));
+            }
         }
+        pnlChart.add(chartCard, BorderLayout.CENTER);
 
-        ChartPanel cp = new ChartPanel(chart);
-        cp.setPreferredSize(new Dimension(500, 300));
-        pnlChartContainer.add(cp, BorderLayout.CENTER);
+        pnlChartContainer.add(pnlChart, BorderLayout.CENTER);
         pnlChartContainer.revalidate();
         pnlChartContainer.repaint();
     }
@@ -996,30 +983,13 @@ public class FormLaporan extends JPanel {
 
     private JLabel filterLabel(String teks) {
         JLabel lbl = new JLabel(teks);
-        lbl.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
+        lbl.setFont(NeoBrutalTheme.body(java.awt.Font.BOLD, 12));
+        lbl.setForeground(NeoBrutalTheme.INK);
         return lbl;
     }
 
-    private JButton styledButton(String teks, FontIcon ikon, Color bg) {
-        JButton b = ikon == null ? new JButton(teks) : new JButton(teks, ikon);
-        b.setIconTextGap(8);
-        b.setFont(new Font("Segoe UI Semibold", Font.BOLD, 13));
-        b.setBackground(bg);
-        b.setForeground(Color.BLACK);
-        b.setBorder(new NeoShadowBorder());
-        b.setFocusPainted(false);
-        b.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                b.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                b.setBorder(new NeoShadowBorder());
-            }
-        });
-        return b;
+    private NeoButton styledButton(String teks, FontIcon ikon, Color bg) {
+        return NeoFormStyle.button(teks, ikon, bg);
     }
 
     private String formatRp(double val) {
