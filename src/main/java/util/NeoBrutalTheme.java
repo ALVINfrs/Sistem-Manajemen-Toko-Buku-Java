@@ -17,6 +17,9 @@ public class NeoBrutalTheme {
     public static final Color DANGER    = Color.decode("#E63946");
     public static final Color BRAND_MAROON = Color.decode("#7A0B2E");
     public static final Color BRAND_TEAL   = Color.decode("#00A7C4");
+    public static final Color BRAND_MAROON_DARK = Color.decode("#5E0822");
+    public static final Color TEXT_MUTED  = Color.decode("#5C5C5C");
+    public static final Color ROW_ALT     = Color.decode("#FFF4CF");
 
     private static String displayFamily;
     private static String monoFamily;
@@ -50,6 +53,11 @@ public class NeoBrutalTheme {
                     "Consolas", "Cascadia Mono", "Courier New");
         }
         return new Font(monoFamily, Font.BOLD, size);
+    }
+
+    /** Font body netral untuk teks form dan tabel. */
+    public static Font body(int style, int size) {
+        return new Font("Segoe UI", style, size);
     }
 
     public static void apply() {
