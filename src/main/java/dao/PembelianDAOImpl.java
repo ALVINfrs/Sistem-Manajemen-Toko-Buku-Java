@@ -207,6 +207,37 @@ public class PembelianDAOImpl implements PembelianDAO {
     }
 
     @Override
+    public List<DetailPembelian> getDetailByPembelian(int idPembelian) {
+        String sql = "SELECT d.id_detail, d.id_pembelian, d.id_buku, b.kode_buku, b.judul, "
+                + "d.qty, d.harga_beli, d.subtotal "
+                + "FROM detail_pembelian d "
+                + "JOIN buku b ON d.id_buku = b.id_buku "
+                + "WHERE d.id_pembelian=? ORDER BY d.id_detail";
+        List<DetailPembelian> list = new ArrayList<>();
+        try (Connection c = Koneksi.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, idPembelian);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    DetailPembelian d = new DetailPembelian();
+                    d.setIdDetail(rs.getInt("id_detail"));
+                    d.setIdPembelian(rs.getInt("id_pembelian"));
+                    d.setIdBuku(rs.getInt("id_buku"));
+                    d.setKodeBuku(rs.getString("kode_buku"));
+                    d.setJudul(rs.getString("judul"));
+                    d.setQty(rs.getInt("qty"));
+                    d.setHargaBeli(rs.getDouble("harga_beli"));
+                    d.setSubtotal(rs.getDouble("subtotal"));
+                    list.add(d);
+                }
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new RuntimeException("Gagal ambil detail pembelian: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public List<LapPembelian> lapPembelian(LocalDate a, LocalDate b) {
         String sql = "SELECT p.no_faktur, p.tanggal, s.nama_supplier supplier, u.nama_lengkap kasir, p.total "
                 + "FROM pembelian p "

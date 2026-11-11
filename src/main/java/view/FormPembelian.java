@@ -1,5 +1,6 @@
 package view;
 
+import com.github.lgooddatepicker.components.DatePicker;
 import dao.BukuDAO;
 import dao.BukuDAOImpl;
 import dao.PembelianDAO;
@@ -15,30 +16,46 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import model.Buku;
 import model.DetailPembelian;
+import model.LapPembelian;
 import model.Pembelian;
 import model.Supplier;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignF;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignH;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignM;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignR;
 import org.kordamp.ikonli.swing.FontIcon;
 import util.ComboItem;
 import util.NeoBrutalTheme;
@@ -49,6 +66,8 @@ import util.Validasi;
 public class FormPembelian extends JPanel {
 
     private static final NumberFormat FMT_RP = NumberFormat.getInstance(new Locale("id", "ID"));
+    private static final DateTimeFormatter FMT_TGL_RIWAYAT =
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     private final BukuDAO bukuDAO = new BukuDAOImpl();
     private final SupplierDAO supplierDAO = new SupplierDAOImpl();
@@ -76,6 +95,15 @@ public class FormPembelian extends JPanel {
     private JLabel lblSummaryItem;
     private JLabel lblTotal;
 
+    private JTabbedPane tabbedPane;
+    private DatePicker dpDari;
+    private DatePicker dpSampai;
+    private JTextField txtCariRiwayat;
+    private JTable tblRiwayat;
+    private DefaultTableModel modelRiwayat;
+    private JLabel lblRiwayatSummary;
+    private List<LapPembelian> cacheRiwayat = new ArrayList<>();
+
     public FormPembelian() {
         setLayout(new BorderLayout(12, 12));
         setBackground(NeoBrutalTheme.BG);
@@ -85,6 +113,7 @@ public class FormPembelian extends JPanel {
         pnlNorth.setBackground(NeoBrutalTheme.BG);
 
         lblFakturDraft = new JLabel("Draft No. Faktur: -");
+        lblFakturDraft.setName("lblFakturDraft");
         lblFakturDraft.setFont(NeoBrutalTheme.mono(10));
         lblFakturDraft.setForeground(NeoBrutalTheme.TEXT_MUTED);
         JPanel pnlDraft = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
@@ -92,19 +121,43 @@ public class FormPembelian extends JPanel {
         pnlDraft.add(lblFakturDraft);
 
         pnlNorth.add(new NeoPageHeader("TRANSAKSI", "Pembelian & Pengadaan",
-                "Pilih supplier â†’ isi qty & harga beli â†’ tambah â†’ simpan faktur.", pnlDraft),
+                "Pilih supplier → isi qty & harga beli → tambah → simpan faktur.", pnlDraft),
                 BorderLayout.NORTH);
         add(pnlNorth, BorderLayout.NORTH);
 
-        JPanel cols = new JPanel(new GridLayout(1, 2, 12, 0));
-        cols.setBackground(NeoBrutalTheme.BG);
-        cols.add(buildKiri());
-        cols.add(buildKanan());
-        add(cols, BorderLayout.CENTER);
+        tabbedPane = new JTabbedPane();
+        tabbedPane.setName("tabPembelian");
+        tabbedPane.setFont(NeoBrutalTheme.display(12));
+        tabbedPane.setBackground(NeoBrutalTheme.BG);
+        tabbedPane.setForeground(NeoBrutalTheme.INK);
+        tabbedPane.addTab("Input Pembelian",
+                FontIcon.of(MaterialDesignC.CART_ARROW_DOWN, 16, NeoBrutalTheme.INK),
+                buildTabInput());
+        tabbedPane.addTab("Riwayat Faktur",
+                FontIcon.of(MaterialDesignH.HISTORY, 16, NeoBrutalTheme.INK),
+                buildTabRiwayat());
+        tabbedPane.addChangeListener(e -> {
+            boolean input = tabbedPane.getSelectedIndex() == 0;
+            lblFakturDraft.setVisible(input);
+            if (!input) {
+                loadRiwayat();
+            }
+        });
+        add(tabbedPane, BorderLayout.CENTER);
 
         reloadSupplier();
         cariBuku("");
         updateDraftFaktur();
+        loadRiwayat();
+    }
+
+    private JPanel buildTabInput() {
+        JPanel pnl = new JPanel(new GridLayout(1, 2, 12, 0));
+        pnl.setBackground(NeoBrutalTheme.BG);
+        pnl.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        pnl.add(buildKiri());
+        pnl.add(buildKanan());
+        return pnl;
     }
 
     private JPanel buildKiri() {
@@ -202,7 +255,7 @@ public class FormPembelian extends JPanel {
         card.add(NeoFormStyle.section("Daftar Barang Masuk"), BorderLayout.NORTH);
 
         modelItem = new DefaultTableModel(
-                new String[]{"Kode", "Judul", "Jenis", "Stok Lama", "Qty Beli", "Stok Baru", "Harga Beli", "Subtotal"}, 0) {
+                new String[]{"Kode", "Judul", "Jenis", "Stok Awal", "Qty Beli", "Stok Akhir", "Harga", "Subtotal"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -211,7 +264,7 @@ public class FormPembelian extends JPanel {
         tblItem = new JTable(modelItem);
         NeoTableStyle.apply(tblItem);
         tblItem.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        int[] lebar = {55, 130, 50, 62, 55, 58, 72, 82};
+        int[] lebar = {50, 110, 48, 72, 66, 78, 64, 64};
         for (int i = 0; i < lebar.length; i++) {
             tblItem.getColumnModel().getColumn(i).setPreferredWidth(lebar[i]);
         }
@@ -255,6 +308,118 @@ public class FormPembelian extends JPanel {
         return card;
     }
 
+    private JPanel buildTabRiwayat() {
+        JPanel pnl = new JPanel(new BorderLayout(10, 10));
+        pnl.setBackground(NeoBrutalTheme.BG);
+        pnl.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+
+        JPanel card = NeoFormStyle.card(new BorderLayout(8, 8));
+
+        JPanel pnlHeader = new JPanel(new BorderLayout(6, 6));
+        pnlHeader.setOpaque(false);
+        pnlHeader.add(NeoFormStyle.section("Riwayat Faktur Pembelian"), BorderLayout.NORTH);
+
+        JPanel pnlFilter = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        pnlFilter.setOpaque(false);
+
+        pnlFilter.add(NeoFormStyle.label("Dari"));
+        dpDari = new DatePicker();
+        dpDari.setName("tglDariPembelian");
+        dpDari.setDate(LocalDate.now().minusDays(30));
+        dpDari.addDateChangeListener(e -> loadRiwayat());
+        pnlFilter.add(dpDari);
+
+        pnlFilter.add(NeoFormStyle.label("Sampai"));
+        dpSampai = new DatePicker();
+        dpSampai.setName("tglSampaiPembelian");
+        dpSampai.setDateToToday();
+        dpSampai.addDateChangeListener(e -> loadRiwayat());
+        pnlFilter.add(dpSampai);
+
+        pnlFilter.add(NeoFormStyle.label("Cari"));
+        txtCariRiwayat = NeoFormStyle.field("cari_riwayat_pembelian");
+        txtCariRiwayat.setColumns(18);
+        txtCariRiwayat.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                applyFilterRiwayat();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                applyFilterRiwayat();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                applyFilterRiwayat();
+            }
+        });
+        pnlFilter.add(txtCariRiwayat);
+        pnlHeader.add(pnlFilter, BorderLayout.SOUTH);
+        card.add(pnlHeader, BorderLayout.NORTH);
+
+        modelRiwayat = new DefaultTableModel(
+                new String[]{"No. Faktur", "Tanggal", "Supplier", "Penerima", "Total"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tblRiwayat = new JTable(modelRiwayat);
+        tblRiwayat.setName("tblRiwayatPembelian");
+        tblRiwayat.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        NeoTableStyle.apply(tblRiwayat);
+        tblRiwayat.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        tblRiwayat.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    bukaFaktur();
+                }
+            }
+        });
+        tblRiwayat.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "bukaFaktur");
+        tblRiwayat.getActionMap().put("bukaFaktur", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                bukaFaktur();
+            }
+        });
+        card.add(NeoTableStyle.wrap(tblRiwayat), BorderLayout.CENTER);
+
+        JPanel pnlBottom = new JPanel(new BorderLayout(8, 0));
+        pnlBottom.setOpaque(false);
+        lblRiwayatSummary = new JLabel("Memuat riwayat faktur...");
+        lblRiwayatSummary.setFont(NeoBrutalTheme.body(Font.PLAIN, 11));
+        lblRiwayatSummary.setForeground(NeoBrutalTheme.TEXT_MUTED);
+        pnlBottom.add(lblRiwayatSummary, BorderLayout.WEST);
+
+        JPanel pnlBtn = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+        pnlBtn.setOpaque(false);
+
+        JButton btnSegarkan = styledButton("Segarkan",
+                FontIcon.of(MaterialDesignR.REFRESH, 16, NeoBrutalTheme.INK),
+                NeoBrutalTheme.SECONDARY);
+        btnSegarkan.setName("btnSegarkanRiwayat");
+        btnSegarkan.addActionListener(e -> loadRiwayat());
+
+        JButton btnBuka = styledButton("Buka Faktur",
+                FontIcon.of(MaterialDesignF.FILE_DOCUMENT, 16, NeoBrutalTheme.INK),
+                NeoBrutalTheme.PRIMARY);
+        btnBuka.setName("btnBukaFaktur");
+        btnBuka.addActionListener(e -> bukaFaktur());
+
+        pnlBtn.add(btnSegarkan);
+        pnlBtn.add(btnBuka);
+        pnlBottom.add(pnlBtn, BorderLayout.EAST);
+        card.add(pnlBottom, BorderLayout.SOUTH);
+
+        pnl.add(card, BorderLayout.CENTER);
+        return pnl;
+    }
+
     private NeoButton styledButton(String teks, FontIcon ikon, Color bg) {
         return NeoFormStyle.button(teks, ikon, bg);
     }
@@ -288,7 +453,8 @@ public class FormPembelian extends JPanel {
             if (s.getIdSupplier() == selected.id) {
                 String almt = (s.getAlamat() != null && !s.getAlamat().isBlank()) ? s.getAlamat() : "-";
                 String telp = (s.getNoTelp() != null && !s.getNoTelp().isBlank()) ? s.getNoTelp() : "-";
-                lblSupplierInfo.setText("<html>ðŸ“ <b>Alamat:</b> " + almt + " &nbsp;|&nbsp; ðŸ“ž <b>Telp:</b> " + telp + "</html>");
+                lblSupplierInfo.setText("<html><b>Alamat:</b> " + almt
+                        + " &nbsp;|&nbsp; <b>Telp:</b> " + telp + "</html>");
                 return;
             }
         }
@@ -476,8 +642,122 @@ public class FormPembelian extends JPanel {
             refreshItem();
             cariBuku(txtCari.getText());
             updateDraftFaktur();
+            loadRiwayat();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Gagal simpan pembelian: " + ex.getMessage(),
+                    "Gagal", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // =========================================================================
+    // LOGIKA TAB RIWAYAT FAKTUR
+    // =========================================================================
+
+    static List<LapPembelian> filterRiwayat(List<LapPembelian> data, String keyword) {
+        List<LapPembelian> hasil = new ArrayList<>();
+        if (data == null) {
+            return hasil;
+        }
+        String key = keyword == null ? "" : keyword.trim().toLowerCase(Locale.ROOT);
+        for (LapPembelian l : data) {
+            if (l == null) {
+                continue;
+            }
+            boolean cocok = key.isEmpty()
+                    || (l.getNoFaktur() != null
+                        && l.getNoFaktur().toLowerCase(Locale.ROOT).contains(key))
+                    || (l.getSupplier() != null
+                        && l.getSupplier().toLowerCase(Locale.ROOT).contains(key));
+            if (cocok) {
+                hasil.add(l);
+            }
+        }
+        return hasil;
+    }
+
+    static Object[] riwayatRow(LapPembelian l) {
+        String tgl = l.getTanggal() != null ? l.getTanggal().format(FMT_TGL_RIWAYAT) : "-";
+        return new Object[]{
+            l.getNoFaktur() != null ? l.getNoFaktur() : "-",
+            tgl,
+            l.getSupplier() != null ? l.getSupplier() : "-",
+            l.getKasir() != null ? l.getKasir() : "-",
+            "Rp " + FMT_RP.format((long) Math.round(l.getTotal()))
+        };
+    }
+
+    public void loadRiwayat() {
+        if (dpDari == null || dpSampai == null || modelRiwayat == null) {
+            return;
+        }
+        LocalDate a = dpDari.getDate();
+        LocalDate b = dpSampai.getDate();
+        if (a == null || b == null) {
+            return;
+        }
+        try {
+            cacheRiwayat = pembelianDAO.lapPembelian(a, b);
+            cacheRiwayat.sort(Comparator.comparing(
+                    LapPembelian::getTanggal,
+                    Comparator.nullsLast(Comparator.naturalOrder())).reversed());
+            applyFilterRiwayat();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Gagal memuat riwayat faktur: " + ex.getMessage(),
+                    "Gagal", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void applyFilterRiwayat() {
+        if (modelRiwayat == null) {
+            return;
+        }
+        List<LapPembelian> tampil = filterRiwayat(cacheRiwayat,
+                txtCariRiwayat != null ? txtCariRiwayat.getText() : "");
+        modelRiwayat.setRowCount(0);
+        double total = 0;
+        for (LapPembelian l : tampil) {
+            modelRiwayat.addRow(riwayatRow(l));
+            total += l.getTotal();
+        }
+        if (lblRiwayatSummary != null) {
+            lblRiwayatSummary.setText(tampil.size() + " faktur | Total " + formatRp(total));
+        }
+    }
+
+    private void bukaFaktur() {
+        int row = tblRiwayat.getSelectedRow();
+        if (row < 0 || row >= modelRiwayat.getRowCount()) {
+            JOptionPane.showMessageDialog(this, "Pilih baris faktur dulu",
+                    "Validasi", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String noFaktur = String.valueOf(modelRiwayat.getValueAt(row, 0));
+        String penerima = String.valueOf(modelRiwayat.getValueAt(row, 3));
+        try {
+            Pembelian h = null;
+            for (Pembelian p : pembelianDAO.search(noFaktur)) {
+                if (p.getNoFaktur() != null
+                        && p.getNoFaktur().equalsIgnoreCase(noFaktur)) {
+                    h = pembelianDAO.getById(p.getIdPembelian());
+                    break;
+                }
+            }
+            if (h == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Faktur " + noFaktur + " tidak ditemukan",
+                        "Tidak Ditemukan", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            List<DetailPembelian> detail = pembelianDAO
+                    .getDetailByPembelian(h.getIdPembelian());
+            Supplier supplier = supplierDAO.getById(h.getIdSupplier());
+            Frame owner = (Frame) SwingUtilities.getWindowAncestor(this);
+            new FakturPembelianFormalDialog(owner, h, detail, supplier, penerima)
+                    .setVisible(true);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Gagal buka faktur: " + ex.getMessage(),
                     "Gagal", JOptionPane.ERROR_MESSAGE);
         }
     }

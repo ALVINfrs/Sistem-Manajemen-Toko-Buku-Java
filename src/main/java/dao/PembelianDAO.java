@@ -14,6 +14,7 @@ public interface PembelianDAO {
     Pembelian getById(int id);
     List<Pembelian> search(String keyword);
     int saveWithDetail(Pembelian h, List<DetailPembelian> d);
+    List<DetailPembelian> getDetailByPembelian(int idPembelian);
     List<LapPembelian> lapPembelian(LocalDate a, LocalDate b);
     List<model.LapSupplier> lapSupplier(LocalDate a, LocalDate b);
 }

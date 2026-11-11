@@ -80,6 +80,16 @@ Tanpa tabel member (dihapus ronde 4); kolom `buku.jenis` (Buku/ATK) +
    stok BK-001 bertambah 1.
 6. Pembelian: supplier 1 + ATK-001 qty 10 -> Simpan -> stok ATK-001
    bertambah 10.
+6b. Pembelian -> tab **Riwayat Faktur** -> default 30 hari terakhir
+    menampilkan faktur seed (kolom No. Faktur, Tanggal, Supplier, Penerima,
+    Total; urut terbaru di atas). Ubah Dari/Sampai dan cari no. faktur/nama
+    supplier -> tabel terfilter live. Klik 2x / Enter / **Buka Faktur** ->
+    dialog **Faktur Pembelian formal** (bukan struk penjualan) berisi header
+    toko + logo, supplier, penerima, item, total, dan tanda tangan.
+    **Export PDF** -> file `Faktur_<no>.pdf` tersimpan dan bisa dibuka.
+    **Cetak** -> dialog printer muncul. Kembali ke tab Input -> simpan
+    pembelian baru -> stok bertambah dan faktur baru muncul di riwayat.
+    Label "Draft No. Faktur" tersembunyi saat tab riwayat aktif.
 7. Laporan (periode mencakup 3 hari terakhir): tampilkan ke-7 jenis
    (Data Master Barang, Penjualan, Laba Kotor / Margin, Pendapatan,
    Pembelian, Pengadaan Supplier, Retur Penjualan) -> viewer terbuka
