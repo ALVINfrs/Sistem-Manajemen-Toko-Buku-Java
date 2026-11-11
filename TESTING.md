@@ -1,11 +1,11 @@
 # Report Testing - Sistem Informasi Toko Buku (CV. Almira Jaya Abadi)
 
-Versi app: 1.0.0 * Tanggal testing: 2026-11-10 * DB: MySQL lokal `db_toko_buku`
-(skema final 10 tabel + `seed_demo.sql` + `migrasi_ronde4.sql`).
+Versi app: 1.0.0 * Tanggal testing: 2026-11-11 * DB: MySQL lokal `db_toko_buku`
+(skema final 10 tabel + `seed_almira_real.sql` + `migrasi_ronde4.sql`).
 
 Hasil otomatis (mesin, hari yang sama): **PROBE-R7-FINAL-OK** (splash → login
 admin → 12 modul internal → logout → login baru → cleanup `TEST-R7` COUNT 0),
-**`mvn test` 20/20** + **`mvn package` BUILD SUCCESS** + **SMOKE-JAR-OK**
+**`mvn test` 21/21** + **`mvn package` BUILD SUCCESS** + **SMOKE-JAR-OK**
 (window `CV. Almira Jaya Abadi - Login`, 1080×680, tampil < 15 detik).
 Screenshot final Ronde 7: `shell.png`, `dashboard.png`, `master-buku.png`,
 `pos.png`, `laporan.png`, `laporan-chart.png`, `login.png`.
@@ -13,16 +13,15 @@ File ini = panduan testing manual untuk Gus.
 
 ## 1. Akun + Cara Masuk
 
-| Username | Password | Role  | Asal                                             |
-|----------|----------|-------|--------------------------------------------------|
-| admin    | admin123 | Admin | schema.sql (login perlu hash dari seed_demo.sql) |
-| kasir    | kasir123 | Kasir | seed_demo.sql                                    |
+| Username | Password | Role  | Asal                 |
+|----------|----------|-------|----------------------|
+| admin    | admin123 | Admin | seed_almira_real.sql |
+| kasir    | kasir123 | Kasir | seed_almira_real.sql |
 
-Akun admin berasal dari schema.sql, kasir dari seed_demo.sql.
-`schema.sql` men-seed admin dengan password plain sedangkan aplikasi
-membandingkan hash SHA-256, jadi DB skema-saja tidak bisa login;
-import `seed_demo.sql` (normalisasi ke `SHA2('admin123', 256)`) agar
-`admin/admin123` bisa login.
+Kedua akun dibuat ulang oleh `seed_almira_real.sql` dengan password
+ter-hash SHA-256 (`SHA2(..., 256)`), jadi langsung bisa dipakai setelah
+import. Jika memakai `schema.sql` saja, password admin masih plain dan
+login akan gagal sampai hash dinormalisasi.
 
 Login: jalankan app (`view.Login`), isi username + password, klik **MASUK**
 (atau tekan Enter). Salah satu salah -> label merah inline
@@ -34,14 +33,24 @@ konfirmasi -> **BUAT AKUN** -> akun baru otomatis Kasir -> kembali ke Login
 dengan info hijau "Akun berhasil dibuat. Silakan masuk." Tombol **KEMBALI**
 membatalkan tanpa menyimpan.
 
-## 2. Isi Seed Demo (setelah import seed_demo.sql + migrasi_ronde4.sql)
+## 2. Isi Seed Realistis (setelah import seed_almira_real.sql)
 
-users 2, kategori 6 (Fiksi, Non-Fiksi, Anak, Pendidikan, Komik, Alat
-Tulis), penerbit 3, supplier 3, buku 18 (BK-001..BK-012 + ATK-001..ATK-006:
-pulpen, buku tulis, pensil, penghapus, penggaris, spidol),
-penjualan 5, pembelian 3, retur 3.
-Stok contoh: BK-001 = 38, BK-002 = 19, BK-003 = 149, BK-004 = 40,
-ATK-001 = 100, ATK-002 = 40.
+Dataset demo KKP: users 2, kategori 9 (Buku SD, Buku SMP, Buku SMA/SMK,
+LKS & Modul, UTBK/SNBT, Novel, Komik, Agama & Umum, Alat Tulis),
+penerbit 11 (Erlangga, Yudhistira, Intan Pariwara, Grafindo, Tiga
+Serangkai, Penerbit Andi, Gramedia, Mizan, Elex Media, M&C!, Pusat
+Perbukuan), supplier 6, buku 80 (56 buku + 24 ATK), penjualan 785,
+detail penjualan 2.152, pembelian 36, retur 20.
+
+Periode transaksi 15 September–11 November 2026, Senin–Sabtu (Minggu
+libur). Penjualan mencakup nota perorangan dan 55 nota borongan sekolah
+(LKS/buku paket qty puluhan). Omzet ±Rp516,7 juta; total pembelian
+±Rp447,6 juta; retur 2–3% dari nota dengan refund Rp1.680.000. Metode
+bayar: Tunai 568, QRIS 141, Transfer 76. Stok akhir minimum 24 unit.
+
+Semua data konsisten: total nota = subtotal detail − diskon, stok tidak
+negatif, retur tidak melebihi qty terjual, dan tidak ada transaksi hari
+Minggu. Jalankan `database/verify_seed_almira.sql` untuk memeriksa ulang.
 Tanpa tabel member (dihapus ronde 4); kolom `buku.jenis` (Buku/ATK) +
 `buku.satuan` (pcs/pak/lusin/box/rim, wajib untuk ATK).
 
@@ -71,11 +80,21 @@ Tanpa tabel member (dihapus ronde 4); kolom `buku.jenis` (Buku/ATK) +
    stok BK-001 bertambah 1.
 6. Pembelian: supplier 1 + ATK-001 qty 10 -> Simpan -> stok ATK-001
    bertambah 10.
+6b. Pembelian -> tab **Riwayat Faktur** -> default 30 hari terakhir
+    menampilkan faktur seed (kolom No. Faktur, Tanggal, Supplier, Penerima,
+    Total; urut terbaru di atas). Ubah Dari/Sampai dan cari no. faktur/nama
+    supplier -> tabel terfilter live. Klik 2x / Enter / **Buka Faktur** ->
+    dialog **Faktur Pembelian formal** (bukan struk penjualan) berisi header
+    toko + logo, supplier, penerima, item, total, dan tanda tangan.
+    **Export PDF** -> file `Faktur_<no>.pdf` tersimpan dan bisa dibuka.
+    **Cetak** -> dialog printer muncul. Kembali ke tab Input -> simpan
+    pembelian baru -> stok bertambah dan faktur baru muncul di riwayat.
+    Label "Draft No. Faktur" tersembunyi saat tab riwayat aktif.
 7. Laporan (periode mencakup 3 hari terakhir): tampilkan ke-7 jenis
    (Data Master Barang, Penjualan, Laba Kotor / Margin, Pendapatan,
    Pembelian, Pengadaan Supplier, Retur Penjualan) -> viewer terbuka
    berisi data; untuk Data Master Barang coba filter Jenis ATK ->
-   hanya 6 baris ATK; Export PDF/Excel tiap jenis -> file tersimpan
+   hanya 24 baris ATK; Export PDF/Excel tiap jenis -> file tersimpan
    dan bisa dibuka (size > 0). Buka-tutup menu Laporan berulang ->
    TIDAK boleh ada popup error.
 8. FormUser: tambah user kasir baru -> logout -> login dengan user baru

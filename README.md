@@ -294,7 +294,9 @@ E:\Sistem-Informasi-Manajemen-Toko-Buku\
 ├── 📂 database/                    # Skrip skema, migrasi, dan seed data
 │   ├── 📄 db_toko_buku.sql         # Dump lengkap phpMyAdmin (skema + data siap pakai)
 │   ├── 📄 schema.sql               # Skema DDL murni (10 tabel database)
-│   ├── 📄 seed_demo.sql            # Data demo kaya (buku, transaksi, akun SHA-256)
+│   ├── 📄 seed_demo.sql            # Data demo kecil (buku, transaksi, akun SHA-256)
+│   ├── 📄 seed_almira_real.sql     # Dataset realistis 80 produk + transaksi Sep–Nov 2026
+│   ├── 📄 verify_seed_almira.sql   # Query verifikasi konsistensi dataset realistis
 │   └── 📄 migrasi_ronde3.sql       # Skrip penambahan kolom fitur POS lanjutan
 ├── 📂 docs/                        # Dokumentasi teknis & spesifikasi produk
 │   ├── 📄 prd.md                   # Product Requirements Document (PRD)
@@ -410,6 +412,16 @@ mysql -u root db_toko_buku < database/db_toko_buku.sql
 ```
 
 > [!TIP]
+> Untuk data demo yang lebih realistis (80 produk, 785 penjualan, 36 pembelian,
+> 20 retur, periode 15 Sep–11 Nov 2026), gunakan:
+> ```powershell
+> mysql -u root db_toko_buku < database/seed_almira_real.sql
+> mysql -u root db_toko_buku < database/verify_seed_almira.sql
+> ```
+> Seed ini mereset seluruh tabel master + transaksi, lalu membuat ulang akun
+> `admin` dan `kasir` dengan password ter-hash SHA-256.
+
+> [!TIP]
 > Jika perintah di atas menampilkan pesan error `mysql is not recognized`, Anda dapat menggunakan path absolut MySQL dari XAMPP, contoh:
 > `C:\xampp\mysql\bin\mysql.exe -u root -e "CREATE DATABASE IF NOT EXISTS db_toko_buku;"`
 
@@ -433,7 +445,9 @@ mysql -u root db_toko_buku < database/db_toko_buku.sql
 
 - **`db_toko_buku.sql` (Pilihan Utama):** Dump utuh terbaru dari phpMyAdmin yang sudah mencakup skema 10 tabel, kolom penyesuaian terbaru (`metode_bayar`, `diskon`, `deskripsi`), serta data demo buku dan transaksi lengkap.
 - **`schema.sql`:** Skema DDL murni 10 tabel tanpa data transaksi demo (hanya akun bawaan).
-- **`seed_demo.sql`:** Kumpulan data simulasi (12 varian buku lengkap, transaksi penjualan multi-metode, pembelian, dan retur) dengan kata sandi terenkripsi SHA-256.
+- **`seed_demo.sql`:** Kumpulan data simulasi kecil (12 varian buku lengkap, transaksi penjualan multi-metode, pembelian, dan retur) dengan kata sandi terenkripsi SHA-256.
+- **`seed_almira_real.sql`:** Dataset realistis untuk demo KKP: 80 produk (56 buku + 24 ATK), 11 penerbit, 6 supplier, 785 penjualan, 36 pembelian, dan 20 retur periode 15 Sep–11 Nov 2026 (Senin–Sabtu). Mereset seluruh tabel sebelum mengisi ulang.
+- **`verify_seed_almira.sql`:** Query verifikasi setelah import seed realistis (jumlah baris, rentang tanggal, total, stok, retur, foreign key).
 - **`migrasi_ronde3.sql`:** Skrip penambahan kolom fitur POS lanjutan bagi yang telah memiliki database versi lama tanpa perlu menghapus (*drop*) data yang sudah ada.
 
 ---
@@ -507,7 +521,7 @@ java -jar target/sistem-toko-buku-1.0.0.jar
 
 ## 🔑 11. Kredensial Akun Default
 
-Setelah mengimpor database (`db_toko_buku.sql` atau `seed_demo.sql`), Anda dapat masuk menggunakan akun berikut:
+Setelah mengimpor database (`db_toko_buku.sql`, `seed_demo.sql`, atau `seed_almira_real.sql`), Anda dapat masuk menggunakan akun berikut:
 
 | Username | Password | Peran (Role) | Akses Fitur Utama |
 |---|:---:|:---:|---|
@@ -580,7 +594,7 @@ Untuk memastikan seluruh modul berfungsi sempurna, Anda dapat mencoba skenario p
   ```sql
   UPDATE users SET password = SHA2('admin123', 256) WHERE username = 'admin';
   ```
-  Atau import file `database/seed_demo.sql` / `database/db_toko_buku.sql`.
+  Atau import file `database/seed_demo.sql`, `database/seed_almira_real.sql`, atau `database/db_toko_buku.sql`.
 
 ---
 

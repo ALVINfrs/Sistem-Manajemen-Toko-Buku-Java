@@ -24,7 +24,8 @@ public class ReportCompilationTest {
         "/reports/lap_pendapatan.jrxml",
         "/reports/lap_retur.jrxml",
         "/reports/lap_laba_kotor.jrxml",
-        "/reports/lap_supplier.jrxml"
+        "/reports/lap_supplier.jrxml",
+        "/reports/faktur_pembelian.jrxml"
     })
     void testCompileAndFillAllReports(String jrxmlPath) throws Exception {
         try (InputStream in = getClass().getResourceAsStream(jrxmlPath)) {
@@ -38,6 +39,17 @@ public class ReportCompilationTest {
             params.put("KOTA", "Bandung");
             params.put("TGL_CETAK", "23 September 2026");
             params.put("PETUGAS", "Admin Test");
+            params.put("NO_FAKTUR", "FB-20261111-0001");
+            params.put("TANGGAL", "11 November 2026 09:30");
+            params.put("SUPPLIER", "PT Supplier Test");
+            params.put("ALAMAT_SUPPLIER", "Jl. Supplier No. 1");
+            params.put("TELP_SUPPLIER", "021-123456");
+            params.put("PENERIMA", "Admin Test");
+            params.put("TOTAL", 0.0);
+            params.put("TOTAL_QTY", 0);
+            params.put("TOTAL_JENIS", 0);
+            params.put("ALAMAT_TOKO", "Jl. Toko No. 1");
+            params.put("TELP_TOKO", "021-999999");
 
             JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(Collections.emptyList());
             JasperPrint print = JasperFillManager.fillReport(report, params, ds);

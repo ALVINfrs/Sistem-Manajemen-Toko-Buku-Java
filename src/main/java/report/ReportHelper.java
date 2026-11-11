@@ -6,6 +6,7 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -20,6 +21,11 @@ public class ReportHelper {
         JasperViewer viewer = new JasperViewer(jp, false);
         viewer.setTitle("Laporan - " + jrxmlPath);
         viewer.setVisible(true);
+    }
+
+    public static void print(String jrxmlPath, List<?> data, Map<String, Object> params) throws JRException {
+        JasperPrint jp = fill(jrxmlPath, data, params);
+        JasperPrintManager.printReport(jp, true);
     }
 
     public static void exportPdf(String jrxmlPath, List<?> data, Map<String, Object> params, File out) throws JRException {
